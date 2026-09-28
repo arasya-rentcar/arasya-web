@@ -122,18 +122,22 @@ const banner = ui(other);
           if (parts.length) sessionStorage.setItem(KEY, parts.join(' · '));
           tag = sessionStorage.getItem(KEY) || '';
         } catch (e) {}
-        /* done() runs once the hit has been sent (or after 1s at most), so
-           a page that navigates away to WhatsApp doesn't lose the event. */
-        window.arasyaTrack = function (name, params, done) {
-          var called = false, finish = function () { if (!called) { called = true; if (done) done(); } };
+        window.arasyaTrack = function (name, params) {
           params = Object.assign({ page_path: location.pathname, language: document.documentElement.lang }, params || {});
           window.dataLayer = window.dataLayer || [];
           window.dataLayer.push(Object.assign({ event: name }, params));
           if (window.gtag && window.arasyaGa4) {
             if (window.arasyaLoadTags) window.arasyaLoadTags();
-            window.gtag('event', name, Object.assign({}, params, { transport_type: 'beacon', event_callback: finish }));
-            if (done) setTimeout(finish, 1000);
-          } else finish();
+            window.gtag('event', name, params);
+          }
+        };
+        /* WhatsApp opens in a new tab (the app, on phones). GA4 sends events
+           in batches a few seconds later; if this page navigated away the
+           batch would be lost, so it stays open and the visitor can come
+           back to it. */
+        window.arasyaOpenWa = function (url) {
+          var w = window.open(url, '_blank');
+          if (w) { try { w.opener = null; } catch (e) {} } else location.href = url;
         };
         document.addEventListener('click', function (ev) {
           var el = ev.target.closest && ev.target.closest('a[href^="https://wa.me/"], a[href^="tel:"], button[data-copy]');
@@ -146,12 +150,9 @@ const banner = ui(other);
             el.href = u.toString();
           }
           window.dataLayer.push({ event: 'cta_click', cta: el.dataset.cta || 'wa', page: location.pathname });
-          // Same-tab links: hold the navigation until the hit is sent.
-          var newTab = el.target === '_blank' || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button === 1;
-          if (newTab || !window.arasyaGa4) return arasyaTrack('whatsapp_click', { cta: el.dataset.cta || 'wa' });
-          ev.preventDefault();
-          var href = el.href;
-          arasyaTrack('whatsapp_click', { cta: el.dataset.cta || 'wa' }, function () { location.href = href; });
+          el.target = '_blank';
+          el.rel = 'noopener nofollow';
+          arasyaTrack('whatsapp_click', { cta: el.dataset.cta || 'wa' });
         }, true);
       })();
     </script>

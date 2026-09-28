@@ -26,7 +26,7 @@ await context.route(/google-analytics\.com\/g\/collect/, (route) => {
   }
   route.continue();
 });
-// Stand in for WhatsApp so the site page really unloads, as it does for a visitor.
+// Stand in for WhatsApp (it opens in a new tab).
 await context.route('https://wa.me/**', (r) => { hits.push({ en: '→ navigated to wa.me' }); r.fulfill({ contentType: 'text/html', body: '<p>WhatsApp</p>' }); });
 
 await page.goto(base + '/sewa-mobil-bogor', { waitUntil: 'networkidle' });
