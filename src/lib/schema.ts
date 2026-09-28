@@ -128,7 +128,7 @@ export function cityService(c: City, cars: Car[], site: string, s: Settings, lan
     serviceType: 'Car rental with driver',
     provider: { '@id': `${site}/#business` },
     areaServed: (c.areaServed || [c.name]).map((n) => ({ '@type': 'Place', name: n })),
-    hasOfferCatalog: offerCatalog(cars, site, lang === 'en' ? `Car rental rates in ${c.name}` : `Tarif sewa mobil ${c.name}`, lang),
+    ...(c.pricing === 'quote' ? {} : { hasOfferCatalog: offerCatalog(cars, site, lang === 'en' ? `Car rental rates in ${c.name}` : `Tarif sewa mobil ${c.name}`, lang) }),
     url: site + paths.city(c, lang),
     brand: s.brandName,
   };

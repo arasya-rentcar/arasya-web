@@ -13,6 +13,7 @@ import { rupiah } from '../lib/format';
 import { dateFmt, ui, type Lang } from '../lib/i18n';
 import { photo } from '../lib/images';
 import { paths, type Alternates } from '../lib/paths';
+import { refSlug, waHref } from '../lib/wa';
 import { cityIsIndexable } from '../lib/quality';
 import { breadcrumbs, cityService, faqPage } from '../lib/schema';
 
@@ -36,20 +37,50 @@ const code = `${en ? 'EN-' : ''}${city.code}`;
 const answer = en
   ? `Renting a car with a driver in ${city.name} costs from ${rupiah(lo.priceCity!)} for 12 hours in town (${lo.name}) up to ${rupiah(hi.priceCity!)} (${hi.name}). Fuel, tolls, parking and the driver’s meals are extra.${Number.isFinite(minAllIn) ? ` All-in rates, which include them, start at ${rupiah(minAllIn)}.` : ''} We pick up anywhere in ${city.pickupPoints || city.name}.`
   : `Tarif sewa mobil dengan driver di ${city.name} mulai ${rupiah(lo.priceCity!)} per 12 jam dalam kota (${lo.name}) sampai ${rupiah(hi.priceCity!)} (${hi.name}), belum termasuk BBM, tol, parkir, dan makan driver.${Number.isFinite(minAllIn) ? ` Tarif all-in mulai ${rupiah(minAllIn)}.` : ''} Penjemputan di ${city.pickupPoints || city.name}.`;
+const quote = city.pricing === 'quote';
+const reference = city.pricing === 'reference';
+const quoteAnswer = en
+  ? `Car hire with a driver in ${city.name} is quoted per trip, in rupiah, based on your dates, hours and itinerary. Send us your plans on WhatsApp and we reply with a written quote before you pay. Pick-up from ${city.pickupPoints || city.name}.`
+  : `Harga sewa mobil dengan supir di ${city.name} dihitung per perjalanan dalam Rupiah, menyesuaikan tanggal, durasi, dan itinerari. Kirim rencana perjalanan lewat WhatsApp; admin kami mengirim penawaran tertulis sebelum Anda membayar. Penjemputan di ${city.pickupPoints || city.name}.`;
+const refNote = en
+  ? `These are our reference rates; we confirm the final rate for ${city.name} with your booking.`
+  : `Tarif di atas adalah tarif acuan armada Arasya; tarif final untuk ${city.name} dikonfirmasi admin saat pemesanan.`;
+const priceText = quote ? quoteAnswer : answer;
+const bookingCars = quote ? (city.unitClasses || []).map((u) => ({ name: u.name }) as any) : cars;
 const priceQuestion = en ? `How much is car rental with a driver in ${city.name}?` : `Berapa tarif sewa mobil dengan driver di ${city.name}?`;
-const faq = [{ question: priceQuestion, answer }, ...(city.faq || []).filter((f) => f.question !== priceQuestion)];
+const faq = [{ question: priceQuestion, answer: priceText }, ...(city.faq || []).filter((f) => f.question !== priceQuestion)];
 const jsonld = [cityService(city, cars, site, settings, lang), faqPage(faq), breadcrumbs(site, crumbs)];
 const waCity = en ? `Hi Arasya, I'd like to rent a car with a driver in ${city.name}.` : `Halo Arasya, saya mau sewa mobil di ${city.name}.`;
 ---
 <Base title={city.seo?.title || t.rentIn(city.name)} description={city.seo?.description || ''} path={path} alternates={alternates} noindex={!cityIsIndexable(city)} jsonld={jsonld} waRef={`${code}-fab`} waMessage={waCity}>
-  <HeroShowroom hero={city.hero} settings={settings} cars={cars} refCode={`${code}-booking`} fromPrice={lo?.priceCity || undefined} crumbs={crumbs} />
+  <HeroShowroom hero={city.hero} settings={settings} cars={bookingCars} refCode={`${code}-booking`} fromPrice={quote ? undefined : lo?.priceCity || undefined} crumbs={crumbs} />
 
   {sections.map((s) => {
     // 'answer' is kept for older documents: its text now opens the rates section.
+    if (s === 'fleet' && quote) return (
+      <section class="section" id="tarif">
+        <div class="wrap">
+          <div class="section-head"><div class="stack"><span class="eyebrow">{en ? 'Cars & prices' : 'Unit & harga'}</span><h2>{en ? `Cars with a driver in ${city.name}` : `Pilihan mobil dengan supir di ${city.name}`}</h2><p class="intro">{quoteAnswer}</p></div></div>
+          <div class="grid grid-3">
+            {(city.unitClasses || []).map((u) => (
+              <article class="uclass">
+                <h3>{u.name}</h3>
+                <dl>
+                  {u.seats && <div><dt>{en ? 'Seats' : 'Kapasitas'}</dt><dd>{u.seats}</dd></div>}
+                  {u.luggage && <div><dt>{en ? 'Luggage' : 'Bagasi'}</dt><dd>{u.luggage}</dd></div>}
+                </dl>
+                {u.useCase && <p class="muted">{u.useCase}</p>}
+                <a class="btn btn-outline" href={waHref(settings.waPhone, en ? `Hi Arasya, I'd like a quote for a ${u.name} with driver in ${city.name}. Dates: …, passengers: …` : `Halo Arasya, saya mau minta penawaran ${u.name} dengan supir di ${city.name}. Tanggal: …, jumlah penumpang: …`, `${code}-${refSlug(u.name)}`)} data-cta={`quote-${refSlug(u.name)}`} rel="nofollow"><Icon name="wa" />{en ? 'Request a quote' : 'Minta penawaran'}</a>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
     if (s === 'fleet') return (
       <section class="section" id="tarif">
         <div class="wrap">
-          <div class="section-head"><div class="stack"><span class="eyebrow">{en ? `Fleet & rates` : `Armada & tarif ${city.name}`}</span><h2>{en ? `Car rental rates in ${city.name}` : `Tarif sewa mobil di ${city.name}`}</h2><p class="intro">{answer}</p></div><a class="link-more" href={paths.fleet(lang)}>{en ? 'Compare all cars →' : 'Bandingkan semua unit →'}</a></div>
+          <div class="section-head"><div class="stack"><span class="eyebrow">{en ? `Fleet & rates` : `Armada & tarif ${city.name}`}</span><h2>{en ? `Car rental rates in ${city.name}` : `Tarif sewa mobil di ${city.name}`}</h2><p class="intro">{answer}</p>{reference && <p class="ref-note">{refNote}</p>}</div><a class="link-more" href={paths.fleet(lang)}>{en ? 'Compare all cars →' : 'Bandingkan semua unit →'}</a></div>
           <div class="table-wrap">
             <table class="rates">
               <caption class="sr-only">{en ? `Car rental rates with driver in ${city.name}` : `Tarif sewa mobil dengan driver di ${city.name}`}</caption>
@@ -74,7 +105,7 @@ const waCity = en ? `Hi Arasya, I'd like to rent a car with a driver in ${city.n
         </div>
       </section>
     );
-    if (s === 'trust') return <TrustRow items={settings.trust} title={en ? `Why rent with Arasya in ${city.name}` : `Kenapa sewa mobil di ${city.name} bersama Arasya`} />;
+    if (s === 'trust') return <TrustRow items={city.trust?.length ? city.trust : settings.trust} title={en ? `Why rent with Arasya in ${city.name}` : `Kenapa sewa mobil di ${city.name} bersama Arasya`} />;
     if (s === 'editorial' && city.editorial) return (
       <section class="section">
         <div class="wrap editorial">
@@ -113,12 +144,12 @@ const waCity = en ? `Hi Arasya, I'd like to rent a car with a driver in ${city.n
     if (s === 'routes' && city.routes?.length) return (
       <section class="section">
         <div class="wrap">
-          <div class="section-head"><div class="stack"><span class="eyebrow">{en ? `From ${city.name}` : `Rute dari ${city.name}`}</span><h2>{en ? 'Typical driving times' : 'Perkiraan waktu tempuh'}</h2></div>{travel && <a class="link-more" href={paths.service(travel, lang)}>{en ? 'Intercity transfer rates →' : 'Tarif travel antar kota →'}</a>}</div>
+          <div class="section-head"><div class="stack"><span class="eyebrow">{en ? `From ${city.name}` : `Rute dari ${city.name}`}</span><h2>{en ? 'Popular trips and driving times' : 'Contoh rute populer'}</h2><p class="muted">{en ? `Just examples: we drive from ${city.name} to anywhere you need to go.` : `Hanya contoh; dari ${city.name} kami melayani perjalanan ke mana pun tujuan Anda.`}</p></div>{travel && !quote && <a class="link-more" href={paths.service(travel, lang)}>{en ? 'Intercity transfer rates →' : 'Tarif travel antar kota →'}</a>}</div>
           <div class="grid grid-2">
             {city.routes.map((r) => (
               <div class="route">
                 <Icon name="route" size={22} />
-                <div><h3>{city.name} → {r.to}</h3>{r.duration && <p class="dur num">{r.duration}</p>}{r.note && <p class="muted">{r.note}</p>}</div>
+                <div><h3>{r.to.includes('→') ? r.to : `${city.name} → ${r.to}`}</h3>{r.duration && <p class="dur num">{r.duration}</p>}{r.note && <p class="muted">{r.note}</p>}</div>
               </div>
             ))}
           </div>
@@ -178,6 +209,13 @@ const waCity = en ? `Hi Arasya, I'd like to rent a car with a driver in ${city.n
   .route h3 { color: var(--deep); }
   .dur { font: 800 1.1rem/1.4 var(--display); color: var(--blue); }
   .route .muted { font-size: 0.9rem; }
+  .ref-note { font-size: 0.9rem; color: var(--soft); border-left: 3px solid var(--sky-2); padding-left: 10px; max-width: 72ch; }
+  .uclass { border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: grid; gap: 10px; align-content: start; }
+  .uclass dl { display: grid; gap: 6px; margin: 0; }
+  .uclass dl div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 6px; font-size: 0.92rem; }
+  .uclass dt { color: var(--soft); }
+  .uclass dd { margin: 0; font-weight: 600; color: var(--deep); text-align: right; }
+  .uclass .btn { margin-top: 4px; }
   .transfers { margin-top: 18px; color: var(--body); }
   .transfers a { font-weight: 600; }
   .post { display: grid; gap: 8px; align-content: start; padding: 22px; background: #fff; border-radius: var(--radius); text-decoration: none; color: var(--ink); border: 1px solid var(--line); }

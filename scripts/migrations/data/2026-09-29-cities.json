@@ -1,0 +1,2719 @@
+{
+ "cities": [
+  {
+   "_id": "city-bekasi",
+   "_type": "city",
+   "name": "Bekasi",
+   "code": "BKS",
+   "slug": {
+    "_type": "slug",
+    "current": "sewa-mobil-bekasi"
+   },
+   "country": "ID",
+   "isHeadquarters": false,
+   "pricing": "reference",
+   "hero": {
+    "eyebrow": "Kota Bekasi",
+    "title": "Sewa Mobil Bekasi dengan Supir",
+    "lead": "Untuk kunjungan kerja ke kawasan industri, antar-jemput bandara, dan perjalanan keluarga dari Bekasi ke mana pun tujuan Anda.",
+    "car": {
+     "_type": "reference",
+     "_ref": "car-toyota-innova-venturer"
+    }
+   },
+   "sections": [
+    "answer",
+    "fleet",
+    "editorial",
+    "destinations",
+    "trust",
+    "routes",
+    "testimonials",
+    "faq"
+   ],
+   "editorial": {
+    "eyebrow": "Mengenal Bekasi",
+    "title": "Kota penyangga di timur Jakarta",
+    "lead": "Bekasi tumbuh sebagai kota hunian dan pusat industri di sisi timur Jakarta. Setiap hari ribuan orang bergerak antara rumah, kantor di Jakarta, dan kawasan industri di Cikarang.",
+    "body": [
+     {
+      "_type": "block",
+      "_key": "bekasie0",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "bekasie0s",
+        "text": "Jalur utamanya, Tol Jakarta–Cikampek, termasuk ruas tersibuk di Indonesia. Kepadatannya bisa berubah drastis dalam satu jam, terutama pagi arah Jakarta dan sore arah Cikarang.",
+        "marks": []
+       }
+      ]
+     },
+     {
+      "_type": "block",
+      "_key": "bekasie1",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "bekasie1s",
+        "text": "Driver Arasya terbiasa dengan pola ini: kapan memakai tol layang, kapan lewat jalur arteri, dan titik penjemputan yang praktis di kawasan industri maupun perumahan.",
+        "marks": []
+       }
+      ]
+     }
+    ]
+   },
+   "pickupPoints": "Stasiun Bekasi, kawasan Summarecon, kawasan industri Cikarang, dan hotel tempat Anda menginap",
+   "areaServed": [
+    "Bekasi",
+    "Cikarang",
+    "Tambun",
+    "Jabodetabek"
+   ],
+   "destinations": [
+    {
+     "_key": "g565c128510",
+     "name": "Kawasan Industri Cikarang",
+     "area": "Kabupaten Bekasi",
+     "text": "Jababeka, MM2100, dan kawasan industri lain yang sering menjadi tujuan kunjungan kerja dan audit pabrik."
+    },
+    {
+     "_key": "g87231eead0",
+     "name": "Summarecon Bekasi",
+     "area": "Bekasi Utara",
+     "text": "Kawasan belanja dan kuliner yang ramai di akhir pekan, mudah dijangkau dari tol."
+    },
+    {
+     "_key": "g273406ec38",
+     "name": "Curug Parigi",
+     "area": "Bantargebang",
+     "text": "Air terjun kecil dengan tebing batu, pilihan wisata alam terdekat dari pusat kota."
+    },
+    {
+     "_key": "gddc1791e74",
+     "name": "Muara Gembong",
+     "area": "Pesisir utara",
+     "text": "Ekowisata hutan mangrove dan pantai di ujung utara Kabupaten Bekasi."
+    }
+   ],
+   "routes": [
+    {
+     "_key": "g4aded50f00",
+     "to": "Bandara Soekarno-Hatta",
+     "duration": "±1,5–2 jam",
+     "note": "Via tol dalam kota dan tol bandara, tergantung jam berangkat."
+    },
+    {
+     "_key": "gef05ee31f5",
+     "to": "Jakarta pusat",
+     "duration": "±1–1,5 jam",
+     "note": "Via Tol Jakarta–Cikampek atau tol layang."
+    },
+    {
+     "_key": "g77c719e011",
+     "to": "Bandung",
+     "duration": "±2,5–3 jam",
+     "note": "Via Tol Cipularang."
+    },
+    {
+     "_key": "gd3cc6fe48d",
+     "to": "Puncak",
+     "duration": "±2–3 jam",
+     "note": "Via Jagorawi, menyesuaikan sistem satu arah akhir pekan."
+    }
+   ],
+   "faq": [
+    {
+     "_key": "g30a65ae1d7",
+     "question": "Apakah tarif sudah termasuk supir?",
+     "answer": "Ya, seluruh tarif sudah termasuk jasa driver profesional. Tersedia dua pilihan: tarif Dalam Kota 12 jam (belum termasuk BBM, tol, parkir, dan makan driver) atau tarif All-in (sudah termasuk BBM, tol, dan makan driver)."
+    },
+    {
+     "_key": "gd6899796cc",
+     "question": "Apakah bisa ke luar kota dari Bekasi?",
+     "answer": "Bisa. Dari Bekasi kami melayani perjalanan ke kota mana pun, dalam provinsi maupun antarprovinsi, termasuk sewa beberapa hari. Tarif disesuaikan dengan jarak dan durasi, dan dikonfirmasi tertulis sebelum berangkat."
+    },
+    {
+     "_key": "g96dd45c6e8",
+     "question": "Di mana saja titik penjemputan di Bekasi?",
+     "answer": "Driver menjemput di alamat mana pun di Bekasi dan sekitarnya, termasuk Stasiun Bekasi, kawasan Summarecon, kawasan industri Cikarang, dan hotel tempat Anda menginap."
+    },
+    {
+     "_key": "g8cd6bd0c74",
+     "question": "Apakah bisa untuk kunjungan ke kawasan industri Cikarang?",
+     "answer": "Bisa. Driver kami terbiasa keluar-masuk kawasan industri di Cikarang dan mengatur jam berangkat supaya tamu tiba sebelum jadwal rapat."
+    },
+    {
+     "_key": "gbdc46f291e",
+     "question": "Bagaimana ketentuan pembayarannya?",
+     "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    }
+   ],
+   "seo": {
+    "title": "Sewa Mobil Bekasi dengan Supir — Arasya Rent Car",
+    "description": "Sewa mobil dengan supir di Bekasi dan Cikarang untuk kunjungan kerja, antar-jemput bandara, dan perjalanan luar kota. Tarif 12 jam atau all-in, pesan via WhatsApp."
+   }
+  },
+  {
+   "_id": "city-depok",
+   "_type": "city",
+   "name": "Depok",
+   "code": "DPK",
+   "slug": {
+    "_type": "slug",
+    "current": "sewa-mobil-depok"
+   },
+   "country": "ID",
+   "isHeadquarters": false,
+   "pricing": "reference",
+   "hero": {
+    "eyebrow": "Kota Depok",
+    "title": "Sewa Mobil Depok dengan Supir",
+    "lead": "Untuk keperluan keluarga, kampus, dan kantor di Depok, antar-jemput bandara, serta perjalanan dari Depok ke kota mana pun.",
+    "car": {
+     "_type": "reference",
+     "_ref": "car-mitsubishi-xpander"
+    }
+   },
+   "sections": [
+    "answer",
+    "fleet",
+    "destinations",
+    "routes",
+    "editorial",
+    "testimonials",
+    "trust",
+    "faq"
+   ],
+   "editorial": {
+    "eyebrow": "Mengenal Depok",
+    "title": "Kota kampus di antara Jakarta dan Bogor",
+    "lead": "Depok dikenal sebagai kota pendidikan dengan kampus Universitas Indonesia, sekaligus kota hunian bagi banyak pekerja Jakarta.",
+    "body": [
+     {
+      "_type": "block",
+      "_key": "depoke0",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "depoke0s",
+        "text": "Jalan Margonda menjadi poros utama kota dan hampir selalu padat. Untuk menuju Jakarta atau bandara, tol seperti Cijago dan Desari sering jauh lebih cepat daripada jalan arteri.",
+        "marks": []
+       }
+      ]
+     },
+     {
+      "_type": "block",
+      "_key": "depoke1",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "depoke1s",
+        "text": "Driver Arasya memilih jalur yang tepat untuk jam Anda berangkat, termasuk untuk acara wisuda dan kunjungan keluarga yang biasanya berbarengan dengan jam sibuk.",
+        "marks": []
+       }
+      ]
+     }
+    ]
+   },
+   "pickupPoints": "Stasiun Depok dan Depok Baru, kawasan Margonda, kampus UI, dan hotel tempat Anda menginap",
+   "areaServed": [
+    "Depok",
+    "Cinere",
+    "Sawangan",
+    "Jabodetabek"
+   ],
+   "destinations": [
+    {
+     "_key": "g329678659e",
+     "name": "Kampus Universitas Indonesia",
+     "area": "Beji",
+     "text": "Kampus dengan danau dan hutan kota, ramai saat wisuda dan acara kampus."
+    },
+    {
+     "_key": "g48edb7a041",
+     "name": "Masjid Kubah Emas",
+     "area": "Limo",
+     "text": "Masjid berkubah emas yang menjadi tujuan wisata religi keluarga."
+    },
+    {
+     "_key": "g42014f033f",
+     "name": "Jalan Margonda",
+     "area": "Pusat Kota",
+     "text": "Pusat belanja, kuliner, dan perkantoran di jantung Depok."
+    }
+   ],
+   "routes": [
+    {
+     "_key": "gda6fad4ff0",
+     "to": "Jakarta Selatan",
+     "duration": "±45–60 menit",
+     "note": "Via Tol Desari atau Tol Cijago."
+    },
+    {
+     "_key": "ge6f10f9f47",
+     "to": "Bogor",
+     "duration": "±45–60 menit",
+     "note": "Via Tol Jagorawi."
+    },
+    {
+     "_key": "geb9bec85e0",
+     "to": "Bandara Soekarno-Hatta",
+     "duration": "±1,5–2 jam",
+     "note": "Via tol lingkar luar Jakarta dan tol bandara."
+    }
+   ],
+   "faq": [
+    {
+     "_key": "gde4c86a554",
+     "question": "Apakah tarif sudah termasuk supir?",
+     "answer": "Ya, seluruh tarif sudah termasuk jasa driver profesional. Tersedia dua pilihan: tarif Dalam Kota 12 jam (belum termasuk BBM, tol, parkir, dan makan driver) atau tarif All-in (sudah termasuk BBM, tol, dan makan driver)."
+    },
+    {
+     "_key": "gdf3aa97cf0",
+     "question": "Apakah bisa ke luar kota dari Depok?",
+     "answer": "Bisa. Dari Depok kami melayani perjalanan ke kota mana pun, dalam provinsi maupun antarprovinsi, termasuk sewa beberapa hari. Tarif disesuaikan dengan jarak dan durasi, dan dikonfirmasi tertulis sebelum berangkat."
+    },
+    {
+     "_key": "g71bab06907",
+     "question": "Di mana saja titik penjemputan di Depok?",
+     "answer": "Driver menjemput di alamat mana pun di Depok dan sekitarnya, termasuk Stasiun Depok dan Depok Baru, kawasan Margonda, kampus UI, dan hotel tempat Anda menginap."
+    },
+    {
+     "_key": "g2a5c036ce8",
+     "question": "Apakah bisa untuk acara wisuda di UI?",
+     "answer": "Bisa. Sampaikan jadwal acara dan jumlah keluarga yang ikut; admin menyarankan unit dan jam jemput supaya tidak terjebak antrean masuk kampus."
+    },
+    {
+     "_key": "ge391947eea",
+     "question": "Bagaimana ketentuan pembayarannya?",
+     "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    }
+   ],
+   "seo": {
+    "title": "Sewa Mobil Depok dengan Supir — Arasya Rent Car",
+    "description": "Sewa mobil dengan supir di Depok untuk keluarga, acara kampus, dan perjalanan luar kota. Tarif 12 jam atau all-in, pesan via WhatsApp."
+   }
+  },
+  {
+   "_id": "city-tangerang",
+   "_type": "city",
+   "name": "Tangerang",
+   "code": "TNG",
+   "slug": {
+    "_type": "slug",
+    "current": "sewa-mobil-tangerang"
+   },
+   "country": "ID",
+   "isHeadquarters": false,
+   "pricing": "reference",
+   "hero": {
+    "eyebrow": "Tangerang & Tangerang Selatan",
+    "title": "Sewa Mobil Tangerang dengan Supir",
+    "lead": "Untuk antar-jemput Bandara Soekarno-Hatta, acara di BSD, kunjungan kerja, dan perjalanan dari Tangerang ke kota mana pun.",
+    "car": {
+     "_type": "reference",
+     "_ref": "car-toyota-zenix"
+    }
+   },
+   "sections": [
+    "answer",
+    "editorial",
+    "fleet",
+    "routes",
+    "destinations",
+    "trust",
+    "faq",
+    "testimonials"
+   ],
+   "editorial": {
+    "eyebrow": "Mengenal Tangerang",
+    "title": "Rumah Bandara Soekarno-Hatta",
+    "lead": "Bandara Soekarno-Hatta berada di wilayah Kota Tangerang, sementara Tangerang Selatan berkembang menjadi pusat bisnis dan acara di BSD, Alam Sutera, dan Gading Serpong.",
+    "body": [
+     {
+      "_type": "block",
+      "_key": "tangerange0",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "tangerange0s",
+        "text": "Banyak tamu kami datang untuk pameran di ICE BSD, rapat di kawasan bisnis, atau transit sebelum penerbangan. Jaraknya dekat, tetapi akses ke bandara dan tol Jakarta bisa padat di jam sibuk.",
+        "marks": []
+       }
+      ]
+     },
+     {
+      "_type": "block",
+      "_key": "tangerange1",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "tangerange1s",
+        "text": "Driver Arasya mengenal jalur alternatif antara BSD, bandara, dan Jakarta, dan terbiasa menunggu di area kedatangan saat pesawat terlambat.",
+        "marks": []
+       }
+      ]
+     }
+    ]
+   },
+   "pickupPoints": "Bandara Soekarno-Hatta, ICE BSD, kawasan Alam Sutera dan Gading Serpong, dan hotel tempat Anda menginap",
+   "areaServed": [
+    "Kota Tangerang",
+    "Tangerang Selatan",
+    "BSD",
+    "Alam Sutera",
+    "Gading Serpong"
+   ],
+   "destinations": [
+    {
+     "_key": "gf438a3ce68",
+     "name": "ICE BSD",
+     "area": "BSD City",
+     "text": "Pusat konvensi dan pameran terbesar di kawasan ini, tujuan utama tamu bisnis."
+    },
+    {
+     "_key": "g35ffce0a55",
+     "name": "Pasar Lama & Klenteng Boen Tek Bio",
+     "area": "Kota Tangerang",
+     "text": "Kawasan kuliner malam dan klenteng tua di pusat kota lama Tangerang."
+    },
+    {
+     "_key": "g4e54322c9d",
+     "name": "Masjid Raya Al-A'zhom",
+     "area": "Kota Tangerang",
+     "text": "Masjid besar dengan arsitektur kubah bertumpuk, ikon kota Tangerang."
+    },
+    {
+     "_key": "g58f444baa3",
+     "name": "Kawasan Alam Sutera",
+     "area": "Serpong Utara",
+     "text": "Kawasan bisnis, belanja, dan kuliner yang terhubung langsung dengan tol."
+    }
+   ],
+   "routes": [
+    {
+     "_key": "gc1cf87b327",
+     "to": "Bandara Soekarno-Hatta",
+     "duration": "±30–60 menit",
+     "note": "Dari BSD atau Alam Sutera, tergantung jalur tol."
+    },
+    {
+     "_key": "g772abd1ab0",
+     "to": "Jakarta pusat",
+     "duration": "±1–1,5 jam",
+     "note": "Via Tol Jakarta–Tangerang atau Tol JORR."
+    },
+    {
+     "_key": "g8d679632b8",
+     "to": "Bogor",
+     "duration": "±1,5–2 jam",
+     "note": "Via tol lingkar luar dan Jagorawi."
+    },
+    {
+     "_key": "g4cddaa3caa",
+     "to": "Anyer",
+     "duration": "±2–2,5 jam",
+     "note": "Via Tol Jakarta–Merak."
+    }
+   ],
+   "faq": [
+    {
+     "_key": "g665abf9b01",
+     "question": "Apakah tarif sudah termasuk supir?",
+     "answer": "Ya, seluruh tarif sudah termasuk jasa driver profesional. Tersedia dua pilihan: tarif Dalam Kota 12 jam (belum termasuk BBM, tol, parkir, dan makan driver) atau tarif All-in (sudah termasuk BBM, tol, dan makan driver)."
+    },
+    {
+     "_key": "gb3dff4114f",
+     "question": "Apakah bisa ke luar kota dari Tangerang?",
+     "answer": "Bisa. Dari Tangerang kami melayani perjalanan ke kota mana pun, dalam provinsi maupun antarprovinsi, termasuk sewa beberapa hari. Tarif disesuaikan dengan jarak dan durasi, dan dikonfirmasi tertulis sebelum berangkat."
+    },
+    {
+     "_key": "gb6c9008cb8",
+     "question": "Di mana saja titik penjemputan di Tangerang?",
+     "answer": "Driver menjemput di alamat mana pun di Tangerang dan sekitarnya, termasuk Bandara Soekarno-Hatta, ICE BSD, kawasan Alam Sutera dan Gading Serpong, dan hotel tempat Anda menginap."
+    },
+    {
+     "_key": "g2b574e9739",
+     "question": "Apakah bisa menjemput di Bandara Soekarno-Hatta tengah malam?",
+     "answer": "Bisa. Admin kami siaga 24 jam. Kirim nomor penerbangan saat memesan, driver memantau jadwal pendaratan dan menunggu di area kedatangan."
+    },
+    {
+     "_key": "gfb94395c1f",
+     "question": "Bagaimana ketentuan pembayarannya?",
+     "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    }
+   ],
+   "seo": {
+    "title": "Sewa Mobil Tangerang dengan Supir — Arasya Rent Car",
+    "description": "Sewa mobil dengan supir di Tangerang, BSD, dan Alam Sutera. Antar-jemput Bandara Soekarno-Hatta, pameran di ICE BSD, dan perjalanan luar kota."
+   }
+  },
+  {
+   "_id": "city-cirebon",
+   "_type": "city",
+   "name": "Cirebon",
+   "code": "CBN",
+   "slug": {
+    "_type": "slug",
+    "current": "sewa-mobil-cirebon"
+   },
+   "country": "ID",
+   "isHeadquarters": false,
+   "pricing": "reference",
+   "hero": {
+    "eyebrow": "Kota Cirebon",
+    "title": "Sewa Mobil Cirebon dengan Supir",
+    "lead": "Untuk wisata keraton dan kuliner, kunjungan kerja di jalur pantura, dan perjalanan dari Cirebon ke kota mana pun.",
+    "car": {
+     "_type": "reference",
+     "_ref": "car-toyota-innova-reborn"
+    }
+   },
+   "sections": [
+    "answer",
+    "fleet",
+    "trust",
+    "routes",
+    "destinations",
+    "editorial",
+    "faq",
+    "testimonials"
+   ],
+   "editorial": {
+    "eyebrow": "Mengenal Cirebon",
+    "title": "Kota Udang di persimpangan Jawa Barat dan Jawa Tengah",
+    "lead": "Cirebon adalah kota pelabuhan tua dengan dua keraton, sentra batik Trusmi, dan kuliner khas seperti empal gentong dan nasi jamblang.",
+    "body": [
+     {
+      "_type": "block",
+      "_key": "cirebone0",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "cirebone0s",
+        "text": "Letaknya strategis: terhubung ke Jakarta lewat Tol Cipali, ke Jawa Tengah lewat Tol Trans-Jawa, dan dekat dengan Bandara Kertajati di Majalengka.",
+        "marks": []
+       }
+      ]
+     },
+     {
+      "_type": "block",
+      "_key": "cirebone1",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "cirebone1s",
+        "text": "Driver Arasya bisa mengatur perjalanan sehari penuh di dalam kota, mulai dari keraton, belanja batik, sampai kuliner, atau menjadi titik singgah dalam perjalanan panjang antar provinsi.",
+        "marks": []
+       }
+      ]
+     }
+    ]
+   },
+   "pickupPoints": "Stasiun Cirebon (Kejaksan), Bandara Kertajati, kawasan Trusmi, dan hotel tempat Anda menginap",
+   "areaServed": [
+    "Cirebon",
+    "Kabupaten Cirebon",
+    "Kuningan",
+    "Majalengka",
+    "Indramayu"
+   ],
+   "destinations": [
+    {
+     "_key": "gd754d77c52",
+     "name": "Keraton Kasepuhan",
+     "area": "Pusat Kota",
+     "text": "Keraton tertua di Cirebon dengan perpaduan arsitektur Jawa, Tionghoa, dan Eropa."
+    },
+    {
+     "_key": "g151d72fec2",
+     "name": "Sentra Batik Trusmi",
+     "area": "Plered",
+     "text": "Deretan toko dan bengkel batik khas Cirebon dengan motif mega mendung."
+    },
+    {
+     "_key": "g6fd1724a1c",
+     "name": "Taman Air Gua Sunyaragi",
+     "area": "Pusat Kota",
+     "text": "Kompleks gua buatan dari batu karang peninggalan keraton."
+    },
+    {
+     "_key": "gff4eca4a14",
+     "name": "Kawasan Linggarjati",
+     "area": "Kuningan",
+     "text": "Udara sejuk di kaki Gunung Ciremai, sekitar satu jam dari kota."
+    }
+   ],
+   "routes": [
+    {
+     "_key": "g462086dcda",
+     "to": "Jakarta",
+     "duration": "±3–3,5 jam",
+     "note": "Via Tol Cipali dan Tol Jakarta–Cikampek."
+    },
+    {
+     "_key": "g085f283504",
+     "to": "Bandung",
+     "duration": "±2,5–3,5 jam",
+     "note": "Via Tol Cisumdawu atau jalur Sumedang."
+    },
+    {
+     "_key": "g93d24efc3e",
+     "to": "Bandara Kertajati",
+     "duration": "±1 jam",
+     "note": "Via Tol Cipali."
+    },
+    {
+     "_key": "g5f2064c682",
+     "to": "Semarang",
+     "duration": "±3,5–4 jam",
+     "note": "Via Tol Trans-Jawa."
+    }
+   ],
+   "faq": [
+    {
+     "_key": "g0ab687955f",
+     "question": "Apakah tarif sudah termasuk supir?",
+     "answer": "Ya, seluruh tarif sudah termasuk jasa driver profesional. Tersedia dua pilihan: tarif Dalam Kota 12 jam (belum termasuk BBM, tol, parkir, dan makan driver) atau tarif All-in (sudah termasuk BBM, tol, dan makan driver)."
+    },
+    {
+     "_key": "gf4ec4ac6a7",
+     "question": "Apakah bisa ke luar kota dari Cirebon?",
+     "answer": "Bisa. Dari Cirebon kami melayani perjalanan ke kota mana pun, dalam provinsi maupun antarprovinsi, termasuk sewa beberapa hari. Tarif disesuaikan dengan jarak dan durasi, dan dikonfirmasi tertulis sebelum berangkat."
+    },
+    {
+     "_key": "g2409976e4a",
+     "question": "Di mana saja titik penjemputan di Cirebon?",
+     "answer": "Driver menjemput di alamat mana pun di Cirebon dan sekitarnya, termasuk Stasiun Cirebon (Kejaksan), Bandara Kertajati, kawasan Trusmi, dan hotel tempat Anda menginap."
+    },
+    {
+     "_key": "geb99bd01d1",
+     "question": "Apakah bisa menjemput di Bandara Kertajati?",
+     "answer": "Bisa. Kirim nomor penerbangan saat memesan, driver menunggu di area kedatangan dan mengantar Anda ke Cirebon atau kota tujuan lain."
+    },
+    {
+     "_key": "gb3c81a9d87",
+     "question": "Bagaimana ketentuan pembayarannya?",
+     "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    }
+   ],
+   "seo": {
+    "title": "Sewa Mobil Cirebon dengan Supir — Arasya Rent Car",
+    "description": "Sewa mobil dengan supir di Cirebon untuk wisata keraton, batik Trusmi, kuliner, dan perjalanan luar kota. Tarif 12 jam atau all-in, pesan via WhatsApp."
+   }
+  },
+  {
+   "_id": "city-pekalongan",
+   "_type": "city",
+   "name": "Pekalongan",
+   "code": "PKL",
+   "slug": {
+    "_type": "slug",
+    "current": "sewa-mobil-pekalongan"
+   },
+   "country": "ID",
+   "isHeadquarters": false,
+   "pricing": "reference",
+   "hero": {
+    "eyebrow": "Kota Pekalongan",
+    "title": "Sewa Mobil Pekalongan dengan Supir",
+    "lead": "Untuk belanja batik, kunjungan kerja, dan acara keluarga di Pekalongan, serta perjalanan dari Pekalongan ke kota mana pun.",
+    "car": {
+     "_type": "reference",
+     "_ref": "car-mitsubishi-xpander"
+    }
+   },
+   "sections": [
+    "answer",
+    "fleet",
+    "routes",
+    "editorial",
+    "destinations",
+    "testimonials",
+    "trust",
+    "faq"
+   ],
+   "editorial": {
+    "eyebrow": "Mengenal Pekalongan",
+    "title": "Kota Batik di pesisir utara Jawa Tengah",
+    "lead": "Pekalongan dikenal sebagai Kota Batik, dengan kampung-kampung batik dan museum yang menyimpan koleksi dari seluruh Nusantara.",
+    "body": [
+     {
+      "_type": "block",
+      "_key": "pekalongane0",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "pekalongane0s",
+        "text": "Banyak tamu kami datang untuk belanja batik dalam jumlah besar, kunjungan ke pabrik dan konveksi, atau acara keluarga. Di luar kota, hutan dan air terjun Petungkriyono menawarkan suasana yang sangat berbeda.",
+        "marks": []
+       }
+      ]
+     },
+     {
+      "_type": "block",
+      "_key": "pekalongane1",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "pekalongane1s",
+        "text": "Dengan Tol Trans-Jawa, Pekalongan kini dekat dengan Semarang dan Cirebon. Driver Arasya bisa mengatur perjalanan sehari penuh maupun perjalanan panjang antar provinsi.",
+        "marks": []
+       }
+      ]
+     }
+    ]
+   },
+   "pickupPoints": "Stasiun Pekalongan, kawasan Kauman, sentra batik, dan hotel tempat Anda menginap",
+   "areaServed": [
+    "Pekalongan",
+    "Kabupaten Pekalongan",
+    "Batang",
+    "Pemalang"
+   ],
+   "destinations": [
+    {
+     "_key": "g64625631ba",
+     "name": "Museum Batik Pekalongan",
+     "area": "Pusat Kota",
+     "text": "Koleksi batik dari berbagai daerah di Indonesia, lengkap dengan kelas membatik."
+    },
+    {
+     "_key": "gf5d290ef19",
+     "name": "Kampung Batik Kauman",
+     "area": "Pusat Kota",
+     "text": "Kampung dengan rumah-rumah pembatik dan toko batik tulis maupun cap."
+    },
+    {
+     "_key": "gd81310c4a6",
+     "name": "Petungkriyono",
+     "area": "Kabupaten Pekalongan",
+     "text": "Hutan hujan dengan air terjun dan sungai jernih di dataran tinggi selatan."
+    }
+   ],
+   "routes": [
+    {
+     "_key": "gc795033700",
+     "to": "Semarang",
+     "duration": "±1,5–2 jam",
+     "note": "Via Tol Trans-Jawa."
+    },
+    {
+     "_key": "g6f3a1dded2",
+     "to": "Cirebon",
+     "duration": "±2–2,5 jam",
+     "note": "Via Tol Trans-Jawa."
+    },
+    {
+     "_key": "g24c9f736df",
+     "to": "Dieng",
+     "duration": "±3 jam",
+     "note": "Via Batang dan Wonosobo, jalur menanjak."
+    }
+   ],
+   "faq": [
+    {
+     "_key": "g143a7f0164",
+     "question": "Apakah tarif sudah termasuk supir?",
+     "answer": "Ya, seluruh tarif sudah termasuk jasa driver profesional. Tersedia dua pilihan: tarif Dalam Kota 12 jam (belum termasuk BBM, tol, parkir, dan makan driver) atau tarif All-in (sudah termasuk BBM, tol, dan makan driver)."
+    },
+    {
+     "_key": "gecd8d3319c",
+     "question": "Apakah bisa ke luar kota dari Pekalongan?",
+     "answer": "Bisa. Dari Pekalongan kami melayani perjalanan ke kota mana pun, dalam provinsi maupun antarprovinsi, termasuk sewa beberapa hari. Tarif disesuaikan dengan jarak dan durasi, dan dikonfirmasi tertulis sebelum berangkat."
+    },
+    {
+     "_key": "gba2611b9f1",
+     "question": "Di mana saja titik penjemputan di Pekalongan?",
+     "answer": "Driver menjemput di alamat mana pun di Pekalongan dan sekitarnya, termasuk Stasiun Pekalongan, kawasan Kauman, sentra batik, dan hotel tempat Anda menginap."
+    },
+    {
+     "_key": "g3f82b8427a",
+     "question": "Apakah bisa diantar keliling sentra batik seharian?",
+     "answer": "Bisa. Tarif Dalam Kota 12 jam cocok untuk belanja batik di beberapa lokasi. Sampaikan daftar tempat yang ingin dikunjungi, driver akan menyusun urutannya."
+    },
+    {
+     "_key": "g9e819406bf",
+     "question": "Bagaimana ketentuan pembayarannya?",
+     "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    }
+   ],
+   "seo": {
+    "title": "Sewa Mobil Pekalongan dengan Supir — Arasya Rent Car",
+    "description": "Sewa mobil dengan supir di Pekalongan untuk belanja batik, kunjungan kerja, dan perjalanan luar kota lewat Tol Trans-Jawa. Pesan via WhatsApp."
+   }
+  },
+  {
+   "_id": "city-semarang",
+   "_type": "city",
+   "name": "Semarang",
+   "code": "SRG",
+   "slug": {
+    "_type": "slug",
+    "current": "sewa-mobil-semarang"
+   },
+   "country": "ID",
+   "isHeadquarters": false,
+   "pricing": "reference",
+   "hero": {
+    "eyebrow": "Kota Semarang",
+    "title": "Sewa Mobil Semarang dengan Supir",
+    "lead": "Untuk perjalanan bisnis, wisata kota lama, dan antar-jemput bandara di Semarang, serta perjalanan dari Semarang ke kota mana pun.",
+    "car": {
+     "_type": "reference",
+     "_ref": "car-toyota-zenix"
+    }
+   },
+   "sections": [
+    "answer",
+    "fleet",
+    "editorial",
+    "destinations",
+    "trust",
+    "routes",
+    "testimonials",
+    "faq"
+   ],
+   "editorial": {
+    "eyebrow": "Mengenal Semarang",
+    "title": "Ibu kota Jawa Tengah di antara pantai dan perbukitan",
+    "lead": "Semarang adalah pusat bisnis dan pemerintahan Jawa Tengah. Kota bawahnya berada di pesisir, sementara kawasan atasnya menanjak ke perbukitan dengan udara lebih sejuk.",
+    "body": [
+     {
+      "_type": "block",
+      "_key": "semarange0",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "semarange0s",
+        "text": "Tamu kami biasanya datang untuk urusan kantor, menghadiri acara, atau menjadikan Semarang titik awal perjalanan ke Solo, Jogja, dan Dieng lewat jaringan tol.",
+        "marks": []
+       }
+      ]
+     },
+     {
+      "_type": "block",
+      "_key": "semarange1",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "semarange1s",
+        "text": "Driver Arasya mengenal jalur naik-turun kota, lokasi parkir di kawasan wisata seperti Kota Lama, dan waktu tempuh realistis ke kota-kota sekitarnya.",
+        "marks": []
+       }
+      ]
+     }
+    ]
+   },
+   "pickupPoints": "Bandara Ahmad Yani, Stasiun Tawang dan Poncol, kawasan Simpang Lima, dan hotel tempat Anda menginap",
+   "areaServed": [
+    "Semarang",
+    "Ungaran",
+    "Kendal",
+    "Demak"
+   ],
+   "destinations": [
+    {
+     "_key": "gc139f728b3",
+     "name": "Lawang Sewu",
+     "area": "Pusat Kota",
+     "text": "Bangunan bersejarah bekas kantor perusahaan kereta api zaman Belanda."
+    },
+    {
+     "_key": "g94c5157abc",
+     "name": "Kota Lama",
+     "area": "Semarang Utara",
+     "text": "Kawasan bangunan kolonial, Gereja Blenduk, dan kafe di sekitar taman."
+    },
+    {
+     "_key": "gfa1c98af24",
+     "name": "Klenteng Sam Poo Kong",
+     "area": "Semarang Barat",
+     "text": "Kompleks klenteng yang dikaitkan dengan persinggahan Laksamana Cheng Ho."
+    },
+    {
+     "_key": "g12fc4ea861",
+     "name": "Masjid Agung Jawa Tengah",
+     "area": "Gayamsari",
+     "text": "Masjid besar dengan payung raksasa dan menara pandang ke seluruh kota."
+    }
+   ],
+   "routes": [
+    {
+     "_key": "g3f58031c81",
+     "to": "Solo",
+     "duration": "±1,5–2 jam",
+     "note": "Via Tol Semarang–Solo."
+    },
+    {
+     "_key": "g17976fdf33",
+     "to": "Yogyakarta",
+     "duration": "±3–3,5 jam",
+     "note": "Via Magelang atau lewat tol ke arah Solo."
+    },
+    {
+     "_key": "g72c578bb0b",
+     "to": "Dieng",
+     "duration": "±3,5 jam",
+     "note": "Via Wonosobo, jalur pegunungan."
+    },
+    {
+     "_key": "g2861925440",
+     "to": "Kudus",
+     "duration": "±1 jam",
+     "note": "Via jalur pantura timur."
+    }
+   ],
+   "faq": [
+    {
+     "_key": "gf3c85efb7a",
+     "question": "Apakah tarif sudah termasuk supir?",
+     "answer": "Ya, seluruh tarif sudah termasuk jasa driver profesional. Tersedia dua pilihan: tarif Dalam Kota 12 jam (belum termasuk BBM, tol, parkir, dan makan driver) atau tarif All-in (sudah termasuk BBM, tol, dan makan driver)."
+    },
+    {
+     "_key": "gdd9d8b8cde",
+     "question": "Apakah bisa ke luar kota dari Semarang?",
+     "answer": "Bisa. Dari Semarang kami melayani perjalanan ke kota mana pun, dalam provinsi maupun antarprovinsi, termasuk sewa beberapa hari. Tarif disesuaikan dengan jarak dan durasi, dan dikonfirmasi tertulis sebelum berangkat."
+    },
+    {
+     "_key": "g90f0376ea4",
+     "question": "Di mana saja titik penjemputan di Semarang?",
+     "answer": "Driver menjemput di alamat mana pun di Semarang dan sekitarnya, termasuk Bandara Ahmad Yani, Stasiun Tawang dan Poncol, kawasan Simpang Lima, dan hotel tempat Anda menginap."
+    },
+    {
+     "_key": "g3ec3621e74",
+     "question": "Apakah bisa menjemput di Bandara Ahmad Yani?",
+     "answer": "Bisa. Kirim nomor penerbangan saat memesan, driver memantau jadwal pendaratan dan menunggu di area kedatangan."
+    },
+    {
+     "_key": "g5f0e4bd5a8",
+     "question": "Bagaimana ketentuan pembayarannya?",
+     "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    }
+   ],
+   "seo": {
+    "title": "Sewa Mobil Semarang dengan Supir — Arasya Rent Car",
+    "description": "Sewa mobil dengan supir di Semarang untuk bisnis, wisata Lawang Sewu dan Kota Lama, antar-jemput bandara, dan perjalanan luar kota. Pesan via WhatsApp."
+   }
+  },
+  {
+   "_id": "city-solo",
+   "_type": "city",
+   "name": "Solo",
+   "code": "SOC",
+   "slug": {
+    "_type": "slug",
+    "current": "sewa-mobil-solo"
+   },
+   "country": "ID",
+   "isHeadquarters": false,
+   "pricing": "reference",
+   "hero": {
+    "eyebrow": "Kota Surakarta",
+    "title": "Sewa Mobil Solo dengan Supir",
+    "lead": "Untuk wisata keraton dan batik, acara keluarga, dan perjalanan bisnis di Solo, serta perjalanan dari Solo ke kota mana pun.",
+    "car": {
+     "_type": "reference",
+     "_ref": "car-toyota-innova-reborn"
+    }
+   },
+   "sections": [
+    "answer",
+    "fleet",
+    "destinations",
+    "routes",
+    "editorial",
+    "testimonials",
+    "trust",
+    "faq"
+   ],
+   "editorial": {
+    "eyebrow": "Mengenal Solo",
+    "title": "Kota budaya yang tenang di tengah Jawa",
+    "lead": "Solo atau Surakarta adalah kota keraton dengan tradisi Jawa yang kuat, pusat batik, dan kuliner seperti nasi liwet, selat solo, dan tengkleng.",
+    "body": [
+     {
+      "_type": "block",
+      "_key": "soloe0",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "soloe0s",
+        "text": "Kotanya relatif lengang dibanding kota besar lain, tetapi banyak tujuan terbaiknya ada di luar kota: Tawangmangu dan kaki Gunung Lawu di timur, serta candi-candi di lerengnya.",
+        "marks": []
+       }
+      ]
+     },
+     {
+      "_type": "block",
+      "_key": "soloe1",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "soloe1s",
+        "text": "Dengan tol yang menghubungkan Solo ke Semarang dan ke arah Jawa Timur, driver Arasya bisa mengatur wisata sehari di Solo maupun perjalanan panjang ke kota lain.",
+        "marks": []
+       }
+      ]
+     }
+    ]
+   },
+   "pickupPoints": "Bandara Adi Soemarmo, Stasiun Solo Balapan dan Purwosari, dan hotel tempat Anda menginap",
+   "areaServed": [
+    "Surakarta",
+    "Sukoharjo",
+    "Karanganyar",
+    "Boyolali",
+    "Klaten"
+   ],
+   "destinations": [
+    {
+     "_key": "gf433ea5eb0",
+     "name": "Keraton Kasunanan Surakarta",
+     "area": "Pusat Kota",
+     "text": "Istana keraton dengan museum dan alun-alun di pusat kota lama."
+    },
+    {
+     "_key": "g76ab165d10",
+     "name": "Pura Mangkunegaran",
+     "area": "Pusat Kota",
+     "text": "Istana dengan pendopo besar dan koleksi pusaka Mangkunegaran."
+    },
+    {
+     "_key": "gcb3bd45580",
+     "name": "Kampung Batik Laweyan",
+     "area": "Laweyan",
+     "text": "Kampung saudagar batik dengan rumah-rumah tua dan toko batik."
+    },
+    {
+     "_key": "g8ce7e8da69",
+     "name": "Tawangmangu",
+     "area": "Karanganyar",
+     "text": "Kawasan pegunungan dengan air terjun Grojogan Sewu dan udara sejuk."
+    }
+   ],
+   "routes": [
+    {
+     "_key": "g4f3353b155",
+     "to": "Yogyakarta",
+     "duration": "±1,5–2 jam",
+     "note": "Via jalur Klaten atau tol."
+    },
+    {
+     "_key": "gaf836bd89b",
+     "to": "Semarang",
+     "duration": "±1,5–2 jam",
+     "note": "Via Tol Semarang–Solo."
+    },
+    {
+     "_key": "g6f6296bdc2",
+     "to": "Tawangmangu",
+     "duration": "±1,5 jam",
+     "note": "Jalur menanjak ke lereng Gunung Lawu."
+    },
+    {
+     "_key": "g16eee95aa0",
+     "to": "Madiun",
+     "duration": "±1,5–2 jam",
+     "note": "Via Tol Trans-Jawa."
+    }
+   ],
+   "faq": [
+    {
+     "_key": "g2b3403f8dc",
+     "question": "Apakah tarif sudah termasuk supir?",
+     "answer": "Ya, seluruh tarif sudah termasuk jasa driver profesional. Tersedia dua pilihan: tarif Dalam Kota 12 jam (belum termasuk BBM, tol, parkir, dan makan driver) atau tarif All-in (sudah termasuk BBM, tol, dan makan driver)."
+    },
+    {
+     "_key": "g6ef582f5f1",
+     "question": "Apakah bisa ke luar kota dari Solo?",
+     "answer": "Bisa. Dari Solo kami melayani perjalanan ke kota mana pun, dalam provinsi maupun antarprovinsi, termasuk sewa beberapa hari. Tarif disesuaikan dengan jarak dan durasi, dan dikonfirmasi tertulis sebelum berangkat."
+    },
+    {
+     "_key": "g4a5f2c194d",
+     "question": "Di mana saja titik penjemputan di Solo?",
+     "answer": "Driver menjemput di alamat mana pun di Solo dan sekitarnya, termasuk Bandara Adi Soemarmo, Stasiun Solo Balapan dan Purwosari, dan hotel tempat Anda menginap."
+    },
+    {
+     "_key": "g04d4e56512",
+     "question": "Apakah bisa wisata Solo dan Tawangmangu dalam sehari?",
+     "answer": "Bisa dengan tarif 12 jam. Driver biasanya menyarankan berangkat ke Tawangmangu pagi hari dan kembali ke kota untuk wisata keraton dan kuliner di sore hari."
+    },
+    {
+     "_key": "g171c44df1d",
+     "question": "Bagaimana ketentuan pembayarannya?",
+     "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    }
+   ],
+   "seo": {
+    "title": "Sewa Mobil Solo dengan Supir — Arasya Rent Car",
+    "description": "Sewa mobil dengan supir di Solo (Surakarta) untuk wisata keraton, batik, Tawangmangu, dan perjalanan luar kota. Tarif 12 jam atau all-in, pesan via WhatsApp."
+   }
+  },
+  {
+   "_id": "city-jogja",
+   "_type": "city",
+   "name": "Jogja",
+   "code": "JOG",
+   "slug": {
+    "_type": "slug",
+    "current": "sewa-mobil-jogja"
+   },
+   "country": "ID",
+   "isHeadquarters": false,
+   "pricing": "reference",
+   "hero": {
+    "eyebrow": "Daerah Istimewa Yogyakarta",
+    "title": "Sewa Mobil Jogja dengan Supir",
+    "lead": "Untuk wisata candi, keraton, dan pantai selatan, perjalanan bisnis, serta perjalanan dari Jogja ke kota mana pun.",
+    "car": {
+     "_type": "reference",
+     "_ref": "car-toyota-innova-reborn"
+    }
+   },
+   "sections": [
+    "answer",
+    "editorial",
+    "fleet",
+    "routes",
+    "destinations",
+    "trust",
+    "faq",
+    "testimonials"
+   ],
+   "editorial": {
+    "eyebrow": "Mengenal Yogyakarta",
+    "title": "Daerah Istimewa dengan destinasi yang tersebar luas",
+    "lead": "Yogyakarta memadukan keraton, candi warisan dunia, dan garis pantai selatan dalam satu wilayah, dan paling nyaman dijelajahi dengan mobil pribadi bersama supir.",
+    "body": [
+     {
+      "_type": "block",
+      "_key": "jogjae0",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "jogjae0s",
+        "text": "Jarak antardestinasi cukup jauh dan karakternya beragam: jalur berkelok menuju perbukitan Gunungkidul, kawasan Malioboro dan Keraton yang padat dengan kantong parkir terbatas, hingga rute lintas kabupaten menuju Borobudur di Magelang.",
+        "marks": []
+       }
+      ]
+     },
+     {
+      "_type": "block",
+      "_key": "jogjae1",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "jogjae1s",
+        "text": "Supir Arasya menyusun urutan kunjungan yang efisien, memahami jam-jam padat, dan mengenal titik penjemputan di Bandara YIA, Stasiun Tugu, maupun hotel Anda, sehingga agenda wisata maupun bisnis berjalan sesuai rencana.",
+        "marks": []
+       }
+      ]
+     }
+    ]
+   },
+   "pickupPoints": "Bandara YIA, Stasiun Tugu, dan hotel tempat Anda menginap",
+   "areaServed": [
+    "Yogyakarta",
+    "Sleman",
+    "Bantul",
+    "Gunungkidul",
+    "Kulon Progo",
+    "Magelang"
+   ],
+   "destinations": [
+    {
+     "_key": "g558edc03e3",
+     "name": "Malioboro & Titik Nol",
+     "area": "Pusat Kota",
+     "text": "Poros wisata utama Jogja: belanja, kuliner, dan bangunan kolonial dalam satu kawasan pedestrian."
+    },
+    {
+     "_key": "g05f0752a96",
+     "name": "Keraton & Tamansari",
+     "area": "Pusat Kota",
+     "text": "Kompleks istana Kesultanan Yogyakarta beserta bekas taman pemandian kerajaan."
+    },
+    {
+     "_key": "gdb976497bc",
+     "name": "Candi Prambanan",
+     "area": "Sleman",
+     "text": "Kompleks candi Hindu terbesar di Indonesia, situs warisan dunia UNESCO di sisi timur Jogja."
+    },
+    {
+     "_key": "g7114cae373",
+     "name": "Candi Borobudur",
+     "area": "Magelang",
+     "text": "Candi Buddha terbesar di dunia, sekitar 1,5 jam dari pusat kota; paling nyaman berangkat pagi."
+    },
+    {
+     "_key": "gbcf28577ec",
+     "name": "Pantai Parangtritis",
+     "area": "Bantul",
+     "text": "Pantai selatan legendaris dengan gumuk pasir Parangkusumo, sekitar satu jam dari pusat kota."
+    },
+    {
+     "_key": "ge316450596",
+     "name": "Pantai-pantai Gunungkidul",
+     "area": "Gunungkidul",
+     "text": "Deretan pantai berpasir putih lewat jalur perbukitan yang berkelok."
+    }
+   ],
+   "routes": [
+    {
+     "_key": "g201f217f2a",
+     "to": "Borobudur (Magelang)",
+     "duration": "±1,5 jam",
+     "note": "Paling nyaman berangkat pagi."
+    },
+    {
+     "_key": "gba4e4e9d37",
+     "to": "Solo",
+     "duration": "±1,5–2 jam",
+     "note": "Bisa sekaligus mengunjungi Keraton Surakarta."
+    },
+    {
+     "_key": "gbc4e9f9bfa",
+     "to": "Semarang",
+     "duration": "±3–3,5 jam",
+     "note": "Via Magelang atau lewat tol."
+    },
+    {
+     "_key": "geec895f198",
+     "to": "Pantai Gunungkidul",
+     "duration": "±2 jam",
+     "note": "Rute berkelok menuju pantai selatan."
+    }
+   ],
+   "faq": [
+    {
+     "_key": "gb2838d43d7",
+     "question": "Apakah tarif sudah termasuk supir?",
+     "answer": "Ya, seluruh tarif sudah termasuk jasa driver profesional. Tersedia dua pilihan: tarif Dalam Kota 12 jam (belum termasuk BBM, tol, parkir, dan makan driver) atau tarif All-in (sudah termasuk BBM, tol, dan makan driver)."
+    },
+    {
+     "_key": "g9b4573f411",
+     "question": "Apakah bisa ke luar kota dari Jogja?",
+     "answer": "Bisa. Dari Jogja kami melayani perjalanan ke kota mana pun, dalam provinsi maupun antarprovinsi, termasuk sewa beberapa hari. Tarif disesuaikan dengan jarak dan durasi, dan dikonfirmasi tertulis sebelum berangkat."
+    },
+    {
+     "_key": "geb704fc01a",
+     "question": "Di mana saja titik penjemputan di Jogja?",
+     "answer": "Driver menjemput di alamat mana pun di Jogja dan sekitarnya, termasuk Bandara YIA, Stasiun Tugu, dan hotel tempat Anda menginap."
+    },
+    {
+     "_key": "g93e2037297",
+     "question": "Apakah bisa menjemput di Bandara YIA?",
+     "answer": "Bisa. Bandara YIA berada di Kulon Progo, sekitar 1–1,5 jam dari pusat kota. Kirim nomor penerbangan saat memesan, driver menunggu di area kedatangan."
+    },
+    {
+     "_key": "g1d6d6d15bd",
+     "question": "Bagaimana ketentuan pembayarannya?",
+     "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    }
+   ],
+   "seo": {
+    "title": "Sewa Mobil Jogja dengan Supir — Arasya Rent Car",
+    "description": "Sewa mobil dengan supir di Jogja untuk wisata Malioboro, Prambanan, Borobudur, dan pantai Gunungkidul. Tarif 12 jam atau all-in, pesan via WhatsApp."
+   },
+   "en": {
+    "slug": {
+     "_type": "slug",
+     "current": "car-rental-yogyakarta"
+    },
+    "hero": {
+     "eyebrow": "Yogyakarta, Central Java",
+     "title": "Car rental in Yogyakarta",
+     "titleAccent": "with a driver",
+     "lead": "Temples, the Sultan's palace and the south-coast beaches, with a driver who knows the way. Day tours, airport pick-ups and trips anywhere in Java."
+    },
+    "seo": {
+     "title": "Car Rental in Yogyakarta with Driver | Arasya Rent Car",
+     "description": "Hire a car with a driver in Yogyakarta for Borobudur, Prambanan, Malioboro and the Gunungkidul beaches. Clear rates, book on WhatsApp."
+    },
+    "pickupPoints": "YIA airport, Tugu station, or your hotel",
+    "areaServed": [
+     "Yogyakarta",
+     "Sleman",
+     "Bantul",
+     "Gunungkidul",
+     "Kulon Progo",
+     "Magelang"
+    ],
+    "editorial": {
+     "eyebrow": "About Yogyakarta",
+     "title": "A special region with its sights spread wide",
+     "lead": "Yogyakarta packs a royal palace, two World Heritage temples and a wild southern coastline into one region, and it is best seen by private car with a driver.",
+     "body": [
+      {
+       "_type": "block",
+       "_key": "enjog1",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "enjog1s",
+         "text": "The distances between sights are long and the driving varies: winding roads up into the Gunungkidul hills, the busy Malioboro and palace quarter where parking is scarce, and a cross-country run to Borobudur in Magelang. Without a plan, the day disappears on the road.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "enjog2",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "enjog2s",
+         "text": "Arasya drivers put your visits in the right order, know which hours to avoid, and know the pick-up points at YIA airport, Tugu station and your hotel, so a sightseeing day or a business schedule runs as planned.",
+         "marks": []
+        }
+       ]
+      }
+     ]
+    },
+    "destinations": [
+     {
+      "_key": "g80cdef1ffd",
+      "name": "Malioboro & Kilometre Zero",
+      "area": "City centre",
+      "text": "Jogja's main street for shopping, street food and colonial buildings."
+     },
+     {
+      "_key": "g489037616c",
+      "name": "Kraton & Taman Sari",
+      "area": "City centre",
+      "text": "The Sultan's palace, with the old royal water gardens next door."
+     },
+     {
+      "_key": "g4f7f1e63bf",
+      "name": "Prambanan",
+      "area": "Sleman",
+      "text": "Indonesia's largest Hindu temple complex, a UNESCO World Heritage site east of the city."
+     },
+     {
+      "_key": "gd65e9ea344",
+      "name": "Borobudur",
+      "area": "Magelang",
+      "text": "The world's largest Buddhist temple, about 1.5 hours away; best with an early start."
+     },
+     {
+      "_key": "g16bcdf2101",
+      "name": "Parangtritis Beach",
+      "area": "Bantul",
+      "text": "The famous south-coast beach and Parangkusumo sand dunes, about an hour from town."
+     },
+     {
+      "_key": "g6b42607c04",
+      "name": "Gunungkidul beaches",
+      "area": "Gunungkidul",
+      "text": "A string of white-sand bays reached by a winding road through the hills."
+     }
+    ],
+    "routes": [
+     {
+      "_key": "g1c411be4c5",
+      "to": "Borobudur (Magelang)",
+      "duration": "about 1.5 hrs",
+      "note": "Leave early for sunrise or the temple-climb slots."
+     },
+     {
+      "_key": "g7601e6decb",
+      "to": "Solo",
+      "duration": "1.5–2 hrs",
+      "note": "Easy to combine with the Surakarta palace."
+     },
+     {
+      "_key": "g08da1276ad",
+      "to": "Semarang",
+      "duration": "3–3.5 hrs",
+      "note": "Via Magelang or the toll road."
+     },
+     {
+      "_key": "g5a62177533",
+      "to": "Gunungkidul beaches",
+      "duration": "about 2 hrs",
+      "note": "A winding drive down to the south coast."
+     }
+    ],
+    "faq": [
+     {
+      "_key": "g54eeef652a",
+      "question": "Is the driver included in the price?",
+      "answer": "Yes, always. You can choose 12 hours in town (fuel, tolls, parking and the driver's meals extra) or all-in (fuel, tolls and the driver's meals included)."
+     },
+     {
+      "_key": "g861d877bc5",
+      "question": "Can we do Borobudur and Prambanan in one day?",
+      "answer": "Yes. With a 12-hour hire most visitors see Borobudur in the morning and Prambanan in the afternoon. Tell us your plans and we'll suggest a start time."
+     },
+     {
+      "_key": "g5c293d1b07",
+      "question": "Can you pick me up at YIA airport?",
+      "answer": "Yes. YIA is in Kulon Progo, about 1–1.5 hours from the city centre. Send your flight number and the driver will wait in arrivals."
+     },
+     {
+      "_key": "g5ea22f55b9",
+      "question": "Can we travel on to other cities?",
+      "answer": "Yes, anywhere you like: Solo, Semarang, Dieng, or further. We quote the price before you go."
+     },
+     {
+      "_key": "g78509d9e10",
+      "question": "How do I pay?",
+      "answer": "Once we send your invoice, you pay a 20% deposit into our official BCA account in the name of PT. Ayomi Raya. The balance is paid to the driver when you meet, in cash or by transfer."
+     }
+    ]
+   }
+  },
+  {
+   "_id": "city-madiun",
+   "_type": "city",
+   "name": "Madiun",
+   "code": "MDN",
+   "slug": {
+    "_type": "slug",
+    "current": "sewa-mobil-madiun"
+   },
+   "country": "ID",
+   "isHeadquarters": false,
+   "pricing": "reference",
+   "hero": {
+    "eyebrow": "Kota Madiun",
+    "title": "Sewa Mobil Madiun dengan Supir",
+    "lead": "Untuk acara keluarga, kunjungan kerja, dan wisata ke Sarangan atau Ponorogo, serta perjalanan dari Madiun ke kota mana pun.",
+    "car": {
+     "_type": "reference",
+     "_ref": "car-toyota-avanza"
+    }
+   },
+   "sections": [
+    "answer",
+    "fleet",
+    "trust",
+    "routes",
+    "destinations",
+    "editorial",
+    "faq",
+    "testimonials"
+   ],
+   "editorial": {
+    "eyebrow": "Mengenal Madiun",
+    "title": "Kota pecel di simpang barat Jawa Timur",
+    "lead": "Madiun dikenal dengan nasi pecelnya dan menjadi simpul perjalanan di bagian barat Jawa Timur, dekat dengan Magetan, Ponorogo, dan Ngawi.",
+    "body": [
+     {
+      "_type": "block",
+      "_key": "madiune0",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "madiune0s",
+        "text": "Banyak tamu kami datang untuk acara keluarga, kunjungan ke instansi, atau wisata ke Telaga Sarangan di lereng Gunung Lawu. Jalannya menanjak dan berkelok setelah keluar dari kota.",
+        "marks": []
+       }
+      ]
+     },
+     {
+      "_type": "block",
+      "_key": "madiune1",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "madiune1s",
+        "text": "Dengan Tol Trans-Jawa, Madiun kini dekat dengan Solo dan Surabaya. Driver Arasya mengatur perjalanan harian maupun perjalanan panjang lintas provinsi.",
+        "marks": []
+       }
+      ]
+     }
+    ]
+   },
+   "pickupPoints": "Stasiun Madiun, pusat kota, dan hotel tempat Anda menginap",
+   "areaServed": [
+    "Madiun",
+    "Magetan",
+    "Ponorogo",
+    "Ngawi"
+   ],
+   "destinations": [
+    {
+     "_key": "gd16dd0ce0c",
+     "name": "Pahlawan Street Center",
+     "area": "Pusat Kota",
+     "text": "Jalan utama dengan miniatur ikon dunia yang ramai dikunjungi keluarga di malam hari."
+    },
+    {
+     "_key": "g1c556655c9",
+     "name": "Telaga Sarangan",
+     "area": "Magetan",
+     "text": "Danau di lereng Gunung Lawu dengan udara sejuk, sekitar satu jam dari kota."
+    },
+    {
+     "_key": "g80d07d9155",
+     "name": "Ponorogo",
+     "area": "Ponorogo",
+     "text": "Kota asal kesenian Reog, dengan alun-alun dan kuliner sate khas."
+    }
+   ],
+   "routes": [
+    {
+     "_key": "g6d545afb59",
+     "to": "Solo",
+     "duration": "±1,5–2 jam",
+     "note": "Via Tol Trans-Jawa."
+    },
+    {
+     "_key": "g9321acafb9",
+     "to": "Surabaya",
+     "duration": "±2,5–3 jam",
+     "note": "Via Tol Trans-Jawa."
+    },
+    {
+     "_key": "g88b5b44609",
+     "to": "Telaga Sarangan",
+     "duration": "±1 jam",
+     "note": "Jalur menanjak ke lereng Gunung Lawu."
+    }
+   ],
+   "faq": [
+    {
+     "_key": "g850dd8d2f6",
+     "question": "Apakah tarif sudah termasuk supir?",
+     "answer": "Ya, seluruh tarif sudah termasuk jasa driver profesional. Tersedia dua pilihan: tarif Dalam Kota 12 jam (belum termasuk BBM, tol, parkir, dan makan driver) atau tarif All-in (sudah termasuk BBM, tol, dan makan driver)."
+    },
+    {
+     "_key": "g7d9df5ba3f",
+     "question": "Apakah bisa ke luar kota dari Madiun?",
+     "answer": "Bisa. Dari Madiun kami melayani perjalanan ke kota mana pun, dalam provinsi maupun antarprovinsi, termasuk sewa beberapa hari. Tarif disesuaikan dengan jarak dan durasi, dan dikonfirmasi tertulis sebelum berangkat."
+    },
+    {
+     "_key": "g7fce39f3d6",
+     "question": "Di mana saja titik penjemputan di Madiun?",
+     "answer": "Driver menjemput di alamat mana pun di Madiun dan sekitarnya, termasuk Stasiun Madiun, pusat kota, dan hotel tempat Anda menginap."
+    },
+    {
+     "_key": "gf0420d5f9c",
+     "question": "Apakah bisa untuk acara keluarga beberapa hari?",
+     "answer": "Bisa. Sampaikan tanggal dan agenda acara, admin menghitungkan tarif harian termasuk kebutuhan menginap driver bila ada."
+    },
+    {
+     "_key": "g2b623ecf2f",
+     "question": "Bagaimana ketentuan pembayarannya?",
+     "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    }
+   ],
+   "seo": {
+    "title": "Sewa Mobil Madiun dengan Supir — Arasya Rent Car",
+    "description": "Sewa mobil dengan supir di Madiun untuk acara keluarga, kunjungan kerja, wisata Telaga Sarangan, dan perjalanan luar kota. Pesan via WhatsApp."
+   }
+  },
+  {
+   "_id": "city-surabaya",
+   "_type": "city",
+   "name": "Surabaya",
+   "code": "SUB",
+   "slug": {
+    "_type": "slug",
+    "current": "sewa-mobil-surabaya"
+   },
+   "country": "ID",
+   "isHeadquarters": false,
+   "pricing": "reference",
+   "hero": {
+    "eyebrow": "Kota Surabaya",
+    "title": "Sewa Mobil Surabaya dengan Supir",
+    "lead": "Untuk perjalanan bisnis, antar-jemput Bandara Juanda, wisata ke Bromo dan Malang, serta perjalanan dari Surabaya ke kota mana pun.",
+    "car": {
+     "_type": "reference",
+     "_ref": "car-toyota-zenix"
+    }
+   },
+   "sections": [
+    "answer",
+    "fleet",
+    "routes",
+    "editorial",
+    "destinations",
+    "testimonials",
+    "trust",
+    "faq"
+   ],
+   "editorial": {
+    "eyebrow": "Mengenal Surabaya",
+    "title": "Kota Pahlawan dan pusat bisnis Jawa Timur",
+    "lead": "Surabaya adalah kota terbesar kedua di Indonesia dan pusat perdagangan Jawa Timur, dengan pelabuhan besar dan kawasan industri di sekitarnya.",
+    "body": [
+     {
+      "_type": "block",
+      "_key": "surabayae0",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "surabayae0s",
+        "text": "Tamu kami biasanya datang untuk rapat dan kunjungan pabrik, lalu melanjutkan perjalanan ke Malang, Bromo, atau Madura. Lalu lintas dalam kota padat di jam kerja, dan Bandara Juanda berada di Sidoarjo, di luar kota.",
+        "marks": []
+       }
+      ]
+     },
+     {
+      "_type": "block",
+      "_key": "surabayae1",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "surabayae1s",
+        "text": "Driver Arasya memilih jalur tol dan arteri yang tepat, dan terbiasa dengan perjalanan panjang dari Surabaya ke kawasan wisata di Jawa Timur.",
+        "marks": []
+       }
+      ]
+     }
+    ]
+   },
+   "pickupPoints": "Bandara Juanda, Stasiun Gubeng dan Pasar Turi, dan hotel tempat Anda menginap",
+   "areaServed": [
+    "Surabaya",
+    "Sidoarjo",
+    "Gresik",
+    "Gerbangkertosusila"
+   ],
+   "destinations": [
+    {
+     "_key": "gd59962db7e",
+     "name": "Tugu Pahlawan",
+     "area": "Surabaya Pusat",
+     "text": "Monumen dan museum peristiwa 10 November 1945."
+    },
+    {
+     "_key": "g6b3b4d15c7",
+     "name": "House of Sampoerna",
+     "area": "Surabaya Utara",
+     "text": "Museum dan bangunan kolonial di kawasan kota tua."
+    },
+    {
+     "_key": "gab66717479",
+     "name": "Jembatan Suramadu",
+     "area": "Kenjeran",
+     "text": "Jembatan terpanjang di Indonesia yang menghubungkan Surabaya dengan Madura."
+    },
+    {
+     "_key": "gbcf5469874",
+     "name": "Kawasan Ampel",
+     "area": "Surabaya Utara",
+     "text": "Masjid bersejarah dan kawasan kuliner khas Arab di sekitarnya."
+    }
+   ],
+   "routes": [
+    {
+     "_key": "gd4202f7a94",
+     "to": "Malang",
+     "duration": "±2 jam",
+     "note": "Via Tol Surabaya–Malang."
+    },
+    {
+     "_key": "gb7c3cb6648",
+     "to": "Bromo",
+     "duration": "±3–4 jam",
+     "note": "Via Pasuruan, sebaiknya berangkat dini hari untuk sunrise."
+    },
+    {
+     "_key": "g16fd7484e7",
+     "to": "Madura (Bangkalan)",
+     "duration": "±1 jam",
+     "note": "Via Jembatan Suramadu."
+    },
+    {
+     "_key": "g6488d25d0d",
+     "to": "Madiun",
+     "duration": "±2,5–3 jam",
+     "note": "Via Tol Trans-Jawa."
+    }
+   ],
+   "faq": [
+    {
+     "_key": "gcf03fb690c",
+     "question": "Apakah tarif sudah termasuk supir?",
+     "answer": "Ya, seluruh tarif sudah termasuk jasa driver profesional. Tersedia dua pilihan: tarif Dalam Kota 12 jam (belum termasuk BBM, tol, parkir, dan makan driver) atau tarif All-in (sudah termasuk BBM, tol, dan makan driver)."
+    },
+    {
+     "_key": "gcea0bc74e9",
+     "question": "Apakah bisa ke luar kota dari Surabaya?",
+     "answer": "Bisa. Dari Surabaya kami melayani perjalanan ke kota mana pun, dalam provinsi maupun antarprovinsi, termasuk sewa beberapa hari. Tarif disesuaikan dengan jarak dan durasi, dan dikonfirmasi tertulis sebelum berangkat."
+    },
+    {
+     "_key": "g74030034b5",
+     "question": "Di mana saja titik penjemputan di Surabaya?",
+     "answer": "Driver menjemput di alamat mana pun di Surabaya dan sekitarnya, termasuk Bandara Juanda, Stasiun Gubeng dan Pasar Turi, dan hotel tempat Anda menginap."
+    },
+    {
+     "_key": "g04fd83e3a3",
+     "question": "Apakah bisa menjemput di Bandara Juanda?",
+     "answer": "Bisa. Kirim nomor penerbangan saat memesan, driver memantau jadwal pendaratan dan menunggu di area kedatangan."
+    },
+    {
+     "_key": "g3a656927bb",
+     "question": "Bagaimana ketentuan pembayarannya?",
+     "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    }
+   ],
+   "seo": {
+    "title": "Sewa Mobil Surabaya dengan Supir — Arasya Rent Car",
+    "description": "Sewa mobil dengan supir di Surabaya untuk bisnis, antar-jemput Bandara Juanda, wisata Bromo dan Malang, serta perjalanan luar kota. Pesan via WhatsApp."
+   }
+  },
+  {
+   "_id": "city-malang",
+   "_type": "city",
+   "name": "Malang",
+   "code": "MLG",
+   "slug": {
+    "_type": "slug",
+    "current": "sewa-mobil-malang"
+   },
+   "country": "ID",
+   "isHeadquarters": false,
+   "pricing": "reference",
+   "hero": {
+    "eyebrow": "Malang & Batu",
+    "title": "Sewa Mobil Malang dengan Supir",
+    "lead": "Untuk wisata Batu dan Bromo, pantai selatan, acara kampus, serta perjalanan dari Malang ke kota mana pun.",
+    "car": {
+     "_type": "reference",
+     "_ref": "car-toyota-fortuner"
+    }
+   },
+   "sections": [
+    "answer",
+    "fleet",
+    "editorial",
+    "destinations",
+    "trust",
+    "routes",
+    "testimonials",
+    "faq"
+   ],
+   "editorial": {
+    "eyebrow": "Mengenal Malang",
+    "title": "Kota sejuk dengan wisata di segala arah",
+    "lead": "Malang dan Kota Batu berada di dataran tinggi dengan udara sejuk, dikelilingi gunung dan taman wisata keluarga. Kota ini juga dikenal sebagai kota pelajar.",
+    "body": [
+     {
+      "_type": "block",
+      "_key": "malange0",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "malange0s",
+        "text": "Tujuan wisatanya tersebar: Batu di barat, Bromo di timur, dan pantai-pantai selatan yang jalannya berkelok. Pada akhir pekan dan musim liburan, jalur menuju Batu sering padat.",
+        "marks": []
+       }
+      ]
+     },
+     {
+      "_type": "block",
+      "_key": "malange1",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "malange1s",
+        "text": "Driver Arasya menyusun urutan kunjungan supaya tidak bolak-balik, dan tahu jam berangkat terbaik untuk menghindari antrean di kawasan wisata.",
+        "marks": []
+       }
+      ]
+     }
+    ]
+   },
+   "pickupPoints": "Bandara Abdul Rachman Saleh, Stasiun Malang, kawasan Batu, dan hotel tempat Anda menginap",
+   "areaServed": [
+    "Malang",
+    "Batu",
+    "Kabupaten Malang"
+   ],
+   "destinations": [
+    {
+     "_key": "gc5a61480a8",
+     "name": "Kota Batu",
+     "area": "Batu",
+     "text": "Taman wisata keluarga, museum, dan kebun apel di udara pegunungan."
+    },
+    {
+     "_key": "g27c0d0c992",
+     "name": "Kampung Warna-Warni Jodipan",
+     "area": "Pusat Kota",
+     "text": "Kampung di tepi sungai dengan rumah-rumah berwarna cerah."
+    },
+    {
+     "_key": "g2c02bf7a8b",
+     "name": "Coban Rondo",
+     "area": "Pujon",
+     "text": "Air terjun di kawasan hutan pinus di jalur menuju Batu."
+    },
+    {
+     "_key": "g4d6e0aeb24",
+     "name": "Pantai selatan Malang",
+     "area": "Kabupaten Malang",
+     "text": "Deretan pantai karang dan pasir putih, sekitar dua jam lewat jalur berkelok."
+    }
+   ],
+   "routes": [
+    {
+     "_key": "g3f31bf31f9",
+     "to": "Surabaya / Bandara Juanda",
+     "duration": "±2 jam",
+     "note": "Via Tol Surabaya–Malang."
+    },
+    {
+     "_key": "g2b0bf75062",
+     "to": "Batu",
+     "duration": "±45–60 menit",
+     "note": "Lebih lama di akhir pekan."
+    },
+    {
+     "_key": "g129b060497",
+     "to": "Bromo",
+     "duration": "±2–3 jam",
+     "note": "Via Tumpang, dilanjutkan jip lokal ke kawasan kawah."
+    }
+   ],
+   "faq": [
+    {
+     "_key": "ga243e54f96",
+     "question": "Apakah tarif sudah termasuk supir?",
+     "answer": "Ya, seluruh tarif sudah termasuk jasa driver profesional. Tersedia dua pilihan: tarif Dalam Kota 12 jam (belum termasuk BBM, tol, parkir, dan makan driver) atau tarif All-in (sudah termasuk BBM, tol, dan makan driver)."
+    },
+    {
+     "_key": "gd9601ff8d4",
+     "question": "Apakah bisa ke luar kota dari Malang?",
+     "answer": "Bisa. Dari Malang kami melayani perjalanan ke kota mana pun, dalam provinsi maupun antarprovinsi, termasuk sewa beberapa hari. Tarif disesuaikan dengan jarak dan durasi, dan dikonfirmasi tertulis sebelum berangkat."
+    },
+    {
+     "_key": "g23de034044",
+     "question": "Di mana saja titik penjemputan di Malang?",
+     "answer": "Driver menjemput di alamat mana pun di Malang dan sekitarnya, termasuk Bandara Abdul Rachman Saleh, Stasiun Malang, kawasan Batu, dan hotel tempat Anda menginap."
+    },
+    {
+     "_key": "gcdedb7ba6c",
+     "question": "Apakah mobil bisa naik sampai ke Bromo?",
+     "answer": "Mobil kami mengantar sampai titik penjemputan jip di Tumpang atau jalur lain yang diizinkan. Dari sana perjalanan ke kawah memakai jip lokal, lalu driver menunggu dan mengantar Anda kembali."
+    },
+    {
+     "_key": "g53e41ba6a8",
+     "question": "Bagaimana ketentuan pembayarannya?",
+     "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    }
+   ],
+   "seo": {
+    "title": "Sewa Mobil Malang dengan Supir — Arasya Rent Car",
+    "description": "Sewa mobil dengan supir di Malang dan Batu untuk wisata keluarga, Bromo, pantai selatan, dan perjalanan luar kota. Pesan via WhatsApp."
+   }
+  },
+  {
+   "_id": "city-singapura",
+   "_type": "city",
+   "name": "Singapura",
+   "code": "SIN",
+   "slug": {
+    "_type": "slug",
+    "current": "sewa-mobil-singapura"
+   },
+   "country": "INTL",
+   "isHeadquarters": false,
+   "pricing": "quote",
+   "hero": {
+    "eyebrow": "Singapura",
+    "title": "Sewa Mobil Singapura dengan Supir",
+    "lead": "Mobil pribadi dengan supir untuk wisatawan Indonesia: jemput Bandara Changi, keliling kota, sampai lintas batas ke Johor, dengan admin berbahasa Indonesia.",
+    "car": {
+     "_type": "reference",
+     "_ref": "car-toyota-alphard"
+    }
+   },
+   "sections": [
+    "answer",
+    "fleet",
+    "destinations",
+    "routes",
+    "editorial",
+    "testimonials",
+    "trust",
+    "faq"
+   ],
+   "editorial": {
+    "eyebrow": "Mengenal Singapura",
+    "title": "Kota-negara yang rapi, padat aturan, dan cepat dijelajahi",
+    "lead": "Luasnya hanya sekitar 730 kilometer persegi, tetapi Singapura menuntut perencanaan: biaya jalan elektronik berubah menurut jam, dan ruang parkir di pusat kota terbatas.",
+    "body": [
+     {
+      "_type": "block",
+      "_key": "singapurae0",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "singapurae0s",
+        "text": "Sistem ERP menaikkan biaya masuk kawasan tertentu pada jam sibuk, sementara gedung di Orchard dan Marina menerapkan tarif parkir progresif. Bagi keluarga atau tamu yang mengejar jadwal rapat, hal seperti ini mudah mengganggu ritme perjalanan.",
+        "marks": []
+       }
+      ]
+     },
+     {
+      "_type": "block",
+      "_key": "singapurae1",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "singapurae1s",
+        "text": "Supir yang mendampingi Anda memahami peta tarif dan pola lalu lintas kota ini. Anda cukup menyebutkan tujuan berikutnya, termasuk bila perjalanan berlanjut ke Johor.",
+        "marks": []
+       }
+      ]
+     }
+    ]
+   },
+   "pickupPoints": "Bandara Changi, Terminal Feri HarbourFront, dan hotel tempat Anda menginap",
+   "areaServed": [
+    "Singapura",
+    "Marina Bay",
+    "Sentosa",
+    "Orchard",
+    "Changi"
+   ],
+   "destinations": [
+    {
+     "_key": "gdba8d09f6c",
+     "name": "Marina Bay Sands & Gardens by the Bay",
+     "area": "Marina Bay",
+     "text": "Kawasan tepi teluk dengan taman futuristik, dek observasi, dan pertunjukan cahaya setiap malam."
+    },
+    {
+     "_key": "g2424b70af5",
+     "name": "Pulau Sentosa",
+     "area": "Sentosa",
+     "text": "Universal Studios, akuarium, dan pantai dalam satu pulau resor yang bisa dijangkau dengan mobil."
+    },
+    {
+     "_key": "g023d2e3c2e",
+     "name": "Orchard Road",
+     "area": "Orchard",
+     "text": "Koridor belanja sepanjang dua kilometer dengan pusat perbelanjaan yang saling terhubung."
+    },
+    {
+     "_key": "gcf3b6ba592",
+     "name": "Jewel Changi Airport",
+     "area": "Changi",
+     "text": "Air terjun dalam ruangan dan taman berlapis yang menyatu dengan terminal bandara."
+    }
+   ],
+   "routes": [
+    {
+     "_key": "g2a7e228e59",
+     "to": "Johor Bahru",
+     "duration": "±1–2 jam",
+     "note": "Via Woodlands atau Tuas, tergantung antrean imigrasi."
+    },
+    {
+     "_key": "g70ce6134c7",
+     "to": "Legoland Malaysia",
+     "duration": "±1,5 jam",
+     "note": "Tujuan keluarga tidak jauh setelah perbatasan Tuas."
+    },
+    {
+     "_key": "gcaeeef2150",
+     "to": "Malaka",
+     "duration": "±3,5 jam",
+     "note": "Kota warisan dunia, paling nyaman sebagai perjalanan menginap."
+    }
+   ],
+   "faq": [
+    {
+     "_key": "g5ec4b645c4",
+     "question": "Bagaimana cara memesan mobil dengan supir di Singapura?",
+     "answer": "Kirim tanggal, jumlah penumpang, penerbangan, dan rencana perjalanan lewat WhatsApp. Admin kami mengirim penawaran tertulis dalam Rupiah sebelum Anda membayar."
+    },
+    {
+     "_key": "g2161f027fb",
+     "question": "Apakah pembayaran dalam Rupiah?",
+     "answer": "Ya. Penawaran dan pembayaran dilakukan dalam Rupiah ke rekening resmi BCA a.n. PT. Ayomi Raya, sehingga Anda tidak perlu menghitung kurs sendiri."
+    },
+    {
+     "_key": "g3a4a29233e",
+     "question": "Apakah mobil bisa menyeberang ke Malaysia?",
+     "answer": "Perjalanan lintas batas ke Johor Bahru dan kota lain di Malaysia bisa diatur beserta dokumen kendaraannya. Sampaikan tanggal dan tujuan Anda agar ketersediaannya dikonfirmasi lebih dahulu."
+    },
+    {
+     "_key": "gcc6c91b874",
+     "question": "Apakah biaya ERP dan parkir sudah termasuk?",
+     "answer": "Rincian biaya jalan elektronik dan parkir dicantumkan dalam penawaran tertulis sebelum perjalanan, sehingga tidak ada tambahan di tengah jalan."
+    },
+    {
+     "_key": "g6b1f2cfc71",
+     "question": "Apakah bisa sewa beberapa hari lintas kota?",
+     "answer": "Bisa. Satu mobil dan supir bisa mendampingi Anda selama beberapa hari, termasuk perjalanan ke kota lain di Singapura. Sampaikan itinerari Anda agar admin menghitungkan penawarannya."
+    }
+   ],
+   "seo": {
+    "title": "Sewa Mobil Singapura dengan Supir — Arasya Rent Car",
+    "description": "Sewa mobil dengan supir di Singapura untuk wisatawan Indonesia. Jemput Bandara Changi, city tour, dan lintas batas ke Johor. Penawaran dalam Rupiah."
+   },
+   "unitClasses": [
+    {
+     "_key": "g0c30e09915",
+     "name": "MPV 7 kursi",
+     "seats": "6 penumpang + driver",
+     "luggage": "3–4 koper kabin",
+     "useCase": "Keluarga kecil, jemput bandara, dan tur harian dalam kota."
+    },
+    {
+     "_key": "gd4557fc4bd",
+     "name": "MPV premium",
+     "seats": "5 penumpang + driver",
+     "luggage": "4 koper sedang",
+     "useCase": "Perjalanan bisnis dan tamu yang ingin kursi kapten dan ruang kaki lega."
+    },
+    {
+     "_key": "g2cca403f8a",
+     "name": "Van 11–14 kursi",
+     "seats": "10–13 penumpang + driver",
+     "luggage": "Ruang di belakang baris terakhir",
+     "useCase": "Rombongan kantor, grup wisata, dan jemput bandara bersama."
+    }
+   ],
+   "trust": [
+    {
+     "_key": "gb5c5a36c15",
+     "title": "Driver lokal terverifikasi",
+     "text": "Diseleksi dengan standar layanan Arasya."
+    },
+    {
+     "_key": "gee1eef9184",
+     "title": "Admin berbahasa Indonesia",
+     "text": "Pendampingan sejak pemesanan sampai perjalanan selesai."
+    },
+    {
+     "_key": "g0e2acd1bc3",
+     "title": "Penawaran dalam Rupiah",
+     "text": "Harga tertulis dalam Rupiah, dibayar ke rekening resmi di Indonesia."
+    },
+    {
+     "_key": "g0acd12383c",
+     "title": "Unit sesuai pesanan",
+     "text": "Kelas dan kapasitas unit sesuai konfirmasi tertulis."
+    }
+   ]
+  },
+  {
+   "_id": "city-malaysia",
+   "_type": "city",
+   "name": "Malaysia",
+   "code": "MYS",
+   "slug": {
+    "_type": "slug",
+    "current": "sewa-mobil-malaysia"
+   },
+   "country": "INTL",
+   "isHeadquarters": false,
+   "pricing": "quote",
+   "hero": {
+    "eyebrow": "Kuala Lumpur & sekitarnya",
+    "title": "Sewa Mobil Malaysia dengan Supir",
+    "lead": "Mobil pribadi dengan supir untuk wisatawan Indonesia: Kuala Lumpur, Genting, Malaka, sampai Penang, dengan admin berbahasa Indonesia.",
+    "car": {
+     "_type": "reference",
+     "_ref": "car-toyota-zenix"
+    }
+   },
+   "sections": [
+    "answer",
+    "editorial",
+    "fleet",
+    "routes",
+    "destinations",
+    "trust",
+    "faq",
+    "testimonials"
+   ],
+   "editorial": {
+    "eyebrow": "Mengenal Malaysia",
+    "title": "Negeri serumpun yang tujuannya tersebar",
+    "lead": "Malaysia terasa akrab bagi wisatawan Indonesia, dengan bahasa serumpun dan kuliner yang familiar, tetapi destinasi terbaiknya tersebar antar kota dan dataran tinggi.",
+    "body": [
+     {
+      "_type": "block",
+      "_key": "malaysiae0",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "malaysiae0s",
+        "text": "Genting dan Cameron Highlands berarti jalan pegunungan, sementara Malaka dan Penang berjarak ratusan kilometer dari ibu kota. Kereta dan bus memakan waktu dan membatasi bawaan keluarga.",
+        "marks": []
+       }
+      ]
+     },
+     {
+      "_type": "block",
+      "_key": "malaysiae1",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "malaysiae1s",
+        "text": "Dengan supir Arasya, itinerari lintas kota tersusun efisien: satu mobil sejak penjemputan di KLIA, dengan koordinasi admin dalam Bahasa Indonesia.",
+        "marks": []
+       }
+      ]
+     }
+    ]
+   },
+   "pickupPoints": "KLIA 1 & 2, KL Sentral, dan hotel tempat Anda menginap",
+   "areaServed": [
+    "Kuala Lumpur",
+    "Selangor",
+    "Genting",
+    "Malaka",
+    "Penang"
+   ],
+   "destinations": [
+    {
+     "_key": "gad913144a4",
+     "name": "Menara Petronas & KLCC",
+     "area": "Kuala Lumpur",
+     "text": "Ikon kota dengan taman dan pusat perbelanjaan di sekitarnya."
+    },
+    {
+     "_key": "gcb6ae09b71",
+     "name": "Batu Caves",
+     "area": "Selangor",
+     "text": "Kuil gua Hindu dengan tangga warna-warni yang ikonik."
+    },
+    {
+     "_key": "g2b3bc5633b",
+     "name": "Genting Highlands",
+     "area": "Pahang",
+     "text": "Resor dataran tinggi dengan taman hiburan dan udara sejuk."
+    },
+    {
+     "_key": "g9c874de206",
+     "name": "Kota Tua Malaka",
+     "area": "Malaka",
+     "text": "Jonker Street dan bangunan kolonial di situs warisan dunia."
+    }
+   ],
+   "routes": [
+    {
+     "_key": "gbc681a4c4b",
+     "to": "Kuala Lumpur → Genting Highlands",
+     "duration": "±1 jam",
+     "note": "Berangkat pagi untuk menghindari kabut sore."
+    },
+    {
+     "_key": "g0d7a924ab8",
+     "to": "Kuala Lumpur → Malaka",
+     "duration": "±2 jam",
+     "note": "Nyaman untuk perjalanan sehari."
+    },
+    {
+     "_key": "g3e655480c0",
+     "to": "Kuala Lumpur → Penang",
+     "duration": "±4 jam",
+     "note": "Ideal menginap satu malam di George Town."
+    }
+   ],
+   "faq": [
+    {
+     "_key": "g048208e642",
+     "question": "Bagaimana cara memesan mobil dengan supir di Malaysia?",
+     "answer": "Kirim tanggal, jumlah penumpang, penerbangan, dan rencana perjalanan lewat WhatsApp. Admin kami mengirim penawaran tertulis dalam Rupiah sebelum Anda membayar."
+    },
+    {
+     "_key": "gd2fe42cf16",
+     "question": "Apakah pembayaran dalam Rupiah?",
+     "answer": "Ya. Penawaran dan pembayaran dilakukan dalam Rupiah ke rekening resmi BCA a.n. PT. Ayomi Raya, sehingga Anda tidak perlu menghitung kurs sendiri."
+    },
+    {
+     "_key": "ga4f7aeecca",
+     "question": "Apakah komunikasi dengan supir mudah?",
+     "answer": "Ya. Admin kami berbahasa Indonesia, dan sebagian besar supir di Malaysia memahami Bahasa Melayu yang serumpun dengan Bahasa Indonesia."
+    },
+    {
+     "_key": "g5443babff0",
+     "question": "Apakah bisa sewa beberapa hari lintas kota?",
+     "answer": "Bisa. Satu mobil dan supir bisa mendampingi Anda selama beberapa hari, termasuk perjalanan ke kota lain di Malaysia. Sampaikan itinerari Anda agar admin menghitungkan penawarannya."
+    }
+   ],
+   "seo": {
+    "title": "Sewa Mobil Malaysia dengan Supir — Arasya Rent Car",
+    "description": "Sewa mobil dengan supir di Malaysia untuk wisatawan Indonesia. Kuala Lumpur, Genting, Malaka, dan Penang. Penawaran dalam Rupiah, pesan via WhatsApp."
+   },
+   "unitClasses": [
+    {
+     "_key": "g1f5c93b1f8",
+     "name": "MPV 7 kursi",
+     "seats": "6 penumpang + driver",
+     "luggage": "3–4 koper kabin",
+     "useCase": "Keluarga kecil, jemput bandara, dan tur harian dalam kota."
+    },
+    {
+     "_key": "g8d13f49739",
+     "name": "MPV premium",
+     "seats": "5 penumpang + driver",
+     "luggage": "4 koper sedang",
+     "useCase": "Perjalanan bisnis dan tamu yang ingin kursi kapten dan ruang kaki lega."
+    },
+    {
+     "_key": "gf142bcb6ff",
+     "name": "Van 11–14 kursi",
+     "seats": "10–13 penumpang + driver",
+     "luggage": "Ruang di belakang baris terakhir",
+     "useCase": "Rombongan kantor, grup wisata, dan jemput bandara bersama."
+    }
+   ],
+   "trust": [
+    {
+     "_key": "g7efb026857",
+     "title": "Driver lokal terverifikasi",
+     "text": "Diseleksi dengan standar layanan Arasya."
+    },
+    {
+     "_key": "gb20b45a984",
+     "title": "Admin berbahasa Indonesia",
+     "text": "Pendampingan sejak pemesanan sampai perjalanan selesai."
+    },
+    {
+     "_key": "g3157d5cfc1",
+     "title": "Penawaran dalam Rupiah",
+     "text": "Harga tertulis dalam Rupiah, dibayar ke rekening resmi di Indonesia."
+    },
+    {
+     "_key": "g07e403bd22",
+     "title": "Unit sesuai pesanan",
+     "text": "Kelas dan kapasitas unit sesuai konfirmasi tertulis."
+    }
+   ]
+  },
+  {
+   "_id": "city-thailand",
+   "_type": "city",
+   "name": "Thailand",
+   "code": "THA",
+   "slug": {
+    "_type": "slug",
+    "current": "sewa-mobil-thailand"
+   },
+   "country": "INTL",
+   "isHeadquarters": false,
+   "pricing": "quote",
+   "hero": {
+    "eyebrow": "Bangkok & sekitarnya",
+    "title": "Sewa Mobil Thailand dengan Supir",
+    "lead": "Mobil pribadi dengan supir untuk wisatawan Indonesia di Thailand: dari Bangkok ke Pattaya, Ayutthaya, dan kota lain, dengan admin berbahasa Indonesia.",
+    "car": {
+     "_type": "reference",
+     "_ref": "car-toyota-hiace-premio"
+    }
+   },
+   "sections": [
+    "answer",
+    "fleet",
+    "trust",
+    "routes",
+    "destinations",
+    "editorial",
+    "faq",
+    "testimonials"
+   ],
+   "editorial": {
+    "eyebrow": "Mengenal Thailand",
+    "title": "Negeri Gajah Putih untuk wisatawan Indonesia",
+    "lead": "Thailand adalah salah satu tujuan luar negeri favorit wisatawan Indonesia: penerbangannya singkat, tetapi bahasa dan transportasi antar kota sering menyulitkan keluarga.",
+    "body": [
+     {
+      "_type": "block",
+      "_key": "thailande0",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "thailande0s",
+        "text": "Transportasi umum Bangkok tidak praktis untuk menuju Damnoen Saduak, Ayutthaya, atau Pattaya, dan taksi antar kota berarti menawar harga dalam bahasa Thai.",
+        "marks": []
+       }
+      ]
+     },
+     {
+      "_type": "block",
+      "_key": "thailande1",
+      "style": "normal",
+      "markDefs": [],
+      "children": [
+       {
+        "_type": "span",
+        "_key": "thailande1s",
+        "text": "Dengan Arasya, satu mobil dan supir yang sama mendampingi Anda sejak mendarat sampai kembali ke bandara, dengan koordinasi admin dalam Bahasa Indonesia.",
+        "marks": []
+       }
+      ]
+     }
+    ]
+   },
+   "pickupPoints": "Bandara Suvarnabhumi, Bandara Don Mueang, dan hotel tempat Anda menginap",
+   "areaServed": [
+    "Bangkok",
+    "Pattaya",
+    "Ayutthaya",
+    "Hua Hin"
+   ],
+   "destinations": [
+    {
+     "_key": "g5a5ac97a43",
+     "name": "Grand Palace & Wat Arun",
+     "area": "Bangkok",
+     "text": "Ikon kerajaan Thailand di tepi Sungai Chao Phraya."
+    },
+    {
+     "_key": "g9814a938e9",
+     "name": "Damnoen Saduak",
+     "area": "Ratchaburi",
+     "text": "Pasar terapung legendaris, paling ramai di pagi hari."
+    },
+    {
+     "_key": "g0706ae7300",
+     "name": "Kota Tua Ayutthaya",
+     "area": "Ayutthaya",
+     "text": "Reruntuhan ibu kota Kerajaan Siam, situs warisan dunia UNESCO."
+    },
+    {
+     "_key": "g3c7b9a9740",
+     "name": "Pattaya",
+     "area": "Chonburi",
+     "text": "Kota pantai dengan taman hiburan dan wisata keluarga."
+    }
+   ],
+   "routes": [
+    {
+     "_key": "gd82764700c",
+     "to": "Bangkok → Pattaya",
+     "duration": "±2 jam",
+     "note": "Kota pantai populer di tepi Teluk Thailand."
+    },
+    {
+     "_key": "g1ef2bd0cc5",
+     "to": "Bangkok → Ayutthaya",
+     "duration": "±1,5 jam",
+     "note": "Bekas ibu kota Kerajaan Siam."
+    },
+    {
+     "_key": "gdfbf7338f4",
+     "to": "Bangkok → Hua Hin",
+     "duration": "±3 jam",
+     "note": "Kota resor tepi laut favorit keluarga."
+    }
+   ],
+   "faq": [
+    {
+     "_key": "gf83843de8c",
+     "question": "Bagaimana cara memesan mobil dengan supir di Thailand?",
+     "answer": "Kirim tanggal, jumlah penumpang, penerbangan, dan rencana perjalanan lewat WhatsApp. Admin kami mengirim penawaran tertulis dalam Rupiah sebelum Anda membayar."
+    },
+    {
+     "_key": "g685d3df9a5",
+     "question": "Apakah pembayaran dalam Rupiah?",
+     "answer": "Ya. Penawaran dan pembayaran dilakukan dalam Rupiah ke rekening resmi BCA a.n. PT. Ayomi Raya, sehingga Anda tidak perlu menghitung kurs sendiri."
+    },
+    {
+     "_key": "g85896cd6b8",
+     "question": "Apakah supir di Thailand bisa berbahasa Indonesia?",
+     "answer": "Koordinasi pemesanan dilakukan admin kami dalam Bahasa Indonesia. Supir lokal berkomunikasi dalam bahasa Inggris dasar, dan admin siap membantu selama perjalanan."
+    },
+    {
+     "_key": "g7c38760218",
+     "question": "Apakah bisa sewa beberapa hari lintas kota?",
+     "answer": "Bisa. Satu mobil dan supir bisa mendampingi Anda selama beberapa hari, termasuk perjalanan ke kota lain di Thailand. Sampaikan itinerari Anda agar admin menghitungkan penawarannya."
+    }
+   ],
+   "seo": {
+    "title": "Sewa Mobil Thailand (Bangkok) dengan Supir — Arasya Rent Car",
+    "description": "Sewa mobil dengan supir di Bangkok untuk wisatawan Indonesia. Pattaya, Ayutthaya, Hua Hin, dan rute antar kota. Penawaran dalam Rupiah."
+   },
+   "unitClasses": [
+    {
+     "_key": "g265113fce6",
+     "name": "MPV 7 kursi",
+     "seats": "6 penumpang + driver",
+     "luggage": "3–4 koper kabin",
+     "useCase": "Keluarga kecil, jemput bandara, dan tur harian dalam kota."
+    },
+    {
+     "_key": "geb536dd9ec",
+     "name": "MPV premium",
+     "seats": "5 penumpang + driver",
+     "luggage": "4 koper sedang",
+     "useCase": "Perjalanan bisnis dan tamu yang ingin kursi kapten dan ruang kaki lega."
+    },
+    {
+     "_key": "g93d61baf49",
+     "name": "Van 11–14 kursi",
+     "seats": "10–13 penumpang + driver",
+     "luggage": "Ruang di belakang baris terakhir",
+     "useCase": "Rombongan kantor, grup wisata, dan jemput bandara bersama."
+    }
+   ],
+   "trust": [
+    {
+     "_key": "g9d07f69ba9",
+     "title": "Driver lokal terverifikasi",
+     "text": "Diseleksi dengan standar layanan Arasya."
+    },
+    {
+     "_key": "g50c7b42aea",
+     "title": "Admin berbahasa Indonesia",
+     "text": "Pendampingan sejak pemesanan sampai perjalanan selesai."
+    },
+    {
+     "_key": "gd4f625b4b0",
+     "title": "Penawaran dalam Rupiah",
+     "text": "Harga tertulis dalam Rupiah, dibayar ke rekening resmi di Indonesia."
+    },
+    {
+     "_key": "g6a13acda67",
+     "title": "Unit sesuai pesanan",
+     "text": "Kelas dan kapasitas unit sesuai konfirmasi tertulis."
+    }
+   ]
+  }
+ ],
+ "fixes": [
+  {
+   "id": "city-bogor",
+   "path": [
+    "hero",
+    "lead"
+   ],
+   "old": "Layanan sewa mobil premium dengan supir profesional untuk perjalanan bisnis, wisata, dan keluarga — melayani Bogor, Puncak, dan rute luar kota.",
+   "new": "Sewa mobil dengan supir profesional untuk perjalanan bisnis, wisata, dan keluarga, di dalam Bogor maupun dari Bogor ke kota mana pun."
+  },
+  {
+   "id": "city-bogor",
+   "path": [
+    "seo",
+    "description"
+   ],
+   "old": "Sewa mobil premium dengan supir profesional di Bogor. Tarif transparan Dalam Kota 12 jam atau All-in, melayani Bogor, Puncak, dan rute luar kota. Pesan via WhatsApp.",
+   "new": "Sewa mobil dengan supir profesional di Bogor. Tarif Dalam Kota 12 jam atau All-in, untuk Puncak, bandara, dan perjalanan ke kota mana pun. Pesan via WhatsApp."
+  },
+  {
+   "id": "city-bogor",
+   "path": [
+    "faq",
+    {
+     "_key": "k00017"
+    }
+   ],
+   "old": null,
+   "new": {
+    "question": "Apakah bisa ke luar kota dari Bogor?",
+    "answer": "Bisa. Dari Bogor kami melayani perjalanan ke kota mana pun, dalam provinsi maupun antarprovinsi, termasuk sewa beberapa hari. Tarif disesuaikan dengan jarak dan durasi, dan dikonfirmasi tertulis sebelum berangkat."
+   }
+  },
+  {
+   "id": "city-jakarta",
+   "path": [
+    "hero",
+    "lead"
+   ],
+   "old": "Untuk meeting, antar-jemput bandara, dan perjalanan keluarga di Jakarta, serta rute ke Bogor, Puncak, dan Bandung.",
+   "new": "Untuk meeting, antar-jemput bandara, dan perjalanan keluarga di Jakarta, serta perjalanan dari Jakarta ke kota mana pun."
+  },
+  {
+   "id": "city-jakarta",
+   "path": [
+    "seo",
+    "description"
+   ],
+   "old": "Sewa mobil dengan supir di Jakarta untuk meeting, antar-jemput bandara, dan perjalanan keluarga. Tarif Dalam Kota 12 jam atau All-in, rute ke Bogor, Puncak, dan Bandung. Pesan via WhatsApp.",
+   "new": "Sewa mobil dengan supir di Jakarta untuk meeting, antar-jemput bandara, dan perjalanan keluarga. Tarif Dalam Kota 12 jam atau All-in, ke luar kota ke mana pun. Pesan via WhatsApp."
+  },
+  {
+   "id": "city-jakarta",
+   "path": [
+    "faq",
+    {
+     "_key": "k00051"
+    }
+   ],
+   "old": null,
+   "new": {
+    "question": "Apakah bisa ke luar kota dari Jakarta?",
+    "answer": "Bisa. Dari Jakarta kami melayani perjalanan ke kota mana pun, dalam provinsi maupun antarprovinsi, termasuk sewa beberapa hari. Tarif disesuaikan dengan jarak dan durasi, dan dikonfirmasi tertulis sebelum berangkat."
+   }
+  },
+  {
+   "id": "city-bandung",
+   "path": [
+    "hero",
+    "lead"
+   ],
+   "old": "Untuk wisata Lembang dan Ciwidey, perjalanan bisnis di Bandung, serta rute ke Jakarta dan Bogor.",
+   "new": "Untuk wisata Lembang dan Ciwidey, perjalanan bisnis di Bandung, serta perjalanan dari Bandung ke kota mana pun."
+  },
+  {
+   "id": "city-bandung",
+   "path": [
+    "seo",
+    "description"
+   ],
+   "old": "Sewa mobil dengan supir di Bandung untuk wisata Lembang dan Ciwidey, perjalanan bisnis, dan rute ke Jakarta atau Bogor. Tarif Dalam Kota 12 jam atau All-in. Pesan via WhatsApp.",
+   "new": "Sewa mobil dengan supir di Bandung untuk wisata Lembang dan Ciwidey, perjalanan bisnis, dan perjalanan ke kota mana pun. Tarif Dalam Kota 12 jam atau All-in. Pesan via WhatsApp."
+  },
+  {
+   "id": "city-bandung",
+   "path": [
+    "faq",
+    {
+     "_key": "k00071"
+    }
+   ],
+   "old": null,
+   "new": {
+    "question": "Apakah bisa ke luar kota dari Bandung?",
+    "answer": "Bisa. Dari Bandung kami melayani perjalanan ke kota mana pun, dalam provinsi maupun antarprovinsi, termasuk sewa beberapa hari. Tarif disesuaikan dengan jarak dan durasi, dan dikonfirmasi tertulis sebelum berangkat."
+   }
+  },
+  {
+   "id": "homePage",
+   "path": [
+    "hero",
+    "lead"
+   ],
+   "old": "Dari Avanza sampai Hiace. Untuk harian, ke Puncak, bandara, atau luar kota.",
+   "new": "Dari MPV keluarga sampai van rombongan. Untuk harian, antar-jemput bandara, atau perjalanan ke kota mana pun."
+  },
+  {
+   "id": "homePage",
+   "path": [
+    "seo",
+    "description"
+   ],
+   "old": "Rental mobil dengan driver: Avanza, Innova, Fortuner sampai Hiace. Tarif 12 jam mulai Rp500.000 atau paket all-in. Melayani Bogor, Jakarta, dan Bandung. Pesan lewat WhatsApp, admin 24 jam.",
+   "new": "Rental mobil dengan driver: Avanza, Innova, Fortuner sampai Hiace. Tarif 12 jam mulai Rp500.000 atau paket all-in. Melayani berbagai kota di Indonesia hingga Singapura, Malaysia, dan Thailand. Admin 24 jam."
+  },
+  {
+   "id": "service-travel",
+   "path": [
+    "answer"
+   ],
+   "old": "Travel carter Arasya adalah layanan satu mobil dengan driver untuk rombongan Anda sendiri, dijemput dan diantar sampai alamat tujuan. Tersedia rute dari Bogor, Jakarta, dan Bandung ke Bandara Soekarno-Hatta, Bandung, Garut, Serang, dan kota lain, dengan tarif mulai Rp500.000 per mobil.",
+   "new": "Travel carter Arasya adalah layanan satu mobil dengan driver untuk rombongan Anda sendiri, dijemput dan diantar sampai alamat tujuan, ke kota mana pun. Tarif rute populer tercantum di bawah, mulai Rp500.000 per mobil; rute lain dihitungkan admin lewat WhatsApp."
+  },
+  {
+   "id": "service-travel",
+   "path": [
+    "faq",
+    {
+     "_key": "k00169"
+    }
+   ],
+   "old": null,
+   "new": {
+    "question": "Rute apa saja yang tersedia?",
+    "answer": "Kami melayani carter ke kota mana pun, antar kota maupun antarprovinsi. Tabel di halaman ini berisi tarif rute yang paling sering dipesan; untuk rute lain, kirim kota asal dan tujuan lewat WhatsApp dan admin kami hitungkan tarifnya."
+   }
+  },
+  {
+   "id": "service-travel",
+   "path": [
+    "seo",
+    "description"
+   ],
+   "old": "Carter mobil door to door dari Bogor, Jakarta, dan Bandung ke bandara dan antar kota. Satu mobil untuk rombongan Anda sendiri. Cek tarif per unit, pesan lewat WhatsApp.",
+   "new": "Carter mobil door to door ke bandara dan antar kota, ke mana pun tujuan Anda. Satu mobil untuk rombongan Anda sendiri. Cek tarif rute populer, pesan lewat WhatsApp."
+  },
+  {
+   "id": "service-korporat",
+   "path": [
+    "answer"
+   ],
+   "old": "Arasya Rent Car melayani sewa mobil dengan driver untuk perusahaan di Bogor, Jakarta, dan Bandung, dikelola oleh PT. Ayomi Raya. Tersedia unit MPV, SUV, hingga van rombongan, dengan pembayaran ke rekening resmi perusahaan dan admin yang siaga 24 jam.",
+   "new": "Arasya Rent Car melayani sewa mobil dengan driver untuk perusahaan di berbagai kota di Indonesia, dikelola oleh PT. Ayomi Raya. Tersedia unit MPV, SUV, hingga van rombongan, untuk perjalanan dalam kota maupun ke kota mana pun, dengan pembayaran ke rekening resmi perusahaan dan admin yang siaga 24 jam."
+  },
+  {
+   "id": "service-korporat",
+   "path": [
+    "seo",
+    "description"
+   ],
+   "old": "Transportasi karyawan dan tamu bisnis di Bogor, Jakarta, dan Bandung. Innova, Fortuner, Hiace dengan driver, pembayaran ke rekening PT. Ayomi Raya, admin 24 jam. Minta penawaran lewat WhatsApp.",
+   "new": "Transportasi karyawan dan tamu bisnis di berbagai kota di Indonesia. Innova, Fortuner, Hiace dengan driver, pembayaran ke rekening PT. Ayomi Raya, admin 24 jam. Minta penawaran lewat WhatsApp."
+  },
+  {
+   "id": "service-wedding",
+   "path": [
+    "answer"
+   ],
+   "old": "Arasya Rent Car menyediakan mobil pengantin dengan driver di Bogor, Jakarta, dan Bandung, dengan pilihan unit Toyota Alphard, Toyota Zenix Q Hybrid Modellista, dan Toyota Fortuner. Pemesanan melalui WhatsApp; unit, jam, dan titik jemput dikonfirmasi sebelum hari acara.",
+   "new": "Arasya Rent Car menyediakan mobil pengantin dengan driver di berbagai kota, dengan pilihan unit seperti Toyota Alphard, Toyota Zenix Q Hybrid Modellista, dan Toyota Fortuner. Pemesanan melalui WhatsApp; unit, jam, dan titik jemput dikonfirmasi sebelum hari acara."
+  },
+  {
+   "id": "city-bandung",
+   "path": [
+    "en",
+    "hero",
+    "lead"
+   ],
+   "old": "For day trips to Lembang and Ciwidey, business in the city, and transfers to Jakarta and Bogor.",
+   "new": "For day trips to Lembang and Ciwidey, business in the city, and trips from Bandung to anywhere you need to go."
+  },
+  {
+   "id": "city-bandung",
+   "path": [
+    "en",
+    "seo",
+    "description"
+   ],
+   "old": "Hire a car with a driver in Bandung for Lembang and Ciwidey day trips, business travel, and transfers to Jakarta or Bogor. Book on WhatsApp.",
+   "new": "Hire a car with a driver in Bandung for Lembang and Ciwidey day trips, business travel, and trips to any city. Book on WhatsApp."
+  },
+  {
+   "id": "city-jakarta",
+   "path": [
+    "en",
+    "hero",
+    "lead"
+   ],
+   "old": "For meetings, airport transfers and family days out in Jakarta, and trips to Bogor, Puncak and Bandung.",
+   "new": "For meetings, airport transfers and family days out in Jakarta, and trips from Jakarta to anywhere in Java."
+  },
+  {
+   "id": "city-jakarta",
+   "path": [
+    "en",
+    "seo",
+    "description"
+   ],
+   "old": "Hire a car with a driver in Jakarta for meetings, airport transfers and day trips. 12-hour or all-in rates, trips to Bogor, Puncak and Bandung. Book on WhatsApp.",
+   "new": "Hire a car with a driver in Jakarta for meetings, airport transfers and day trips. 12-hour or all-in rates, and trips to any city. Book on WhatsApp."
+  },
+  {
+   "id": "service-travel",
+   "path": [
+    "en",
+    "answer"
+   ],
+   "old": "A private transfer is a car and driver for your group only, from your address to your destination. We run from Bogor, Jakarta and Bandung to Soekarno-Hatta Airport, Bandung, Garut, Serang and more, from Rp500,000 per car.",
+   "new": "A private transfer is a car and driver for your group only, from your address to wherever you are going. Popular routes are priced below from Rp500,000 per car; for anywhere else, send us your route on WhatsApp for a quote."
+  },
+  {
+   "id": "service-travel",
+   "path": [
+    "en",
+    "faq",
+    2
+   ],
+   "old": null,
+   "new": {
+    "question": "Which routes do you cover?",
+    "answer": "Anywhere you need to go, between cities or across provinces. The table shows our most-booked routes; for any other trip, send us your start and end point on WhatsApp and we'll quote a price."
+   }
+  },
+  {
+   "id": "service-travel",
+   "path": [
+    "en",
+    "seo",
+    "description"
+   ],
+   "old": "Door-to-door private car transfers from Bogor, Jakarta and Bandung to Soekarno-Hatta Airport and other cities. Priced per car, driver included.",
+   "new": "Door-to-door private car transfers to the airport and between cities, wherever you are going. Priced per car, driver included."
+  },
+  {
+   "id": "service-korporat",
+   "path": [
+    "en",
+    "answer"
+   ],
+   "old": "Yes. Arasya Rent Car provides cars with drivers for companies in Bogor, Jakarta and Bandung, and is operated by PT. Ayomi Raya. We have MPVs, SUVs and group vans, invoice in the company's name, and answer on WhatsApp 24 hours a day.",
+   "new": "Yes. Arasya Rent Car provides cars with drivers for companies in cities across Indonesia, and is operated by PT. Ayomi Raya. We have MPVs, SUVs and group vans for local and intercity trips, invoice in the company's name, and answer on WhatsApp 24 hours a day."
+  },
+  {
+   "id": "service-korporat",
+   "path": [
+    "en",
+    "seo",
+    "description"
+   ],
+   "old": "Cars and drivers for companies in Bogor, Jakarta and Bandung: airport pick-ups, meetings and staff transport. Invoiced by PT. Ayomi Raya.",
+   "new": "Cars and drivers for companies across Indonesia: airport pick-ups, meetings, staff transport and intercity trips. Invoiced by PT. Ayomi Raya."
+  },
+  {
+   "id": "homePage",
+   "path": [
+    "en",
+    "hero",
+    "lead"
+   ],
+   "old": "From a seven-seater to a 14-seat van. Day hire, airport transfers, and trips to Puncak, Bandung and beyond.",
+   "new": "From family seven-seaters to group vans. Day hire, airport transfers, and trips to anywhere you need to go."
+  },
+  {
+   "id": "homePage",
+   "path": [
+    "en",
+    "seo",
+    "description"
+   ],
+   "old": "Rent a car with a professional driver: Avanza, Innova, Fortuner, Alphard or Hiace. 12-hour rates from Rp500,000 or all-in packages. Book on WhatsApp.",
+   "new": "Rent a car with a professional driver in cities across Indonesia: Avanza, Innova, Fortuner, Alphard or Hiace. 12-hour rates from Rp500,000 or all-in packages. Book on WhatsApp."
+  }
+ ]
+}

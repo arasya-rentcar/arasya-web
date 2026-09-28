@@ -17,6 +17,7 @@ ROOT = HERE.parent.parent
 sys.path.insert(0, str(HERE.parent))
 
 from content.cars import CARS  # noqa: E402
+from content.cities import ALL as NEW_CITIES, EN_FIXES, FIXES  # noqa: E402
 from content.english import CITIES, HOME, SERVICES, SETTINGS  # noqa: E402
 from content.posts import POSTS, blocks  # noqa: E402
 from content.routes import ROUTES  # noqa: E402
@@ -69,9 +70,15 @@ data = {
     "posts": [post_doc(p) for p in POSTS],
 }
 
+cities_data = {
+    "cities": [keyed(c, c["_id"]) for c in NEW_CITIES],
+    "fixes": [{"id": i, "path": path, "old": old, "new": keyed(new, f"fix.{i}") if isinstance(new, (dict, list)) else new} for i, path, old, new in FIXES + EN_FIXES],
+}
+
 out = ROOT / "scripts" / "migrations" / "data" / "2026-09-29-growth.json"
 out.parent.mkdir(parents=True, exist_ok=True)
 out.write_text(json.dumps(data, ensure_ascii=False, indent=1))
+(out.parent / "2026-09-29-cities.json").write_text(json.dumps(cities_data, ensure_ascii=False, indent=1))
 
 # Same content into the local fallback dataset.
 seed_path = ROOT / "src" / "data" / "seed.json"
@@ -95,5 +102,30 @@ for p in data["posts"]:
         by_id[p["_id"]].update(p)
     else:
         seed.append(p)
+for c in cities_data["cities"]:
+    if c["_id"] in by_id:
+        by_id[c["_id"]].clear()
+        by_id[c["_id"]].update(c)
+    else:
+        seed.append(c)
+        by_id[c["_id"]] = c
+
+
+def locate(doc, path):
+    """Walk a path like ["faq", {"_key": "k1"}] or ["en", "faq", 2]; return (parent, key)."""
+    node = doc
+    for seg in path[:-1]:
+        node = next(x for x in node if x.get("_key") == seg["_key"]) if isinstance(seg, dict) else node[seg]
+    last = path[-1]
+    if isinstance(last, dict):
+        return node, next(i for i, x in enumerate(node) if x.get("_key") == last["_key"])
+    return node, last
+
+
+for f in cities_data["fixes"]:
+    parent, k = locate(by_id[f["id"]], f["path"])
+    if f["old"] is None or parent[k] == f["old"]:
+        parent[k] = {**parent[k], **f["new"]} if isinstance(f["new"], dict) else f["new"]
+
 seed_path.write_text(json.dumps(seed, ensure_ascii=False, indent=1))
 print(f"wrote {out.relative_to(ROOT)} and updated {seed_path.relative_to(ROOT)} ({len(seed)} documents)")

@@ -4,11 +4,38 @@
   "headers": [
     {
       "source": "/(cars|places|brand|_astro)/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     },
     {
       "source": "/studio",
-      "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }]
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/rental-mobil-jogja",
+      "destination": "/sewa-mobil-jogja",
+      "permanent": true
+    },
+    {
+      "source": "/sewa-mobil-yogyakarta",
+      "destination": "/sewa-mobil-jogja",
+      "permanent": true
+    },
+    {
+      "source": "/rental-mobil-:city",
+      "destination": "/sewa-mobil-:city",
+      "permanent": true
     }
   ]
 }

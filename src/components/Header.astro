@@ -12,7 +12,11 @@ const { settings, services, cities, posts, lang } = content;
 const t = ui(lang);
 
 // Only cities that are live in search appear in the menu; thin drafts stay reachable by URL.
-const menuCities = cities.filter(cityIsIndexable).map((c) => ({ href: paths.city(c, lang), label: c.name }));
+const menuCities = cities.filter(cityIsIndexable).map((c) => ({ href: paths.city(c, lang), label: c.name, abroad: c.country === 'INTL' }));
+const groups = [
+  { label: lang === 'en' ? 'Indonesia' : 'Domestik', items: menuCities.filter((c) => !c.abroad) },
+  { label: lang === 'en' ? 'Abroad' : 'Internasional', items: menuCities.filter((c) => c.abroad) },
+].filter((g) => g.items.length);
 const allCities = paths.cities(lang);
 const inCities = path === allCities || menuCities.some((c) => c.href === path);
 const links = [
@@ -40,11 +44,18 @@ const switchHref = alternates[otherLang] || paths.home(otherLang);
                 {t.navCities} <svg class="chev" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="m2.5 4.5 3.5 3.5 3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
               </summary>
               <div class="dd-menu">
-                <ul class:list={['dd-list', { cols: menuCities.length > 8 }]}>
-                  {menuCities.map((c) => (
-                    <li><a href={c.href} aria-current={path === c.href ? 'page' : undefined}><Icon name="pin" size={16} />{c.label}</a></li>
+                <div class="dd-groups">
+                  {groups.map((g) => (
+                    <div class="dd-group">
+                      {groups.length > 1 && <span class="dd-label">{g.label}</span>}
+                      <ul class:list={['dd-list', { cols: g.items.length > 6 }]}>
+                        {g.items.map((c) => (
+                          <li><a href={c.href} aria-current={path === c.href ? 'page' : undefined}><Icon name="pin" size={16} />{c.label}</a></li>
+                        ))}
+                      </ul>
+                    </div>
                   ))}
-                </ul>
+                </div>
                 <a class="dd-all" href={allCities} aria-current={path === allCities ? 'page' : undefined}>{t.navAllCities} →</a>
               </div>
             </details>
@@ -111,9 +122,14 @@ const switchHref = alternates[otherLang] || paths.home(otherLang);
   .dd-toggle.active { border-bottom-color: var(--blue); }
   .chev { transition: transform 0.15s; }
   .dd[open] .chev { transform: rotate(180deg); }
-  .dd-menu { position: absolute; left: -12px; top: calc(100% + 12px); min-width: 240px; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 8px; display: grid; gap: 4px; }
-  .dd-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; max-height: min(60vh, 420px); overflow-y: auto; }
-  .dd-list.cols { grid-template-columns: repeat(2, minmax(160px, 1fr)); }
+  .dd-menu { position: absolute; left: -12px; top: calc(100% + 12px); min-width: 240px; width: max-content; max-width: calc(100vw - 48px); background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 8px; display: grid; gap: 4px; }
+  .dd-groups { display: flex; gap: 12px; max-height: min(70vh, 520px); overflow-y: auto; }
+  .dd-group { display: grid; gap: 4px; align-content: start; }
+  .dd-group + .dd-group { border-left: 1px solid var(--line); padding-left: 12px; }
+  .dd-label { padding: 6px 12px 2px; font: 700 0.7rem/1 var(--text); letter-spacing: 0.08em; text-transform: uppercase; color: var(--soft); }
+  .dd-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .dd-list.cols { grid-template-columns: repeat(2, minmax(150px, 1fr)); }
+  .dd-list a { white-space: nowrap; }
   .dd-list a { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 8px; color: var(--ink); text-decoration: none; font-weight: 500; }
   .dd-list a :global(svg) { color: var(--soft); flex: none; }
   .dd-list a:hover { background: var(--paper); color: var(--blue); }
@@ -136,6 +152,7 @@ const switchHref = alternates[otherLang] || paths.home(otherLang);
   .mgroup { border-bottom: 1px solid var(--line); padding-bottom: 6px; }
   .mlabel { display: block; padding: 8px 12px 4px; font: 700 0.72rem/1 var(--text); letter-spacing: 0.08em; text-transform: uppercase; color: var(--soft); }
   .mlabel.active { color: var(--blue); }
+  .mcities { display: grid; grid-template-columns: 1fr 1fr; }
   .mcities a { font-weight: 500; padding-block: 10px; }
   @media (max-width: 1080px) { .phone { display: none; } }
   @media (max-width: 920px) { .nav { display: none; } .mnav { display: block; } }

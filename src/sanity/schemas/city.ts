@@ -51,6 +51,41 @@ export const city = defineType({
       options: { list: [{ title: 'Indonesia', value: 'ID' }, { title: 'Luar negeri', value: 'INTL' }] },
     }),
     defineField({ name: 'isHeadquarters', title: 'Kantor pusat', type: 'boolean', group: 'main', initialValue: false }),
+    defineField({
+      name: 'pricing',
+      title: 'Tampilan harga',
+      type: 'string',
+      group: 'main',
+      initialValue: 'table',
+      options: {
+        list: [
+          { title: 'Tabel tarif armada', value: 'table' },
+          { title: 'Tabel tarif armada sebagai acuan (tarif final dikonfirmasi admin)', value: 'reference' },
+          { title: 'Tanpa harga: kelas unit + minta penawaran (luar negeri)', value: 'quote' },
+        ],
+        layout: 'radio',
+      },
+    }),
+    defineField({
+      name: 'unitClasses',
+      title: 'Kelas unit (untuk tampilan "minta penawaran")',
+      type: 'array',
+      group: 'main',
+      hidden: ({ document }) => document?.pricing !== 'quote',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          fields: [
+            { name: 'name', type: 'string', title: 'Nama kelas' },
+            { name: 'seats', type: 'string', title: 'Kapasitas' },
+            { name: 'luggage', type: 'string', title: 'Bagasi' },
+            { name: 'useCase', type: 'string', title: 'Cocok untuk' },
+          ],
+          preview: { select: { title: 'name', subtitle: 'seats' } },
+        }),
+      ],
+    }),
+    defineField({ name: 'trust', title: 'Poin kepercayaan khusus kota ini (opsional)', type: 'array', of: [{ type: 'titledText' }], group: 'main' }),
     defineField({ name: 'hero', title: 'Hero', type: 'hero', group: 'main' }),
     defineField({
       name: 'sections',

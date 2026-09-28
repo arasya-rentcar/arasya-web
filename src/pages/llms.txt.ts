@@ -18,7 +18,7 @@ export const GET: APIRoute = async ({ site }) => {
   const lines = [
     `# ${settings.brandName}`,
     '',
-    `> Rental mobil dengan driver (bukan lepas kunci) di ${settings.address.locality}, dikelola ${settings.legalName}. Pemesanan melalui WhatsApp +${settings.waPhone}, admin siaga 24 jam.`,
+    `> Rental mobil dengan driver (bukan lepas kunci) di ${settings.address.locality}, dikelola ${settings.legalName}. Pemesanan melalui WhatsApp +${settings.waPhone}, admin siaga 24 jam. Melayani perjalanan dalam kota, antar kota, dan antarprovinsi ke mana pun tujuan, serta layanan di Singapura, Malaysia, dan Thailand dengan penawaran dalam Rupiah.`,
     '',
     '## Fakta utama',
     `- Alamat kantor: ${settings.address.full}`,
@@ -30,6 +30,7 @@ export const GET: APIRoute = async ({ site }) => {
     settings.rateNotes?.allIn ? `- Tarif All-in: ${settings.rateNotes.allIn}` : '',
     '',
     '## Armada dan tarif (dengan driver)',
+    '- Daftar berikut adalah tipe unit yang paling sering dipesan; unit lain bisa di-request ke admin.',
     ...cars.map((c) => `- [${c.name}](${base}${paths.car(c.slug.current, 'id')}) (${c.capacity ?? '?'} kursi termasuk driver): ${c.priceCity ? `${rupiah(c.priceCity)} per 12 jam dalam kota` : 'tarif sesuai permintaan'}${c.priceAllIn ? `, all-in ${rupiah(c.priceAllIn)}` : ''}`),
     ...(travel?.routes?.length
       ? [

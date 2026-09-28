@@ -26,3 +26,10 @@ export function carIsIndexable(c: Car): boolean {
 export function routeIsIndexable(r: TravelRoute): boolean {
   return !!r.intro && !!r.duration && (r.faq?.length ?? 0) >= 2;
 }
+
+/** Busiest cities first, for places that only show a few (home cards, footer). */
+const FEATURED = ['Bogor', 'Jakarta', 'Bandung', 'Jogja', 'Surabaya', 'Bali', 'Semarang', 'Malang'];
+export function byPopularity<T extends { name: string }>(cities: T[]): T[] {
+  const rank = (n: string) => { const i = FEATURED.indexOf(n); return i < 0 ? 99 : i; };
+  return [...cities].sort((a, b) => rank(a.name) - rank(b.name));
+}

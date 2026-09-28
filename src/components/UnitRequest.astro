@@ -1,0 +1,34 @@
+---
+/**
+ * The fleet pages show the main car types, not every car Arasya can supply.
+ * This tells visitors so, and gives them a direct line to ask for something
+ * that isn't listed.
+ */
+import type { Settings } from '../lib/content';
+import { langOf } from '../lib/i18n';
+import { waHref } from '../lib/wa';
+import Icon from './Icon.astro';
+
+interface Props { settings: Settings; waRef: string }
+const { settings, waRef } = Astro.props;
+const en = langOf(Astro.url.pathname) === 'en';
+const href = waHref(settings.waPhone, en ? "Hi Arasya, I'm looking for a car that isn't on your list: … Date: …, city: …" : 'Halo Arasya, saya cari unit yang tidak ada di daftar: … Tanggal: …, kota: …', waRef);
+---
+<aside class="req">
+  <span class="ic" aria-hidden="true"><Icon name="car" size={22} /></span>
+  <div class="txt">
+    <h3>{en ? "Can't see the car you want?" : 'Unit yang Anda cari tidak ada di sini?'}</h3>
+    <p>{en
+      ? 'These are our most-booked car types, not the whole fleet. Tell us what you need, from a specific model to several cars at once, and we will find it for you.'
+      : 'Yang tampil di sini adalah tipe unit yang paling sering dipesan, bukan seluruh armada kami. Sampaikan kebutuhan Anda, dari model tertentu sampai beberapa unit sekaligus, admin kami carikan unitnya.'}</p>
+  </div>
+  <a class="btn btn-blue" href={href} data-cta="unit-request" rel="nofollow"><Icon name="wa" />{en ? 'Request a car' : 'Request unit ke admin'}</a>
+</aside>
+<style>
+  .req { margin-top: 20px; display: grid; grid-template-columns: 44px 1fr auto; gap: 16px; align-items: center; padding: 18px 20px; border-radius: var(--radius); background: var(--sky); border: 1px solid var(--sky-2); }
+  .ic { width: 44px; height: 44px; border-radius: 12px; background: #fff; color: var(--blue); display: grid; place-items: center; }
+  .txt { display: grid; gap: 4px; }
+  h3 { font-size: 1.08rem; }
+  p { color: var(--body); font-size: 0.93rem; max-width: 70ch; }
+  @media (max-width: 760px) { .req { grid-template-columns: 1fr; } .ic { display: none; } .btn { width: 100%; } }
+</style>

@@ -82,6 +82,10 @@ export interface City {
   slug: Slug;
   country?: string;
   isHeadquarters?: boolean;
+  /** table: fleet rates · reference: fleet rates, final rate confirmed per city · quote: no rates, car classes. */
+  pricing?: 'table' | 'reference' | 'quote';
+  unitClasses?: { name: string; seats?: string; luggage?: string; useCase?: string }[];
+  trust?: TitledText[];
   hero: Hero;
   sections?: string[];
   editorial?: { eyebrow?: string; title?: string; lead?: string; body?: any[] };
@@ -243,7 +247,11 @@ function load(): Promise<Content> {
       settings: one<Settings>('siteSettings'),
       home,
       cars: of<Car>('car').sort((a, b) => (a.order ?? 100) - (b.order ?? 100) || a.name.localeCompare(b.name)),
-      cities: of<City>('city').sort((a, b) => Number(!!b.isHeadquarters) - Number(!!a.isHeadquarters) || a.name.localeCompare(b.name)),
+      // Headquarters first, then Indonesian cities, then abroad; alphabetical within each.
+      cities: of<City>('city').sort((a, b) =>
+        Number(!!b.isHeadquarters) - Number(!!a.isHeadquarters) ||
+        Number(a.country === 'INTL') - Number(b.country === 'INTL') ||
+        a.name.localeCompare(b.name)),
       services,
       posts: of<Post>('post').filter((p) => isPublished(p)).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)),
     };

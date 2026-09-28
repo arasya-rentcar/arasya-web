@@ -4,6 +4,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import CarImage from '../components/CarImage.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Icon from '../components/Icon.astro';
+import UnitRequest from '../components/UnitRequest.astro';
 import { getContent } from '../lib/content';
 import { rupiah } from '../lib/format';
 import { listJoin, ui, type Lang } from '../lib/i18n';
@@ -24,12 +25,12 @@ const priced = cars.filter((c) => c.priceCity).sort((a, b) => a.priceCity! - b.p
 const lo = priced[0], hi = priced[priced.length - 1];
 const catList = listJoin(cats.map((c) => t.category[c]), lang);
 const answer = en
-  ? `${cars.length} cars, all rented with a driver: ${catList}. Twelve hours in town costs from ${rupiah(lo.priceCity!)} (${lo.name}) to ${rupiah(hi.priceCity!)} (${hi.name}).`
-  : `${cars.length} unit, semuanya disewakan bersama driver: ${cats.map((c) => t.category[c]).join(', ')}. Tarif dalam kota 12 jam mulai ${rupiah(lo.priceCity!)} (${lo.name}) sampai ${rupiah(hi.priceCity!)} (${hi.name}).`;
+  ? `Every car comes with a driver, across ${catList}. Twelve hours in town costs from ${rupiah(lo.priceCity!)} (${lo.name}) to ${rupiah(hi.priceCity!)} (${hi.name}). These are our most-booked types; ask us for anything else.`
+  : `Semua unit disewakan bersama driver, dari ${listJoin(cats.map((c) => t.category[c]), lang)}. Tarif dalam kota 12 jam mulai ${rupiah(lo.priceCity!)} (${lo.name}) sampai ${rupiah(hi.priceCity!)} (${hi.name}). Yang tampil di sini adalah tipe unit yang paling sering dipesan; unit lain bisa di-request ke admin.`;
 const title = en ? 'Fleet & Rates: Car Rental with Driver in Indonesia | Arasya Rent Car' : 'Armada & Tarif Sewa Mobil dengan Driver — Arasya Rent Car';
 const description = en
-  ? `${cars.length} cars with a professional driver: Avanza, Xpander, Innova, Zenix, Fortuner, Alphard, Hiace. Compare seats and 12-hour or all-in rates.`
-  : `${cars.length} unit sewa mobil dengan driver: Avanza, Xpander, Innova, Zenix, Fortuner, Alphard, Hiace. Bandingkan kapasitas dan tarif 12 jam atau all-in.`;
+  ? 'Cars with a professional driver: Avanza, Xpander, Innova, Zenix, Fortuner, Alphard, Hiace and more. Compare seats and 12-hour or all-in rates.'
+  : 'Sewa mobil dengan driver: Avanza, Xpander, Innova, Zenix, Fortuner, Alphard, Hiace, dan unit lainnya. Bandingkan kapasitas dan tarif 12 jam atau all-in.';
 ---
 <Base title={title} description={description} path={path} alternates={{ id: '/armada', en: '/en/fleet' }} jsonld={[{ '@type': 'ItemList', name: en ? 'Arasya fleet' : 'Armada Arasya', itemListElement: cars.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, url: site + paths.car(c.slug.current, lang) })) }, { '@id': `${site}/#business`, hasOfferCatalog: offerCatalog(cars, site, en ? 'Fleet rates' : 'Tarif armada', lang) }, breadcrumbs(site, crumbs)]} waRef={en ? 'EN-ARM-fab' : 'ARM-fab'}>
   <section class="head">
@@ -69,6 +70,7 @@ const description = en
           </div>
         </div>
       ))}
+      <UnitRequest settings={settings} waRef={en ? 'EN-ARM-request' : 'ARM-request'} />
       <div class="notes muted">
         {settings.rateNotes?.city && <p>{settings.rateNotes.city}</p>}
         {settings.rateNotes?.allIn && <p>{settings.rateNotes.allIn}</p>}

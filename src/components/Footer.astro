@@ -2,14 +2,15 @@
 import type { Content } from '../lib/content';
 import { ui } from '../lib/i18n';
 import { paths } from '../lib/paths';
-import { cityIsIndexable } from '../lib/quality';
+import { byPopularity, cityIsIndexable } from '../lib/quality';
 import Icon from './Icon.astro';
 
 interface Props { content: Content }
 const { settings, cities, services, posts, lang } = Astro.props.content;
 const t = ui(lang);
 const year = new Date().getFullYear();
-const liveCities = cities.filter(cityIsIndexable);
+// The full list lives on the cities page; the footer shows the main ones.
+const liveCities = byPopularity(cities.filter(cityIsIndexable)).slice(0, 5);
 ---
 <footer class="site-footer">
   <div class="wrap cols">
@@ -37,6 +38,7 @@ const liveCities = cities.filter(cityIsIndexable);
       <h2 class="h">{t.services}</h2>
       <ul>
         {liveCities.map((c) => <li><a href={paths.city(c, lang)}>{t.rentIn(c.name)}</a></li>)}
+        <li><a href={paths.cities(lang)}>{t.navAllCities}</a></li>
         <li><a href={paths.fleet(lang)}>{t.fleetAndRates}</a></li>
         {services.map((s) => <li><a href={paths.service(s, lang)}>{s.navLabel}</a></li>)}
         {posts.length > 0 && <li><a href={paths.blog()}>Blog</a></li>}

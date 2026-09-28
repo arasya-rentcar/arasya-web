@@ -8,12 +8,13 @@ import Faq from '../components/Faq.astro';
 import FraudNotice from '../components/FraudNotice.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Icon from '../components/Icon.astro';
+import UnitRequest from '../components/UnitRequest.astro';
 import { getContent, hasEn } from '../lib/content';
 import { rupiah } from '../lib/format';
 import { listJoin, type Lang } from '../lib/i18n';
 import { paths } from '../lib/paths';
 import { faqPage } from '../lib/schema';
-import { cityIsIndexable } from '../lib/quality';
+import { byPopularity, cityIsIndexable } from '../lib/quality';
 import { carImage, photo } from '../lib/images';
 
 interface Props { lang: Lang }
@@ -38,6 +39,9 @@ const serviceText: Record<string, string> = en
       travel: 'Carter door to door ke bandara dan antar kota, satu mobil untuk rombongan Anda.',
     };
 const cityList = listJoin(liveCities.map((c) => c.name), lang);
+// Six cities get a card (the busiest first); the rest are listed as links.
+const cityCards = byPopularity(liveCities).slice(0, 6);
+const cityMore = liveCities.filter((c) => !cityCards.includes(c));
 // Plain questions people ask before renting; the answers are built from live data
 // so prices never drift. Rendered as an FAQ (with FAQPage JSON-LD), which is what
 // search snippets and AI answer engines quote.
@@ -47,7 +51,7 @@ const homeFaq = en ? [
     question: 'How much does it cost to rent a car with a driver from Arasya?',
     answer: `From ${rupiah(cheapest.priceCity!)} for 12 hours in town in a ${cheapest.name}, excluding fuel, tolls, parking and the driver’s meals.${Number.isFinite(cheapestAllIn) ? ` All-in packages that include fuel, tolls and the driver’s meals start at ${rupiah(cheapestAllIn)}.` : ''} Every car’s rate is on the fleet page.`,
   },
-  ...(cityList ? [{ question: 'Which cities does Arasya serve?', answer: `${cityList}, including out-of-town trips from those cities and airport transfers.` }] : []),
+  ...(cityList ? [{ question: 'Which cities does Arasya serve?', answer: `We have local pages for ${cityList}. Beyond those, we drive between cities and across provinces to wherever you need to go; just ask.` }] : []),
   { question: 'Can I rent a car without a driver?', answer: 'No. Every Arasya car comes with a professional driver who knows the local roads, so you never deal with traffic, parking or directions yourself.' },
   { question: 'How do I book?', answer: `Send your date, pick-up point and destination on WhatsApp to ${settings.phones[0]}. Our team confirms the car, the rate and the pick-up before the booking is final. We reply on WhatsApp 24 hours a day.` },
   ...(settings.paymentTerms ? [{ question: 'How do I pay?', answer: `${settings.paymentTerms}${bank ? ` Official account: ${bank.bank} ${bank.number} ${bank.owner}.` : ''}` }] : []),
@@ -56,7 +60,7 @@ const homeFaq = en ? [
     question: 'Berapa harga sewa mobil dengan driver di Arasya?',
     answer: `Mulai ${rupiah(cheapest.priceCity!)} per 12 jam dalam kota untuk ${cheapest.name}, belum termasuk BBM, tol, parkir, dan makan driver.${Number.isFinite(cheapestAllIn) ? ` Paket all-in yang sudah termasuk BBM, tol, dan makan driver mulai ${rupiah(cheapestAllIn)}.` : ''} Tarif lengkap per unit ada di halaman armada.`,
   },
-  ...(cityList ? [{ question: 'Arasya melayani kota mana saja?', answer: `Saat ini ${cityList}, termasuk perjalanan luar kota dari kota-kota tersebut dan antar-jemput bandara.` }] : []),
+  ...(cityList ? [{ question: 'Arasya melayani kota mana saja?', answer: `Kami punya layanan lokal di ${cityList}. Di luar itu, kami melayani perjalanan antar kota dan antarprovinsi ke mana pun tujuan Anda; tanyakan saja ke admin.` }] : []),
   { question: 'Bagaimana cara memesan?', answer: `Kirim tanggal, titik jemput, dan tujuan lewat WhatsApp ${settings.phones[0]}. Admin mengonfirmasi unit, tarif, dan titik jemput sebelum pemesanan dipastikan. Admin siaga 24 jam.` },
   ...(settings.paymentTerms ? [{ question: 'Bagaimana ketentuan pembayarannya?', answer: `${settings.paymentTerms}${bank ? ` Rekening resmi: ${bank.bank} ${bank.number} ${bank.owner}.` : ''}` }] : []),
 ];
@@ -67,13 +71,14 @@ const homeFaq = en ? [
   <section class="section">
     <div class="wrap">
       <div class="section-head">
-        <div class="stack"><span class="eyebrow">{en ? 'Fleet' : 'Armada'}</span><h2>{en ? 'Choose a car for your trip' : 'Pilih mobil untuk perjalanan Anda'}</h2><p class="intro">{en ? `${cars.length} cars, from family MPVs to group vans. Every one comes with a driver.` : `${cars.length} unit dari MPV keluarga sampai van rombongan. Semua disewakan bersama driver.`}</p></div>
-        <a class="link-more" href={paths.fleet(lang)}>{en ? `See all ${cars.length} cars →` : `Lihat semua ${cars.length} unit →`}</a>
+        <div class="stack"><span class="eyebrow">{en ? 'Fleet' : 'Armada'}</span><h2>{en ? 'Choose a car for your trip' : 'Pilih mobil untuk perjalanan Anda'}</h2><p class="intro">{en ? 'From family seven-seaters to group vans and luxury MPVs. Every car comes with a driver.' : 'Dari MPV keluarga sampai van rombongan dan MPV mewah. Semua disewakan bersama driver.'}</p></div>
+        <a class="link-more" href={paths.fleet(lang)}>{en ? 'See more cars →' : 'Lihat unit lainnya →'}</a>
       </div>
       <div class="grid grid-4">
         {featured.map((c) => <CarCard car={c} settings={settings} refPrefix={en ? 'EN-HOME' : 'HOME'} />)}
       </div>
       {settings.rateNotes?.city && <p class="note muted">{settings.rateNotes.city}</p>}
+      <UnitRequest settings={settings} waRef={en ? 'EN-HOME-request' : 'HOME-request'} />
     </div>
   </section>
 
@@ -100,7 +105,7 @@ const homeFaq = en ? [
       <div class="wrap">
         <div class="section-head"><div class="stack"><span class="eyebrow">{en ? 'Cities' : 'Kota layanan'}</span><h2>{en ? 'Car rental by city' : 'Sewa mobil per kota'}</h2></div><a class="link-more" href={paths.cities(lang)}>{en ? 'All cities →' : 'Semua kota →'}</a></div>
         <div class="grid grid-3">
-          {liveCities.map((c) => {
+          {cityCards.map((c) => {
             const dest = c.destinations?.find((d) => d.image?.asset || d.imagePath);
             const img = dest ? photo(dest.image, dest.imagePath, 800) : null;
             const car = img ? null : carImage(c.hero.car);
@@ -113,6 +118,13 @@ const homeFaq = en ? [
             );
           })}
         </div>
+        {cityMore.length > 0 && (
+          <p class="more-cities">
+            <span>{en ? 'Also in' : 'Juga di'}</span>
+            {cityMore.map((c) => <a href={paths.city(c, lang)}>{c.name}</a>)}
+          </p>
+        )}
+        <p class="anywhere muted">{en ? "Don't see your city? We also drive between cities and across provinces, wherever you need to go." : 'Kota Anda belum ada di daftar? Kami tetap melayani perjalanan antar kota dan antarprovinsi, ke mana pun tujuan Anda.'}</p>
       </div>
     </section>
   )}
@@ -174,6 +186,11 @@ const homeFaq = en ? [
   .post.wide img { width: 100%; height: 100%; min-height: 220px; max-height: 300px; object-fit: cover; }
   .post.wide .post-body { align-content: center; padding: 28px; }
   .grid-1 { grid-template-columns: 1fr; }
+  .more-cities { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 20px; }
+  .more-cities span { font-weight: 700; color: var(--deep); margin-right: 4px; }
+  .more-cities a { padding: 7px 13px; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; font-weight: 600; font-size: 0.9rem; color: var(--deep); background: #fff; }
+  .more-cities a:hover { border-color: var(--blue); color: var(--blue); }
+  .anywhere { margin-top: 12px; font-size: 0.93rem; }
   @media (max-width: 760px) { .post.wide { grid-template-columns: 1fr; } .post.wide img { min-height: 0; aspect-ratio: 16 / 9; } }
   .post:hover, .city:hover { border-color: var(--blue); color: var(--ink); }
 </style>
