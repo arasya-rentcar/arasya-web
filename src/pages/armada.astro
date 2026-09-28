@@ -1,7 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
-import AnswerBox from '../components/AnswerBox.astro';
 import CarImage from '../components/CarImage.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Icon from '../components/Icon.astro';
@@ -15,14 +14,14 @@ const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
 const crumbs = [{ name: 'Beranda', path: '/' }, { name: 'Armada', path: '/armada' }];
 const cats = [...new Set(cars.map((c) => c.category))];
 const priced = cars.filter((c) => c.priceCity).sort((a, b) => a.priceCity! - b.priceCity!);
-const answer = `Arasya Rent Car memiliki ${cars.length} unit dengan driver: ${cats.map((c) => CATEGORY_LABEL[c]).join(', ')}. Tarif dalam kota 12 jam mulai ${rupiah(priced[0].priceCity!)} (${priced[0].name}) sampai ${rupiah(priced[priced.length - 1].priceCity!)} (${priced[priced.length - 1].name}).`;
+const answer = `${cars.length} unit, semuanya disewakan bersama driver: ${cats.map((c) => CATEGORY_LABEL[c]).join(', ')}. Tarif dalam kota 12 jam mulai ${rupiah(priced[0].priceCity!)} (${priced[0].name}) sampai ${rupiah(priced[priced.length - 1].priceCity!)} (${priced[priced.length - 1].name}).`;
 ---
 <Base title="Armada & Tarif Sewa Mobil dengan Driver — Arasya Rent Car" description={`${cars.length} unit sewa mobil dengan driver: Avanza, Xpander, Innova, Zenix, Fortuner, Alphard, Hiace. Bandingkan kapasitas dan tarif 12 jam atau all-in.`} path="/armada" jsonld={[{ '@type': 'ItemList', name: 'Armada Arasya', itemListElement: cars.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, url: `${site}/armada#${c.slug.current}` })) }, { '@id': `${site}/#business`, hasOfferCatalog: offerCatalog(cars, site, 'Tarif armada') }, breadcrumbs(site, crumbs)]} waRef="ARM-fab">
   <section class="head">
     <div class="wrap stack">
       <Breadcrumbs items={crumbs} />
       <h1>Pilih mobil, kami siapkan driver-nya</h1>
-      <p class="lead">{cars.length} unit, dari MPV keluarga sampai van rombongan. Semua tarif sudah termasuk driver.</p>
+      <p class="lead">{answer}</p>
       <nav class="tabs" aria-label="Kategori">
         <a href="#semua" class="on">Semua</a>
         {cats.map((c) => <a href={`#${c}`}>{CATEGORY_LABEL[c]}</a>)}
@@ -32,7 +31,6 @@ const answer = `Arasya Rent Car memiliki ${cars.length} unit dengan driver: ${ca
 
   <section class="section" id="semua" style="padding-top:28px">
     <div class="wrap stack">
-      <AnswerBox question="Mobil apa saja yang bisa disewa di Arasya?" answer={answer} />
       {cats.map((cat) => (
         <div class="cat" id={cat}>
           <h2>{CATEGORY_LABEL[cat]}</h2>
@@ -48,7 +46,7 @@ const answer = `Arasya Rent Car memiliki ${cars.length} unit dengan driver: ${ca
                 <div class="buy">
                   {c.priceCity ? <><small>12 jam dalam kota</small><b class="num">{rupiah(c.priceCity)}</b></> : <><small>Tarif</small><b>Tanya admin</b></>}
                   {c.priceAllIn && <small class="num">All-in {rupiah(c.priceAllIn)}</small>}
-                  <a class="btn btn-wa" href={waHref(settings.waPhone, `Halo Arasya, saya mau sewa ${c.name}. Tanggal: …, tujuan: …`, `ARM-${refSlug(c.name)}`)} data-cta={`arm-${refSlug(c.name)}`} rel="nofollow"><Icon name="wa" />Pesan via WA</a>
+                  <a class="btn btn-outline" href={waHref(settings.waPhone, `Halo Arasya, saya mau sewa ${c.name}. Tanggal: …, tujuan: …`, `ARM-${refSlug(c.name)}`)} data-cta={`arm-${refSlug(c.name)}`} rel="nofollow"><Icon name="wa" />Pesan via WA</a>
                 </div>
               </article>
             ))}
@@ -86,5 +84,12 @@ const answer = `Arasya Rent Car memiliki ${cars.length} unit dengan driver: ${ca
   .buy b { font: 800 1.4rem/1.1 var(--display); color: var(--deep); }
   .buy .btn { margin-top: 8px; }
   .notes { display: grid; gap: 4px; font-size: 0.9rem; margin-top: 16px; }
-  @media (max-width: 760px) { .item { grid-template-columns: 1fr; } .buy { justify-items: start; text-align: left; } }
+  @media (max-width: 760px) {
+    .item { grid-template-columns: 112px 1fr; gap: 12px 14px; padding: 12px; }
+    .ph { padding: 6px 4px 2px; }
+    h3 { font-size: 1.05rem; }
+    .specs span:first-child { display: none; }
+    .buy { grid-column: 1 / -1; grid-template-columns: 1fr auto; align-items: end; justify-items: start; text-align: left; border-top: 1px solid var(--line); padding-top: 10px; column-gap: 12px; }
+    .buy .btn { grid-column: 2; grid-row: 1 / span 3; margin-top: 0; align-self: center; }
+  }
 </style>

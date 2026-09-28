@@ -2,7 +2,6 @@
 /** Hub of all city pages: the crawl path from the home page to every city. */
 import Base from '../layouts/Base.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
-import AnswerBox from '../components/AnswerBox.astro';
 import CtaBand from '../components/CtaBand.astro';
 import { getContent } from '../lib/content';
 import { rupiah } from '../lib/format';
@@ -23,13 +22,12 @@ const list = names.length > 1 ? `${names.slice(0, -1).join(', ')}, dan ${names[n
     <div class="wrap stack">
       <Breadcrumbs items={crumbs} />
       <h1>Kota layanan Arasya</h1>
-      <p class="lead">Mobil dan driver yang sama, dengan supir yang paham rute di kota Anda.</p>
+      <p class="lead">Arasya Rent Car melayani sewa mobil dengan driver di {list}, termasuk perjalanan luar kota. Tarif dalam kota 12 jam mulai {rupiah(min)}.</p>
     </div>
   </section>
   <section class="section" style="padding-top:28px">
     <div class="wrap stack">
-      <AnswerBox question="Di kota mana saja Arasya melayani sewa mobil dengan driver?" answer={`Arasya Rent Car melayani sewa mobil dengan driver di ${list}, termasuk perjalanan luar kota dari kota-kota tersebut. Tarif dalam kota 12 jam mulai ${rupiah(min)}.`} />
-      <div class="grid grid-3 cities">
+      <div class="grid grid-3">
         {live.map((c) => {
           const dest = c.destinations?.find((d) => d.image?.asset || d.imagePath);
           const img = dest ? photo(dest.image, dest.imagePath, 800) : null;

@@ -13,7 +13,7 @@ const { settings, cars, refCode, defaultPickup = '', defaultDest = '', defaultCa
 const fallback = waHref(settings.waPhone, 'Halo Arasya, saya mau sewa mobil.', refCode);
 const uid = 'bk-' + refCode.toLowerCase();
 ---
-<form class="booking" data-booking data-phone={settings.waPhone} data-ref={refCode} action={fallback} method="get">
+<form class="booking" data-booking data-fab-tuck data-phone={settings.waPhone} data-ref={refCode} action={fallback} method="get">
   <div class="f">
     <label for={`${uid}-date`}>Tanggal</label>
     <input id={`${uid}-date`} name="date" type="date" required />
@@ -69,12 +69,12 @@ const uid = 'bk-' + refCode.toLowerCase();
 </script>
 
 <style>
-  .booking { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto; gap: 10px; align-items: end; }
+  .booking { background: #fff; border-radius: var(--radius); box-shadow: 0 8px 24px rgba(2, 38, 75, 0.1); border: 1px solid #e3ebf4; padding: 14px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto; gap: 10px; align-items: end; }
   .f { display: grid; gap: 5px; min-width: 0; }
   label { font: 700 0.7rem/1 var(--text); color: var(--soft); letter-spacing: 0.05em; text-transform: uppercase; }
   input, select { width: 100%; min-width: 0; font: 500 0.95rem/1.2 var(--text); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 11px 12px; background: #fff; }
   input:focus, select:focus { outline: 2px solid var(--blue); outline-offset: 0; border-color: var(--blue); }
   .btn { height: 44px; }
   @media (max-width: 920px) { .booking { grid-template-columns: 1fr 1fr; } .btn { grid-column: 1 / -1; } }
-  @media (max-width: 480px) { .booking { grid-template-columns: 1fr; } }
+  @media (max-width: 480px) { .booking { gap: 8px; padding: 12px; } label { font-size: 0.66rem; } input, select { padding: 10px; font-size: 0.9rem; } }
 </style>

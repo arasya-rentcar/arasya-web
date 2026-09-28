@@ -4,11 +4,12 @@ import HeroShowroom from '../components/HeroShowroom.astro';
 import CarCard from '../components/CarCard.astro';
 import TrustRow from '../components/TrustRow.astro';
 import Testimonials from '../components/Testimonials.astro';
-import AnswerBox from '../components/AnswerBox.astro';
+import Faq from '../components/Faq.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Icon from '../components/Icon.astro';
 import { getContent } from '../lib/content';
 import { rupiah } from '../lib/format';
+import { faqPage } from '../lib/schema';
 import { cityIsIndexable } from '../lib/quality';
 import { carImage, photo } from '../lib/images';
 
@@ -25,21 +26,27 @@ const serviceText: Record<string, string> = {
 };
 const cityNames = liveCities.map((c) => c.name);
 const cityList = cityNames.length > 1 ? `${cityNames.slice(0, -1).join(', ')}, dan ${cityNames[cityNames.length - 1]}` : cityNames[0];
-const answer = `Sewa mobil dengan driver di Arasya Rent Car mulai ${rupiah(cheapest.priceCity!)} per 12 jam dalam kota (${cheapest.name}), belum termasuk BBM, tol, parkir, dan makan driver.${Number.isFinite(cheapestAllIn) ? ` Paket all-in yang sudah termasuk BBM, tol, dan makan driver mulai ${rupiah(cheapestAllIn)}.` : ''} ${cityList ? ` Melayani ${cityList}, termasuk rute luar kota.` : ''} Pemesanan melalui WhatsApp ${settings.phones[0]}, admin siaga 24 jam.`;
+// Plain questions people ask before renting; the answers are built from live data
+// so prices never drift. Rendered as an FAQ (with FAQPage JSON-LD), which is what
+// search snippets and AI answer engines quote.
+const bank = settings.bankAccounts[0];
+const homeFaq = [
+  {
+    question: 'Berapa harga sewa mobil dengan driver di Arasya?',
+    answer: `Mulai ${rupiah(cheapest.priceCity!)} per 12 jam dalam kota untuk ${cheapest.name}, belum termasuk BBM, tol, parkir, dan makan driver.${Number.isFinite(cheapestAllIn) ? ` Paket all-in yang sudah termasuk BBM, tol, dan makan driver mulai ${rupiah(cheapestAllIn)}.` : ''} Tarif lengkap per unit ada di halaman armada.`,
+  },
+  ...(cityList ? [{ question: 'Arasya melayani kota mana saja?', answer: `Saat ini ${cityList}, termasuk perjalanan luar kota dari kota-kota tersebut dan antar-jemput bandara.` }] : []),
+  { question: 'Bagaimana cara memesan?', answer: `Kirim tanggal, titik jemput, dan tujuan lewat WhatsApp ${settings.phones[0]}. Admin mengonfirmasi unit, tarif, dan titik jemput sebelum pemesanan dipastikan. Admin siaga 24 jam.` },
+  ...(settings.paymentTerms ? [{ question: 'Bagaimana ketentuan pembayarannya?', answer: `${settings.paymentTerms}${bank ? ` Rekening resmi: ${bank.bank} ${bank.number} ${bank.owner}.` : ''}` }] : []),
+];
 ---
-<Base title={home.seo?.title || settings.brandName} description={home.seo?.description || ''} path="/" waRef="HOME-fab">
+<Base title={home.seo?.title || settings.brandName} description={home.seo?.description || ''} path="/" waRef="HOME-fab" jsonld={[faqPage(homeFaq)]}>
   <HeroShowroom hero={home.hero} settings={settings} cars={cars} refCode="HOME-booking" fromPrice={cheapest?.priceCity || undefined} />
 
   <section class="section">
     <div class="wrap">
-      <AnswerBox question="Berapa harga sewa mobil dengan driver di Arasya?" answer={answer} />
-    </div>
-  </section>
-
-  <section class="section" style="padding-top:0">
-    <div class="wrap">
       <div class="section-head">
-        <div class="stack"><span class="eyebrow">Armada</span><h2>Pilih mobil untuk perjalanan Anda</h2></div>
+        <div class="stack"><span class="eyebrow">Armada</span><h2>Pilih mobil untuk perjalanan Anda</h2><p class="intro">{cars.length} unit dari MPV keluarga sampai van rombongan. Semua disewakan bersama driver.</p></div>
         <a class="link-more" href="/armada">Lihat semua {cars.length} unit →</a>
       </div>
       <div class="grid grid-4">
@@ -95,18 +102,27 @@ const answer = `Sewa mobil dengan driver di Arasya Rent Car mulai ${rupiah(cheap
     <section class="section tint">
       <div class="wrap">
         <div class="section-head"><div class="stack"><span class="eyebrow">Blog</span><h2>Panduan perjalanan</h2></div><a class="link-more" href="/blog">Semua artikel →</a></div>
-        <div class="grid grid-3">
-          {posts.slice(0, 3).map((p) => (
-            <a class="post" href={`/blog/${p.slug.current}`}>
-              <span class="eyebrow">{p.category}</span>
-              <h3>{p.title}</h3>
-              <p>{p.excerpt}</p>
-            </a>
-          ))}
+        <div class:list={['grid', posts.length >= 3 ? 'grid-3' : 'grid-1']}>
+          {posts.slice(0, 3).map((p) => {
+            const cover = posts.length < 3 ? photo(p.cover, p.coverPath, 800) : null;
+            return (
+              <a class:list={['post', { wide: !!cover }]} href={`/blog/${p.slug.current}`}>
+                {cover && <img src={cover.src} srcset={cover.srcset} sizes="(max-width: 760px) 92vw, 480px" alt="" loading="lazy" width="800" height="450" />}
+                <div class="post-body">
+                  <span class="eyebrow">{p.category}</span>
+                  <h3>{p.title}</h3>
+                  <p>{p.excerpt}</p>
+                  <span class="go">Baca artikel <Icon name="arrow" size={16} /></span>
+                </div>
+              </a>
+            );
+          })}
         </div>
       </div>
     </section>
   )}
+
+  <Faq items={homeFaq} />
 
   <CtaBand settings={settings} title="Belum yakin unit mana yang cocok?" text="Kirim jumlah penumpang dan tujuan Anda, admin kami bantu pilihkan unit dan tarifnya." message="Halo Arasya, saya mau dibantu pilih unit. Penumpang: …, tujuan: …" waRef="HOME-band" />
 </Base>
@@ -124,7 +140,13 @@ const answer = `Sewa mobil dengan driver di Arasya Rent Car mulai ${rupiah(cheap
   .city-car { aspect-ratio: 16 / 9; background: var(--sky); display: flex; align-items: flex-end; justify-content: center; padding: 16px 24px 8px; }
   .city-car img { width: 100%; height: 100%; object-fit: contain; object-position: bottom; }
   .city div { padding: 16px; display: grid; gap: 4px; }
-  .city p, .post p { color: var(--soft); font-size: 0.9rem; }
-  .post { display: grid; gap: 8px; align-content: start; padding: 22px; background: #fff; border-radius: var(--radius); text-decoration: none; color: var(--ink); border: 1px solid var(--line); }
+  .city p, .post p { color: var(--soft); font-size: 0.95rem; }
+  .post { display: grid; background: #fff; border-radius: var(--radius); text-decoration: none; color: var(--ink); border: 1px solid var(--line); overflow: hidden; }
+  .post-body { display: grid; gap: 8px; align-content: start; padding: 22px; }
+  .post.wide { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); align-items: stretch; }
+  .post.wide img { width: 100%; height: 100%; min-height: 220px; max-height: 300px; object-fit: cover; }
+  .post.wide .post-body { align-content: center; padding: 28px; }
+  .grid-1 { grid-template-columns: 1fr; }
+  @media (max-width: 760px) { .post.wide { grid-template-columns: 1fr; } .post.wide img { min-height: 0; aspect-ratio: 16 / 9; } }
   .post:hover, .city:hover { border-color: var(--blue); color: var(--ink); }
 </style>

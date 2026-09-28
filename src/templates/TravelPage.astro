@@ -8,7 +8,6 @@
 import '@fontsource-variable/red-hat-mono';
 import Base from '../layouts/Base.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
-import AnswerBox from '../components/AnswerBox.astro';
 import Testimonials from '../components/Testimonials.astro';
 import Faq from '../components/Faq.astro';
 import CtaBand from '../components/CtaBand.astro';
@@ -17,6 +16,7 @@ import { getContent, type ServicePage } from '../lib/content';
 import { rupiah } from '../lib/format';
 import { carImage, photo } from '../lib/images';
 import { breadcrumbs, faqPage } from '../lib/schema';
+import { withAnswer } from '../lib/faq';
 
 interface Props { page: ServicePage }
 const { page } = Astro.props;
@@ -24,6 +24,7 @@ const { settings, cities } = await getContent();
 const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
 const path = `/${page.slug.current}`;
 const crumbs = [{ name: 'Beranda', path: '/' }, { name: page.navLabel || 'Travel', path }];
+const faq = withAnswer(page.faq, page.answerQuestion || 'Berapa tarif travel carter Arasya?', page.answer);
 const units = (page.units || []).map((u) => ({ ...u, img: carImage(u) }));
 const origins = page.origins || [];
 const routes = page.routes || [];
@@ -57,7 +58,7 @@ const service = {
   },
 };
 ---
-<Base title={page.seo?.title || 'Travel'} description={page.seo?.description || ''} path={path} noindex={page.seo?.noindex} jsonld={[service, faqPage(page.faq), breadcrumbs(site, crumbs)]} waRef="TRV-fab" waMessage="Halo Arasya, saya mau tanya travel carter.">
+<Base title={page.seo?.title || 'Travel'} description={page.seo?.description || ''} path={path} noindex={page.seo?.noindex} jsonld={[service, faqPage(faq), breadcrumbs(site, crumbs)]} waRef="TRV-fab" waMessage="Halo Arasya, saya mau tanya travel carter.">
   <section class="t-hero" style={bg ? `--bg:url('${bg.src}')` : undefined}>
     <div class="wrap copy">
       <Breadcrumbs items={crumbs} />
@@ -68,7 +69,7 @@ const service = {
   </section>
 
   <div class="wrap checker-wrap">
-    <div class="checker" id="cek-tarif" data-travel={JSON.stringify(data)}>
+    <div class="checker" id="cek-tarif" data-fab-tuck data-travel={JSON.stringify(data)}>
       <div class="sel">
         <label for="t-origin">Dari<select id="t-origin">{origins.map((o) => <option value={o.key}>{o.name}</option>)}</select></label>
         <span class="arrow" aria-hidden="true"><Icon name="arrow" size={20} /></span>
@@ -78,8 +79,6 @@ const service = {
       <div class="units" id="t-units"></div>
     </div>
   </div>
-
-  {page.answer && <section class="section"><div class="wrap"><AnswerBox question={page.answerQuestion || "Berapa tarif travel carter Arasya?"} answer={page.answer} /></div></section>}
 
   {page.highlights && page.highlights.length > 0 && (
     <section class="section tint">
@@ -91,7 +90,7 @@ const service = {
 
   <section class="section">
     <div class="wrap">
-      <div class="section-head"><div class="stack"><span class="eyebrow">Semua rute</span><h2>Daftar tarif travel carter</h2><p class="muted">Tarif sekali jalan per mobil, sudah termasuk driver.</p></div></div>
+      <div class="section-head"><div class="stack"><span class="eyebrow">Semua rute</span><h2>Daftar tarif travel carter</h2>{page.answer && <p class="intro">{page.answer}</p>}<p class="muted">Tarif sekali jalan per mobil, sudah termasuk driver.</p></div></div>
       <div class="table-wrap">
         <table class="all">
           <thead><tr><th scope="col">Rute</th>{units.map((u) => <th scope="col">{u.name}</th>)}</tr></thead>
@@ -109,7 +108,7 @@ const service = {
   </section>
 
   <Testimonials items={settings.testimonials} />
-  <Faq items={page.faq || []} title="Tanya jawab travel carter" />
+  <Faq items={faq} title="Tanya jawab travel carter" />
   <CtaBand settings={settings} title="Rute Anda tidak ada di daftar?" text="Kirim kota asal dan tujuan, admin kami hitungkan tarifnya." message="Halo Arasya, saya mau tanya tarif travel carter. Dari: …, ke: …, tanggal: …" waRef="TRV-band" />
 </Base>
 
@@ -141,7 +140,7 @@ const service = {
         return `<div class="u${p ? '' : ' na'}"><div class="ph">${u.src ? `<img src="${u.src}" srcset="${u.srcset || ''}" sizes="200px" alt="" loading="lazy" width="960" height="600">` : ''}</div>
           <b>${esc(u.name)}</b><small>${u.capacity - 1} penumpang + driver</small>
           <span class="p">${p ? rp(p) : 'Tidak tersedia'}</span>
-          ${p ? `<a class="btn btn-wa" href="${href}" rel="nofollow" data-cta="trv-${u.key}">Pesan</a>` : ''}</div>`;
+          ${p ? `<a class="btn btn-outline" href="${href}" rel="nofollow" data-cta="trv-${u.key}">Pesan</a>` : ''}</div>`;
       }).join('');
     };
     origin.addEventListener('change', fillDest);
@@ -184,5 +183,16 @@ const service = {
   .all tbody th { color: var(--deep); }
   .mono { display: block; font: 600 0.72rem/1.4 'Red Hat Mono Variable', monospace; color: var(--blue); }
   .all tbody tr:last-child > * { border-bottom: 0; }
-  @media (max-width: 640px) { .sel { grid-template-columns: 1fr; } .arrow { display: none; } }
+  @media (max-width: 640px) {
+    .sel { grid-template-columns: 1fr; }
+    .arrow { display: none; }
+    .units { grid-template-columns: 1fr; gap: 8px; }
+    .units :global(.u) { grid-template-columns: 92px 1fr auto; grid-template-areas: 'ph name name' 'ph cap cap' 'ph price btn'; align-items: center; column-gap: 12px; row-gap: 2px; padding: 10px; }
+    .units :global(.u.na) { display: none; }
+    .units :global(.ph) { grid-area: ph; padding: 4px; }
+    .units :global(.u b) { grid-area: name; font-size: 0.9rem; }
+    .units :global(.u small) { grid-area: cap; }
+    .units :global(.p) { grid-area: price; font-size: 1.05rem; }
+    .units :global(.u .btn) { grid-area: btn; padding: 8px 12px; }
+  }
 </style>

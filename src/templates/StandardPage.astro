@@ -1,7 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
 import HeroShowroom from '../components/HeroShowroom.astro';
-import AnswerBox from '../components/AnswerBox.astro';
 import CarCard from '../components/CarCard.astro';
 import Steps from '../components/Steps.astro';
 import Faq from '../components/Faq.astro';
@@ -19,7 +18,7 @@ const code = page.slug.current.slice(0, 3).toUpperCase();
 ---
 <Base title={page.seo?.title || page.hero.title} description={page.seo?.description || ''} path={path} noindex={page.seo?.noindex} jsonld={[faqPage(page.faq), breadcrumbs(site, crumbs)]} waRef={`${code}-fab`}>
   <HeroShowroom hero={page.hero} settings={settings} cars={cars} refCode={`${code}-booking`} crumbs={crumbs} />
-  {page.answer && <section class="section"><div class="wrap"><AnswerBox question={page.hero.title} answer={page.answer} /></div></section>}
+  {page.answer && <section class="section"><div class="wrap"><p class="intro">{page.answer}</p></div></section>}
   {page.cars && page.cars.length > 0 && (
     <section class="section"><div class="wrap grid grid-4">{page.cars.map((c) => <CarCard car={c} settings={settings} refPrefix={code} />)}</div></section>
   )}

@@ -34,7 +34,7 @@ const href = waHref(settings.waPhone, message, `${refPrefix}-${refSlug(car.name)
     {car.priceAllIn && <div class="allin"><span class="lbl">All-in</span><span class="num">{rupiah(car.priceAllIn)}</span></div>}
   </div>
   )}
-  <a class="btn btn-wa" href={href} data-cta={`car-${refSlug(car.name)}`} rel="nofollow"><Icon name="wa" />{consult ? 'Konsultasi harga' : 'Pesan unit ini'}</a>
+  <a class="btn btn-outline" href={href} data-cta={`car-${refSlug(car.name)}`} rel="nofollow"><Icon name="wa" />{consult ? 'Konsultasi harga' : 'Pesan unit ini'}</a>
 </article>
 
 <style>
@@ -45,8 +45,8 @@ const href = waHref(settings.waPhone, message, `${refPrefix}-${refSlug(car.name)
   .ph img { width: 100%; height: 100%; min-height: 0; object-fit: contain; object-position: bottom; }
   .ph { min-width: 0; overflow: hidden; }
   .badge { position: absolute; left: 10px; top: 10px; background: var(--deep); color: #fff; font: 700 0.72rem/1 var(--text); padding: 5px 8px; border-radius: 6px; }
-  .body { display: grid; gap: 4px; padding-inline: 4px; }
-  .meta { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--soft); }
+  .body { display: grid; gap: 4px; padding-inline: 4px; align-content: start; }
+  .meta { display: flex; align-items: flex-start; gap: 6px; line-height: 1.4; font-size: 0.85rem; color: var(--soft); }
   .price { display: flex; justify-content: space-between; align-items: end; gap: 8px; border-top: 1px solid var(--line); padding: 10px 4px 0; }
   .price > div { display: grid; gap: 2px; }
   .lbl { font-size: 0.75rem; color: var(--soft); }

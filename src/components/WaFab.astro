@@ -7,8 +7,23 @@ const { phone, message = 'Halo Arasya, saya mau tanya sewa mobil.', waRef = 'FAB
 <a class="fab" href={waHref(phone, message, waRef)} data-cta="fab" rel="nofollow" aria-label="Chat WhatsApp admin Arasya">
   <Icon name="wa" size={26} /><span>Chat admin</span>
 </a>
+<script>
+  // Keep the chat button out of the way while a booking form or tariff checker is on screen.
+  const fab = document.querySelector<HTMLElement>('.fab');
+  const zones = document.querySelectorAll('[data-fab-tuck]');
+  if (fab && zones.length && 'IntersectionObserver' in window) {
+    const visible = new Set<Element>();
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => (e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)));
+      fab.classList.toggle('tucked', visible.size > 0);
+    });
+    zones.forEach((z) => io.observe(z));
+  }
+</script>
 <style>
   .fab { position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 60; display: inline-flex; align-items: center; gap: 8px; background: var(--wa); color: var(--wa-ink); padding: 13px 18px; border-radius: 999px; font: 800 0.95rem/1 var(--display); text-decoration: none; box-shadow: 0 8px 24px rgba(6, 51, 26, 0.28); }
+  .fab.tucked { opacity: 0; transform: translateY(12px); pointer-events: none; }
+  .fab { transition: opacity 0.2s, transform 0.2s; }
   .fab:hover { color: var(--wa-ink); background: #1fb457; }
   @media (min-width: 921px) { .fab span { display: none; } .fab { padding: 15px; } }
 </style>

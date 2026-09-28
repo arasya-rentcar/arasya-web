@@ -7,7 +7,6 @@
  */
 import Base from '../layouts/Base.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
-import AnswerBox from '../components/AnswerBox.astro';
 import CarImage from '../components/CarImage.astro';
 import Steps from '../components/Steps.astro';
 import Testimonials from '../components/Testimonials.astro';
@@ -17,6 +16,7 @@ import Icon from '../components/Icon.astro';
 import { getContent, type ServicePage } from '../lib/content';
 import { passengers } from '../lib/format';
 import { breadcrumbs, faqPage } from '../lib/schema';
+import { withAnswer } from '../lib/faq';
 import { refSlug, waHref } from '../lib/wa';
 
 interface Props { page: ServicePage }
@@ -25,13 +25,14 @@ const { settings, cars, cities } = await getContent();
 const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
 const path = `/${page.slug.current}`;
 const crumbs = [{ name: 'Beranda', path: '/' }, { name: page.navLabel || 'Korporat', path }];
+const faq = withAnswer(page.faq, page.answerQuestion || 'Apakah Arasya melayani sewa mobil untuk perusahaan?', page.answer);
 const units = page.cars?.length ? page.cars : cars;
 const bank = settings.bankAccounts[0];
 const quote = waHref(settings.waPhone, 'Halo Arasya, kami dari perusahaan … ingin minta penawaran sewa mobil. Tanggal: …, jumlah penumpang: …, rute: …', 'KOR-hero');
 const service = { '@type': 'Service', name: page.seo?.title, serviceType: 'Corporate car rental with driver', provider: { '@id': `${site}/#business` }, areaServed: cities.map((c) => c.name), url: site + path };
 const icons = ['shield', 'clock', 'users', 'check'] as const;
 ---
-<Base title={page.seo?.title || 'Korporat'} description={page.seo?.description || ''} path={path} noindex={page.seo?.noindex} jsonld={[service, faqPage(page.faq), breadcrumbs(site, crumbs)]} waRef="KOR-fab" waMessage="Halo Arasya, kami ingin minta penawaran sewa mobil untuk perusahaan.">
+<Base title={page.seo?.title || 'Korporat'} description={page.seo?.description || ''} path={path} noindex={page.seo?.noindex} jsonld={[service, faqPage(faq), breadcrumbs(site, crumbs)]} waRef="KOR-fab" waMessage="Halo Arasya, kami ingin minta penawaran sewa mobil untuk perusahaan.">
   <section class="k-hero">
     <div class="wrap">
       <Breadcrumbs items={crumbs} />
@@ -70,12 +71,10 @@ const icons = ['shield', 'clock', 'users', 'check'] as const;
     </div>
   </section>
 
-  {page.answer && <section class="section"><div class="wrap"><AnswerBox question={page.answerQuestion || "Apakah Arasya melayani sewa mobil untuk perusahaan?"} answer={page.answer} /></div></section>}
-
   {page.highlights && page.highlights.length > 0 && (
     <section class="section tint">
       <div class="wrap">
-        <div class="section-head"><div class="stack"><span class="eyebrow">Untuk tim GA & purchasing</span><h2>Yang biasanya ditanyakan perusahaan</h2></div></div>
+        <div class="section-head"><div class="stack"><span class="eyebrow">Untuk tim GA & purchasing</span><h2>Yang biasanya ditanyakan perusahaan</h2>{page.answer && <p class="intro">{page.answer}</p>}</div></div>
         <div class="grid grid-4">
           {page.highlights.map((h, i) => (
             <div class="hl"><span class="ic"><Icon name={icons[i % icons.length]} size={22} /></span><h3>{h.title}</h3>{h.text && <p>{h.text}</p>}</div>
@@ -103,13 +102,13 @@ const icons = ['shield', 'clock', 'users', 'check'] as const;
 
   <Steps items={page.steps || []} title="Alur pemesanan perusahaan" />
   <Testimonials items={settings.testimonials} />
-  <Faq items={page.faq || []} title="Tanya jawab layanan korporat" />
+  <Faq items={faq} title="Tanya jawab layanan korporat" />
   <CtaBand settings={settings} title="Butuh penawaran tertulis?" text="Kirim tanggal, jumlah penumpang, dan rute. Admin kami mengirim pilihan unit dan penawaran harga." message="Halo Arasya, kami ingin minta penawaran tertulis. Perusahaan: …, tanggal: …, rute: …" waRef="KOR-band" />
 </Base>
 
 <style>
-  .k-hero { background: linear-gradient(180deg, #eef2f7 0%, #eef2f7 80%, #fff 80%); padding-block: 24px 0; }
-  .grid-hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 32px; align-items: start; margin-top: 20px; }
+  .k-hero { background: #eef2f7; padding-block: 24px 56px; border-bottom: 1px solid #dfe5ee; }
+  .grid-hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 40px; align-items: center; margin-top: 20px; }
   .copy { display: grid; gap: 16px; padding-top: 12px; }
   .accent { color: var(--blue); }
   .facts { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
@@ -117,7 +116,7 @@ const icons = ['shield', 'clock', 'users', 'check'] as const;
   .facts :global(svg) { color: var(--blue); flex: none; margin-top: 3px; }
   .acts { display: flex; gap: 10px; flex-wrap: wrap; }
   .panel { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 20px; display: grid; gap: 8px; }
-  .panel :global(.panel-car) { width: 78%; margin: -44px auto 0; filter: drop-shadow(0 14px 10px rgba(2, 38, 75, 0.16)); }
+  .panel :global(.panel-car) { width: 72%; max-height: 180px; object-fit: contain; margin: 0 auto; filter: drop-shadow(0 14px 10px rgba(2, 38, 75, 0.16)); }
   table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
   caption { text-align: left; font: 700 0.75rem/1.3 var(--text); letter-spacing: 0.05em; text-transform: uppercase; color: var(--soft); padding-bottom: 6px; }
   th, td { padding: 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
@@ -135,8 +134,7 @@ const icons = ['shield', 'clock', 'users', 'check'] as const;
   .units .ph :global(img) { width: 100%; height: 100%; object-fit: contain; object-position: bottom; }
   .units a { font: 700 0.9rem/1.3 var(--display); text-decoration: none; }
   @media (max-width: 860px) {
-    .k-hero { background: #eef2f7; padding-bottom: 24px; }
-    .grid-hero { grid-template-columns: 1fr; }
-    .panel :global(.panel-car) { margin-top: 0; }
+    .k-hero { padding-bottom: 32px; }
+    .grid-hero { grid-template-columns: 1fr; gap: 24px; }
   }
 </style>
