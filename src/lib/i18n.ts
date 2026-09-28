@@ -119,7 +119,7 @@ const id = {
   bkNotes: 'Catatan',
   bkNotesPh: 'Mis. bawa 3 koper, butuh kursi bayi, nomor penerbangan…',
   bkHint: 'Data ini kami kirim ke WhatsApp admin supaya admin langsung bisa mengecek unit dan tarif.',
-  bkMsg: { hello: 'Halo Arasya, saya mau pesan mobil dengan driver.', name: 'Nama', date: 'Tanggal', time: 'Jam jemput', pickup: 'Jemput di', dest: 'Tujuan', unit: 'Tipe mobil', pax: 'Jumlah penumpang', duration: 'Lama sewa', notes: 'Catatan', help: 'mohon dibantu pilihkan', locale: 'id-ID' },
+  bkMsg: { hello: 'Halo Arasya, saya mau pesan mobil dengan driver.', code: 'Kode pesanan', name: 'Nama', date: 'Tanggal', time: 'Jam jemput', pickup: 'Jemput di', dest: 'Tujuan', unit: 'Tipe mobil', pax: 'Jumlah penumpang', duration: 'Lama sewa', notes: 'Catatan', help: 'mohon dibantu pilihkan', locale: 'id-ID' },
   // shared sections
   faqTitle: 'Pertanyaan yang sering diajukan',
   trustTitle: 'Kenapa memilih Arasya',
@@ -210,7 +210,7 @@ const en: Dict = {
   bkNotes: 'Notes',
   bkNotesPh: 'E.g. 3 suitcases, child seat, flight number…',
   bkHint: 'We send this to our WhatsApp team so they can check the car and price straight away.',
-  bkMsg: { hello: "Hi Arasya, I'd like to book a car with a driver.", name: 'Name', date: 'Date', time: 'Pick-up time', pickup: 'Pick-up', dest: 'Destination', unit: 'Car type', pax: 'Passengers', duration: 'Hire type', notes: 'Notes', help: 'please recommend one', locale: 'en-GB' },
+  bkMsg: { hello: "Hi Arasya, I'd like to book a car with a driver.", code: 'Booking code', name: 'Name', date: 'Date', time: 'Pick-up time', pickup: 'Pick-up', dest: 'Destination', unit: 'Car type', pax: 'Passengers', duration: 'Hire type', notes: 'Notes', help: 'please recommend one', locale: 'en-GB' },
   faqTitle: 'Frequently asked questions',
   trustTitle: 'Why travel with Arasya',
   trustEyebrow: 'Our service',

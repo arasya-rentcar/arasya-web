@@ -101,7 +101,12 @@ const banner = ui(other);
          landing, kept for the session, and appended to every WhatsApp link so
          the admin sees which ad a chat came from. Events go to GA4 (gtag) and
          to dataLayer for Tag Manager:
-           generate_lead  WhatsApp link or booking form (method: whatsapp | booking_form)
+           whatsapp_click any WhatsApp link (interest only, not a conversion)
+           generate_lead  booking form sent: name, date and pick-up filled in,
+                          with a lead_id that also appears in the chat, so a
+                          confirmed booking can be matched later
+           (a paid deposit is the real conversion; it is recorded by the admin
+           and uploaded to Google Ads, not tracked here)
            phone_click    tel: link
            copy_official  copy button on an official number or account */
       (function () {
@@ -128,7 +133,7 @@ const banner = ui(other);
             u.searchParams.set('text', (u.searchParams.get('text') || '') + ' [Src: ' + tag + ']');
             el.href = u.toString();
           }
-          arasyaTrack('generate_lead', { method: 'whatsapp', cta: el.dataset.cta || 'wa' });
+          arasyaTrack('whatsapp_click', { cta: el.dataset.cta || 'wa' });
           window.dataLayer.push({ event: 'cta_click', cta: el.dataset.cta || 'wa', page: location.pathname });
         }, true);
       })();
