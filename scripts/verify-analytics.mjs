@@ -10,9 +10,11 @@ import { chromium } from 'playwright';
 
 const base = process.argv[2] || 'https://arasya-web.vercel.app';
 const browser = await chromium.launch();
-const page = await (await browser.newContext({ viewport: { width: 1280, height: 900 }, locale: 'id-ID' })).newPage();
+const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, locale: 'id-ID' });
+const page = await context.newPage();
 const hits = [];
-page.on('request', (r) => {
+// Context-level, so beacons sent while a page unloads are caught too.
+context.on('request', (r) => {
   const u = r.url();
   if (!/google-analytics\.com\/g\/collect/.test(u)) return;
   const body = r.postData() || '';
@@ -21,19 +23,20 @@ page.on('request', (r) => {
     if (q.get('en')) hits.push({ tid: new URL(u).searchParams.get('tid'), en: q.get('en'), lead_id: q.get('ep.lead_id') || '', cta: q.get('ep.cta') || '' });
   }
 });
-await page.route('https://wa.me/**', (r) => { hits.push({ en: '→ navigated to wa.me' }); r.abort(); });
+// Stand in for WhatsApp so the site page really unloads, as it does for a visitor.
+await context.route('https://wa.me/**', (r) => { hits.push({ en: '→ navigated to wa.me' }); r.fulfill({ contentType: 'text/html', body: '<p>WhatsApp</p>' }); });
 
 await page.goto(base + '/sewa-mobil-bogor', { waitUntil: 'networkidle' });
 await page.mouse.wheel(0, 200);
 await page.waitForTimeout(2500);
 await page.click('a[data-cta=nav-wa]');
-await page.waitForTimeout(2500);
+await page.waitForTimeout(4000);
 
 await page.goto(base + '/sewa-mobil-bogor', { waitUntil: 'networkidle' });
 await page.fill('input[name=name]', 'Tes Analytics');
 await page.fill('input[name=pickup]', 'Tes (abaikan)');
 await page.click('button[data-cta=booking]');
-await page.waitForTimeout(2500);
+await page.waitForTimeout(4000);
 await browser.close();
 
 console.table(hits);
