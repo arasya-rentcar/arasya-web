@@ -1,16 +1,13 @@
-name: Deploy to Vercel
+name: Deploy to Vercel (manual)
 
-# Builds with the Vercel CLI and deploys to production on every push to main.
-# Also runs on `repository_dispatch` (type: sanity-publish) so a Sanity webhook
-# can trigger a rebuild when content is published.
+# The repo is now Git-connected in Vercel, so every push to main deploys
+# automatically there. This workflow is kept only as a manual fallback
+# (Actions tab) and for `repository_dispatch` (type: sanity-publish).
+# Prefer a Vercel deploy hook for Sanity webhooks.
 #
-# Required repo secret: VERCEL_TOKEN_NEW. Once the Vercel GitHub App is
-# installed on the org and the project is Git-connected, delete this workflow
-# and use a Vercel deploy hook instead, or every push deploys twice.
+# Required repo secret: VERCEL_TOKEN_NEW.
 
 on:
-  push:
-    branches: [ main ]
   repository_dispatch:
     types: [ sanity-publish ]
   workflow_dispatch: {}

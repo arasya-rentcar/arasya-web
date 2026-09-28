@@ -9,7 +9,8 @@ Marketing site for Arasya Rent Car (PT. Ayomi Raya, Bogor): car rental with driv
 - Every page is prerendered at build time. Sanity is queried once per build
   (`src/lib/content.ts`), so visitors never hit the Sanity API: fast pages and
   no request quota to worry about.
-- Publishing in the Studio triggers a rebuild through a Vercel deploy hook
+- Pushes to `main` deploy through the Vercel Git integration. Publishing in the
+  Studio triggers a rebuild through a Vercel deploy hook
   (Sanity → API → Webhooks). New content is live a few minutes later.
 - If Sanity can't be reached or the dataset is empty, the build falls back to
   `src/data/seed.json`. Set `CONTENT_STRICT=1` on production to fail instead.
