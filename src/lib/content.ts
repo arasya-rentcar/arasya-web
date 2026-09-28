@@ -90,6 +90,7 @@ export interface ServicePage extends Partial<TravelData> {
   navLabel?: string;
   hero: Hero;
   answer?: string;
+  answerQuestion?: string;
   highlights?: TitledText[];
   cars?: Car[];
   steps?: TitledText[];

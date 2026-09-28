@@ -1,0 +1,27 @@
+name: Migrate Sanity
+
+# Runs one content migration from scripts/migrations/ against the Sanity
+# dataset, then the Deploy workflow picks up the new content on its next run.
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: Migration file name without .mjs (e.g. 2026-09-28-multi-city)
+        required: true
+        type: string
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: node scripts/migrate.mjs "$NAME"
+        env:
+          NAME: ${{ inputs.name }}
+          SANITY_API_TOKEN: ${{ secrets.SANITY_API_TOKEN }}

@@ -6,14 +6,15 @@ import Icon from './Icon.astro';
 interface Props { content: Content; path: string }
 const { content, path } = Astro.props;
 const { settings, services, cities } = content;
-const hq = cities.find((c) => c.isHeadquarters) || cities[0];
 const nav = [
-  ...(hq ? [{ href: `/${hq.slug.current}`, label: `Sewa Mobil ${hq.name}` }] : []),
+  ...(cities.length ? [{ href: '/sewa-mobil', label: 'Kota' }] : []),
   { href: '/armada', label: 'Armada' },
   ...services.map((s) => ({ href: `/${s.slug.current}`, label: s.navLabel || s.slug.current })),
   { href: '/blog', label: 'Blog' },
 ];
-const isActive = (href: string) => path === href || (href !== '/' && path.startsWith(href + '/'));
+const cityPaths = cities.map((c) => `/${c.slug.current}`);
+const isActive = (href: string) =>
+  path === href || (href !== '/' && path.startsWith(href + '/')) || (href === '/sewa-mobil' && cityPaths.includes(path));
 const wa = waHref(settings.waPhone, 'Halo Arasya, saya mau tanya sewa mobil.', 'NAV');
 ---
 <header class="site-header">

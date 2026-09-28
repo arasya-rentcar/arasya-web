@@ -21,7 +21,7 @@ const { title, description, path, noindex = false, jsonld = [], ogImage = '/og-d
 const content = await getContent();
 const site = (Astro.site?.toString() || content.settings.siteUrl).replace(/\/$/, '');
 const canonical = site + (path === '/' ? '' : path);
-const org = { ...organization(content.settings, site), priceRange: priceRange(content.cars) };
+const org = { ...organization(content.settings, site, content.cities.map((c) => c.name)), priceRange: priceRange(content.cars) };
 const ld = graph({ '@type': 'WebSite', '@id': `${site}/#website`, url: site, name: content.settings.brandName, inLanguage: 'id-ID' }, org, ...jsonld);
 const gtm = import.meta.env.PUBLIC_GTM_ID;
 ---

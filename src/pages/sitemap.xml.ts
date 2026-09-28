@@ -13,6 +13,7 @@ export const GET: APIRoute = async ({ site }) => {
   const urls: { loc: string; lastmod?: string }[] = [
     { loc: base, lastmod: today },
     { loc: `${base}/armada`, lastmod: today },
+    { loc: `${base}/sewa-mobil`, lastmod: today },
     ...cities.filter(cityIsIndexable).map((c) => ({ loc: `${base}/${c.slug.current}`, lastmod: c._updatedAt?.slice(0, 10) })),
     ...services.filter((s) => !s.seo?.noindex).map((s) => ({ loc: `${base}/${s.slug.current}`, lastmod: s._updatedAt?.slice(0, 10) })),
     ...(posts.length ? [{ loc: `${base}/blog`, lastmod: posts[0].updatedAt || posts[0].publishedAt }] : []),

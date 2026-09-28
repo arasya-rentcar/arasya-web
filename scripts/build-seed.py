@@ -140,12 +140,12 @@ docs.append(
         "_id": "homePage",
         "_type": "homePage",
         "seo": {
-            "title": "Sewa Mobil dengan Driver di Bogor — Arasya Rent Car",
-            "description": "Rental mobil dengan driver di Bogor: Avanza, Innova, Fortuner sampai Hiace. Tarif 12 jam mulai Rp500.000 atau paket all-in. Pesan lewat WhatsApp, admin 24 jam.",
+            "title": "Sewa Mobil dengan Driver — Arasya Rent Car",
+            "description": "Rental mobil dengan driver: Avanza, Innova, Fortuner sampai Hiace. Tarif 12 jam mulai Rp500.000 atau paket all-in. Melayani Bogor, Jakarta, dan Bandung. Pesan lewat WhatsApp, admin 24 jam.",
         },
         "hero": {
-            "eyebrow": "Rental mobil + driver · Kota Bogor",
-            "title": "Sewa mobil di Bogor,",
+            "eyebrow": "Rental mobil + driver · Admin 24 jam",
+            "title": "Sewa mobil,",
             "titleAccent": "sudah dengan driver",
             "lead": "Dari Avanza sampai Hiace. Untuk harian, ke Puncak, bandara, atau luar kota.",
             "car": car_ref("Toyota Zenix"),
@@ -202,7 +202,7 @@ for loc in snap["locations"]:
             "isHeadquarters": True,
             "seo": {"title": loc["metaTitle"], "description": loc["metaDescription"]},
             "hero": {
-                "eyebrow": "Kantor pusat Arasya · Bogor Barat",
+                "eyebrow": "Kota Bogor",
                 "title": loc["h1"],
                 "lead": loc["heroSubtitle"],
                 "car": car_ref("Toyota Innova Reborn"),
@@ -242,6 +242,157 @@ for loc in snap["locations"]:
         }
     )
 
+# ------------------------------------------------------- more cities
+# Written for the new site (the old one had no Jakarta/Bandung pages).
+# Fleet prices are shared across cities; if a city prices differently, add
+# per-city overrides in the Studio rather than editing the fleet.
+
+
+def base_city_faq(name, out_of_town, pickup):
+    return [
+        faq(
+            "Apakah tarif sudah termasuk supir?",
+            "Ya, seluruh tarif sudah termasuk jasa driver profesional. Tersedia dua pilihan: tarif Dalam Kota 12 jam (belum termasuk BBM, tol, parkir, dan makan driver) atau tarif All-in (sudah termasuk BBM, tol, dan makan driver).",
+        ),
+        faq(
+            "Bagaimana prosedur pemesanannya?",
+            "Hubungi kami melalui WhatsApp. Tim kami mengonfirmasi ketersediaan unit, rincian tarif, dan titik penjemputan sebelum pemesanan dipastikan.",
+        ),
+        faq(
+            f"Apakah melayani rute luar kota seperti {out_of_town}?",
+            "Ya. Kami melayani perjalanan luar kota dengan penyesuaian tarif sesuai jarak dan durasi. Sampaikan rencana rute Anda saat meminta penawaran.",
+        ),
+        faq(
+            "Bagaimana jika pemakaian melebihi 12 jam?",
+            "Kelebihan durasi dikenakan biaya tambahan per jam yang diinformasikan secara tertulis di awal, sehingga tidak ada biaya yang mengejutkan.",
+        ),
+        faq(
+            "Di mana saja titik penjemputannya?",
+            f"Supir kami menjemput di titik mana pun di wilayah {name} dan sekitarnya, termasuk {pickup}.",
+        ),
+        faq(
+            "Bagaimana ketentuan pembayarannya?",
+            "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer.",
+        ),
+    ]
+
+
+def dest(name, area, text):
+    return {"_key": key(), "name": name, "area": area, "text": text}
+
+
+def route(to, duration, note):
+    return {"_key": key(), "to": to, "duration": duration, "note": note}
+
+
+jkt_pickup = "Bandara Soekarno-Hatta, Bandara Halim Perdanakusuma, Stasiun Gambir, dan hotel tempat Anda menginap"
+docs.append(
+    {
+        "_id": "city-jakarta",
+        "_type": "city",
+        "name": "Jakarta",
+        "code": "JKT",
+        "slug": {"_type": "slug", "current": "sewa-mobil-jakarta"},
+        "country": "ID",
+        "isHeadquarters": False,
+        "seo": {
+            "title": "Sewa Mobil Jakarta dengan Supir — Arasya Rent Car",
+            "description": "Sewa mobil dengan supir di Jakarta untuk meeting, antar-jemput bandara, dan perjalanan keluarga. Tarif Dalam Kota 12 jam atau All-in, rute ke Bogor, Puncak, dan Bandung. Pesan via WhatsApp.",
+        },
+        "hero": {
+            "eyebrow": "Kota Jakarta",
+            "title": "Sewa Mobil Jakarta dengan Supir",
+            "lead": "Untuk meeting, antar-jemput bandara, dan perjalanan keluarga di Jakarta, serta rute ke Bogor, Puncak, dan Bandung.",
+            "car": car_ref("Toyota Innova Venturer"),
+        },
+        "editorial": {
+            "eyebrow": "Mengenal Jakarta",
+            "title": "Kota yang jadwalnya ditentukan jalan",
+            "lead": "Jakarta adalah pusat bisnis dan pemerintahan Indonesia. Di sini, lalu lintas sering ikut menentukan apakah sebuah jadwal bisa ditepati.",
+            "body": [
+                block("Sejumlah ruas utama memberlakukan aturan ganjil-genap pada jam tertentu di hari kerja, dan kepadatan di jalan tol dalam kota maupun tol bandara bisa berubah dalam hitungan menit. Perjalanan yang sama bisa memakan waktu sangat berbeda pada pagi dan sore hari."),
+                block("Supir Arasya terbiasa dengan rute ke Bandara Soekarno-Hatta, kawasan perkantoran seperti Sudirman–Thamrin dan Kuningan, serta jalur tol menuju Bogor dan Bandung. Sampaikan jadwal Anda, dan supir kami yang merencanakan jam berangkat dan rutenya."),
+            ],
+        },
+        "pickupPoints": jkt_pickup,
+        "areaServed": ["Jakarta", "Bandara Soekarno-Hatta", "Jabodetabek"],
+        "destinations": [
+            dest("Monumen Nasional (Monas)", "Jakarta Pusat", "Tugu setinggi 132 meter di Lapangan Merdeka, ikon kota dan titik awal tur keliling Jakarta."),
+            dest("Kota Tua", "Jakarta Barat", "Kawasan bersejarah Batavia dengan Museum Fatahillah dan bangunan kolonial di sekitar Taman Fatahillah."),
+            dest("Taman Mini Indonesia Indah", "Jakarta Timur", "Taman budaya dengan anjungan rumah adat dari berbagai provinsi, cocok untuk wisata keluarga seharian."),
+            dest("Taman Impian Jaya Ancol", "Jakarta Utara", "Kawasan rekreasi tepi laut dengan pantai, taman hiburan, dan pertunjukan untuk keluarga."),
+        ],
+        "routes": [
+            route("Bandara Soekarno-Hatta", "±1–1,5 jam", "Tergantung kepadatan tol dalam kota dan tol bandara."),
+            route("Bogor", "±1–1,5 jam", "Via Tol Jagorawi."),
+            route("Puncak", "±2–3 jam", "Menyesuaikan jadwal sistem satu arah akhir pekan."),
+            route("Bandung", "±3 jam", "Via Tol Cipularang."),
+        ],
+        "faq": base_city_faq("Jakarta", "Bogor, Puncak, atau Bandung", jkt_pickup)
+        + [
+            faq(
+                "Bagaimana dengan aturan ganjil-genap?",
+                "Sampaikan jadwal dan tujuan Anda saat memesan. Supir kami merencanakan rute dan jam berangkat sesuai aturan ganjil-genap yang berlaku di hari perjalanan.",
+            )
+        ],
+        "sections": ["answer", "fleet", "routes", "editorial", "trust", "destinations", "faq", "testimonials"],
+    }
+)
+
+bdg_pickup = "Stasiun Bandung, kawasan Dago, dan hotel tempat Anda menginap"
+docs.append(
+    {
+        "_id": "city-bandung",
+        "_type": "city",
+        "name": "Bandung",
+        "code": "BDG",
+        "slug": {"_type": "slug", "current": "sewa-mobil-bandung"},
+        "country": "ID",
+        "isHeadquarters": False,
+        "seo": {
+            "title": "Sewa Mobil Bandung dengan Supir — Arasya Rent Car",
+            "description": "Sewa mobil dengan supir di Bandung untuk wisata Lembang dan Ciwidey, perjalanan bisnis, dan rute ke Jakarta atau Bogor. Tarif Dalam Kota 12 jam atau All-in. Pesan via WhatsApp.",
+        },
+        "hero": {
+            "eyebrow": "Kota Bandung",
+            "title": "Sewa Mobil Bandung dengan Supir",
+            "lead": "Untuk wisata Lembang dan Ciwidey, perjalanan bisnis di Bandung, serta rute ke Jakarta dan Bogor.",
+            "car": car_ref("Toyota Innova Reborn"),
+        },
+        "editorial": {
+            "eyebrow": "Mengenal Bandung",
+            "title": "Kota Kembang di dataran tinggi Priangan",
+            "lead": "Bandung berada di cekungan dataran tinggi, sekitar 150 kilometer dari Jakarta, dan menjadi tujuan akhir pekan favorit warga Jabodetabek.",
+            "body": [
+                block("Tempat wisata terbaiknya ada di pinggiran kota: Lembang di utara dan Ciwidey di selatan. Jalannya menanjak dan berkelok, dan pada akhir pekan serta musim liburan antrean kendaraan menuju kawasan wisata bisa sangat panjang."),
+                block("Supir Arasya mengatur urutan tujuan supaya perjalanan tidak bolak-balik, memilih jam berangkat yang menghindari puncak kepadatan, dan tahu titik parkir di tempat wisata yang ramai. Anda cukup menikmati udara sejuknya."),
+            ],
+        },
+        "pickupPoints": bdg_pickup,
+        "areaServed": ["Bandung", "Lembang", "Ciwidey", "Bandung Raya"],
+        "destinations": [
+            dest("Tangkuban Parahu", "Lembang", "Kawah gunung api yang bisa dilihat dari tepi kawah, tujuan klasik wisata keluarga di utara Bandung."),
+            dest("Kawah Putih", "Ciwidey", "Danau kawah berwarna hijau pucat di ketinggian, dengan udara dingin dan kabut di pagi hari."),
+            dest("Jalan Braga", "Pusat Kota", "Jalan bersejarah dengan bangunan art deco, kafe, dan galeri di tengah kota."),
+            dest("Kawasan Lembang", "Bandung Barat", "Deretan tempat wisata keluarga, kebun, dan kuliner di jalur menuju Tangkuban Parahu."),
+        ],
+        "routes": [
+            route("Jakarta", "±3 jam", "Via Tol Cipularang."),
+            route("Bogor", "±3–3,5 jam", "Via Tol Cipularang dan Jagorawi, atau jalur Puncak–Cianjur."),
+            route("Bandara Soekarno-Hatta", "±3,5 jam", "Tergantung kepadatan tol menuju bandara."),
+            route("Garut", "±2–3 jam", "Via Tol Cileunyi dan jalur Nagreg."),
+        ],
+        "faq": base_city_faq("Bandung", "Jakarta, Bogor, atau Garut", bdg_pickup)
+        + [
+            faq(
+                "Apakah bisa sewa seharian untuk wisata Lembang atau Ciwidey?",
+                "Bisa. Tarif Dalam Kota berlaku 12 jam. Untuk perjalanan wisata ke Lembang atau Ciwidey, sampaikan rencana tujuan Anda agar admin mengonfirmasi tarif yang sesuai.",
+            )
+        ],
+        "sections": ["answer", "editorial", "fleet", "destinations", "routes", "testimonials", "trust", "faq"],
+    }
+)
+
 # -------------------------------------------------------------- services
 docs.append(
     {
@@ -251,21 +402,22 @@ docs.append(
         "slug": {"_type": "slug", "current": "wedding"},
         "navLabel": "Wedding",
         "seo": {
-            "title": "Sewa Mobil Pengantin di Bogor dengan Driver — Arasya Rent Car",
-            "description": "Wedding car di Bogor: Alphard, Zenix Q Hybrid Modellista, Fortuner. Mobil bersih dan elegan dengan driver rapi untuk akad dan resepsi. Cek tanggal lewat WhatsApp.",
+            "title": "Sewa Mobil Pengantin dengan Driver — Arasya Rent Car",
+            "description": "Wedding car: Alphard, Zenix Q Hybrid Modellista, Fortuner. Mobil bersih dan elegan dengan driver rapi untuk akad dan resepsi. Cek tanggal lewat WhatsApp.",
         },
         "hero": {
-            "eyebrow": "Wedding car · Bogor",
+            "eyebrow": "Wedding car",
             "title": "Mobil pengantin yang bersih, elegan,",
             "titleAccent": "dan datang tepat waktu",
             "lead": "Mobil bersih dan elegan untuk hari spesial Anda, dengan driver rapi. Untuk akad, resepsi, dan antar keluarga inti.",
             "car": car_ref("Toyota Alphard"),
         },
-        "answer": "Arasya Rent Car menyediakan mobil pengantin dengan driver di Bogor, dengan pilihan unit Toyota Alphard, Toyota Zenix Q Hybrid Modellista, dan Toyota Fortuner. Pemesanan melalui WhatsApp; unit, jam, dan titik jemput dikonfirmasi sebelum hari acara.",
+        "answerQuestion": "Mobil pengantin apa saja yang tersedia di Arasya?",
+        "answer": "Arasya Rent Car menyediakan mobil pengantin dengan driver di Bogor, Jakarta, dan Bandung, dengan pilihan unit Toyota Alphard, Toyota Zenix Q Hybrid Modellista, dan Toyota Fortuner. Pemesanan melalui WhatsApp; unit, jam, dan titik jemput dikonfirmasi sebelum hari acara.",
         "highlights": [
             {"_key": key(), "title": "Unit premium pilihan", "text": "Alphard, Zenix Q Hybrid Modellista, dan Fortuner untuk mobil pengantin maupun keluarga inti."},
             {"_key": key(), "title": "Dikonfirmasi sebelum hari H", "text": "Unit, jam penjemputan, dan titik jemput disepakati bersama admin sebelum acara."},
-            {"_key": key(), "title": "Driver rapi", "text": "Driver berpengalaman yang memahami rute di Bogor dan sekitarnya."},
+            {"_key": key(), "title": "Driver rapi", "text": "Driver berpengalaman yang memahami rute di kota Anda."},
             {"_key": key(), "title": "Pembayaran resmi", "text": "DP 20% ke rekening BCA a.n. PT. Ayomi Raya, pelunasan saat bertemu driver."},
         ],
         "cars": [car_ref("Toyota Alphard"), car_ref("Toyota Zenix Q Hybrid Modellista"), car_ref("Toyota Fortuner")],
@@ -290,17 +442,18 @@ docs.append(
         "slug": {"_type": "slug", "current": "korporat"},
         "navLabel": "Korporat",
         "seo": {
-            "title": "Sewa Mobil Perusahaan di Bogor dengan Driver — Arasya Rent Car",
-            "description": "Transportasi karyawan dan tamu bisnis di Bogor. Innova, Fortuner, Hiace dengan driver, pembayaran ke rekening PT. Ayomi Raya, admin 24 jam. Minta penawaran lewat WhatsApp.",
+            "title": "Sewa Mobil Perusahaan dengan Driver — Arasya Rent Car",
+            "description": "Transportasi karyawan dan tamu bisnis di Bogor, Jakarta, dan Bandung. Innova, Fortuner, Hiace dengan driver, pembayaran ke rekening PT. Ayomi Raya, admin 24 jam. Minta penawaran lewat WhatsApp.",
         },
         "hero": {
             "eyebrow": "Transportasi perusahaan",
             "title": "Transportasi karyawan dan tamu bisnis,",
             "titleAccent": "terjadwal",
-            "lead": "Untuk antar-jemput tamu, rapat di luar kota, dan kebutuhan harian kantor di Bogor dan sekitarnya.",
+            "lead": "Untuk antar-jemput tamu, rapat di luar kota, dan kebutuhan harian kantor.",
             "car": car_ref("Toyota Innova Venturer"),
         },
-        "answer": "Arasya Rent Car melayani sewa mobil dengan driver untuk perusahaan di Bogor, dikelola oleh PT. Ayomi Raya. Tersedia unit MPV, SUV, hingga van rombongan, dengan pembayaran ke rekening resmi perusahaan dan admin yang siaga 24 jam.",
+        "answerQuestion": "Apakah Arasya melayani sewa mobil untuk perusahaan?",
+        "answer": "Arasya Rent Car melayani sewa mobil dengan driver untuk perusahaan di Bogor, Jakarta, dan Bandung, dikelola oleh PT. Ayomi Raya. Tersedia unit MPV, SUV, hingga van rombongan, dengan pembayaran ke rekening resmi perusahaan dan admin yang siaga 24 jam.",
         "highlights": [
             {"_key": key(), "title": "Badan usaha resmi", "text": "Dikelola PT. Ayomi Raya. Pembayaran hanya ke rekening atas nama perusahaan."},
             {"_key": key(), "title": "Admin 24 jam", "text": "Perubahan jadwal dan permintaan mendadak ditangani lewat WhatsApp."},
@@ -344,8 +497,8 @@ docs.append(
         "slug": {"_type": "slug", "current": "travel"},
         "navLabel": "Travel",
         "seo": {
-            "title": "Travel Carter Bogor ke Bandung, Garut & Bandara — Arasya Rent Car",
-            "description": "Carter mobil door to door dari Bogor ke Bandara Soekarno-Hatta, Bandung, dan Garut. Satu mobil untuk rombongan Anda sendiri. Cek tarif per unit, pesan lewat WhatsApp.",
+            "title": "Travel Carter Antar Kota Door to Door — Arasya Rent Car",
+            "description": "Carter mobil door to door dari Bogor, Jakarta, dan Bandung ke bandara dan antar kota. Satu mobil untuk rombongan Anda sendiri. Cek tarif per unit, pesan lewat WhatsApp.",
         },
         "hero": {
             "eyebrow": "Carter · door to door",
@@ -354,7 +507,8 @@ docs.append(
             "lead": "Satu mobil untuk rombongan Anda sendiri, tidak digabung dengan penumpang lain.",
             "imagePath": "/places/puncak-kebun-teh.webp",
         },
-        "answer": "Travel carter Arasya adalah layanan satu mobil dengan driver untuk rombongan Anda sendiri, dijemput dan diantar sampai alamat tujuan. Dari Bogor tersedia rute ke Bandara Soekarno-Hatta mulai Rp500.000, Bandung mulai Rp1.100.000, dan Garut mulai Rp1.200.000 per mobil.",
+        "answerQuestion": "Berapa tarif travel carter Arasya?",
+        "answer": "Travel carter Arasya adalah layanan satu mobil dengan driver untuk rombongan Anda sendiri, dijemput dan diantar sampai alamat tujuan. Tersedia rute dari Bogor, Jakarta, dan Bandung ke Bandara Soekarno-Hatta, Bandung, Garut, Serang, dan kota lain, dengan tarif mulai Rp500.000 per mobil.",
         "units": [
             {"_key": key(), "key": u["key"], "name": u["name"], "capacity": u["capacity"], "imagePath": UNIT_IMG[u["key"]]}
             for u in travel["units"]
@@ -379,7 +533,7 @@ docs.append(
         "faq": [
             faq("Apakah tarif travel dihitung per orang?", "Tidak. Tarif dihitung per mobil, untuk rombongan Anda sendiri."),
             faq("Apakah bisa dijemput di rumah?", "Ya. Layanan carter kami door to door: dijemput di alamat Anda dan diantar sampai alamat tujuan."),
-            faq("Rute apa saja yang tersedia?", "Dari Bogor: Bandara Soekarno-Hatta, Bandung, dan Garut. Rute lain bisa ditanyakan ke admin lewat WhatsApp."),
+            faq("Rute apa saja yang tersedia?", "Dari Bogor, Jakarta, dan Bandung ke Bandara Soekarno-Hatta dan antar kota, termasuk Bandung, Garut, dan Serang. Rute lain bisa ditanyakan ke admin lewat WhatsApp."),
         ],
     }
 )

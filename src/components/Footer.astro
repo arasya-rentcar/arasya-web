@@ -47,7 +47,8 @@ const liveCities = cities.filter(cityIsIndexable);
 
 <style>
   .site-footer { background: var(--night); color: #c3ccd6; padding-top: 56px; margin-top: 0; font-size: 0.95rem; }
-  .cols { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 32px; }
+  .cols { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 32px; align-items: start; }
+  .cols > .stack { align-content: start; }
   .about img { height: 40px; width: auto; }
   .about p { max-width: 36ch; }
   .addr { display: flex; gap: 8px; align-items: flex-start; }

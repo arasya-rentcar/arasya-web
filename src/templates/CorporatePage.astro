@@ -20,14 +20,14 @@ import { refSlug, waHref } from '../lib/wa';
 
 interface Props { page: ServicePage }
 const { page } = Astro.props;
-const { settings, cars } = await getContent();
+const { settings, cars, cities } = await getContent();
 const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
 const path = `/${page.slug.current}`;
 const crumbs = [{ name: 'Beranda', path: '/' }, { name: page.navLabel || 'Korporat', path }];
 const units = page.cars?.length ? page.cars : cars;
 const bank = settings.bankAccounts[0];
 const quote = waHref(settings.waPhone, 'Halo Arasya, kami dari perusahaan … ingin minta penawaran sewa mobil. Tanggal: …, jumlah penumpang: …, rute: …', 'KOR-hero');
-const service = { '@type': 'Service', name: page.seo?.title, serviceType: 'Corporate car rental with driver', provider: { '@id': `${site}/#business` }, areaServed: 'Bogor', url: site + path, hasOfferCatalog: offerCatalog(units, site, 'Tarif korporat') };
+const service = { '@type': 'Service', name: page.seo?.title, serviceType: 'Corporate car rental with driver', provider: { '@id': `${site}/#business` }, areaServed: cities.map((c) => c.name), url: site + path, hasOfferCatalog: offerCatalog(units, site, 'Tarif korporat') };
 const icons = ['shield', 'clock', 'users', 'check'] as const;
 ---
 <Base title={page.seo?.title || 'Korporat'} description={page.seo?.description || ''} path={path} noindex={page.seo?.noindex} jsonld={[service, faqPage(page.faq), breadcrumbs(site, crumbs)]} waRef="KOR-fab" waMessage="Halo Arasya, kami ingin minta penawaran sewa mobil untuk perusahaan.">
@@ -68,7 +68,7 @@ const icons = ['shield', 'clock', 'users', 'check'] as const;
     </div>
   </section>
 
-  {page.answer && <section class="section"><div class="wrap"><AnswerBox question="Apakah Arasya melayani sewa mobil untuk perusahaan di Bogor?" answer={page.answer} /></div></section>}
+  {page.answer && <section class="section"><div class="wrap"><AnswerBox question={page.answerQuestion || "Apakah Arasya melayani sewa mobil untuk perusahaan?"} answer={page.answer} /></div></section>}
 
   {page.highlights && page.highlights.length > 0 && (
     <section class="section tint">

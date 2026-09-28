@@ -5,7 +5,7 @@
  */
 import type { Car, City, Faq, Post, Settings } from './content';
 
-export function organization(s: Settings, site: string) {
+export function organization(s: Settings, site: string, areas: string[] = []) {
   return {
     '@type': 'AutoRental',
     '@id': `${site}/#business`,
@@ -23,7 +23,7 @@ export function organization(s: Settings, site: string) {
       postalCode: s.address.postalCode,
       addressCountry: 'ID',
     },
-    areaServed: ['Bogor', 'Puncak', 'Jabodetabek'],
+    areaServed: areas.map((name) => ({ '@type': 'City', name })),
     sameAs: [s.instagram].filter(Boolean),
     contactPoint: {
       '@type': 'ContactPoint',

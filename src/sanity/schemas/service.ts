@@ -33,6 +33,13 @@ export const servicePage = defineType({
     defineField({ name: 'navLabel', title: 'Label di menu', type: 'string', group: 'main' }),
     defineField({ name: 'hero', title: 'Hero', type: 'hero', group: 'main' }),
     defineField({
+      name: 'answerQuestion',
+      title: 'Pertanyaan untuk jawaban singkat',
+      description: 'Mis. "Berapa tarif travel carter Arasya?"',
+      type: 'string',
+      group: 'main',
+    }),
+    defineField({
       name: 'answer',
       title: 'Jawaban singkat (untuk Google & AI)',
       description: '2–3 kalimat faktual yang menjawab "apa layanan ini, di mana, berapa". Tampil di atas halaman.',

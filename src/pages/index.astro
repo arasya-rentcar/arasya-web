@@ -10,13 +10,12 @@ import Icon from '../components/Icon.astro';
 import { getContent } from '../lib/content';
 import { rupiah } from '../lib/format';
 import { cityIsIndexable } from '../lib/quality';
-import { photo } from '../lib/images';
+import { carImage, photo } from '../lib/images';
 
 const { settings, home, cars, cities, services, posts } = await getContent();
 const priced = cars.filter((c) => c.priceCity);
 const cheapest = priced.reduce((m, c) => (c.priceCity! < m.priceCity! ? c : m), priced[0]);
 const cheapestAllIn = Math.min(...cars.map((c) => c.priceAllIn || Infinity));
-const hq = cities.find((c) => c.isHeadquarters) || cities[0];
 const liveCities = cities.filter(cityIsIndexable);
 const featured = home.featuredCars?.length ? home.featuredCars : cars.slice(0, 4);
 const serviceText: Record<string, string> = {
@@ -24,14 +23,16 @@ const serviceText: Record<string, string> = {
   corporate: 'Transportasi karyawan dan tamu bisnis, pembayaran ke rekening perusahaan.',
   travel: 'Carter door to door ke bandara dan antar kota, satu mobil untuk rombongan Anda.',
 };
-const answer = `Sewa mobil dengan driver di ${hq?.name || 'Bogor'} bersama Arasya Rent Car mulai ${rupiah(cheapest.priceCity!)} per 12 jam dalam kota (${cheapest.name}), belum termasuk BBM, tol, parkir, dan makan driver.${Number.isFinite(cheapestAllIn) ? ` Paket all-in yang sudah termasuk BBM, tol, dan makan driver mulai ${rupiah(cheapestAllIn)}.` : ''} Pemesanan melalui WhatsApp ${settings.phones[0]}, admin siaga 24 jam.`;
+const cityNames = liveCities.map((c) => c.name);
+const cityList = cityNames.length > 1 ? `${cityNames.slice(0, -1).join(', ')}, dan ${cityNames[cityNames.length - 1]}` : cityNames[0];
+const answer = `Sewa mobil dengan driver di Arasya Rent Car mulai ${rupiah(cheapest.priceCity!)} per 12 jam dalam kota (${cheapest.name}), belum termasuk BBM, tol, parkir, dan makan driver.${Number.isFinite(cheapestAllIn) ? ` Paket all-in yang sudah termasuk BBM, tol, dan makan driver mulai ${rupiah(cheapestAllIn)}.` : ''} ${cityList ? ` Melayani ${cityList}, termasuk rute luar kota.` : ''} Pemesanan melalui WhatsApp ${settings.phones[0]}, admin siaga 24 jam.`;
 ---
 <Base title={home.seo?.title || settings.brandName} description={home.seo?.description || ''} path="/" waRef="HOME-fab">
   <HeroShowroom hero={home.hero} settings={settings} cars={cars} refCode="HOME-booking" fromPrice={cheapest?.priceCity || undefined} />
 
   <section class="section">
     <div class="wrap">
-      <AnswerBox question={`Berapa harga sewa mobil dengan driver di ${hq?.name || 'Bogor'}?`} answer={answer} />
+      <AnswerBox question="Berapa harga sewa mobil dengan driver di Arasya?" answer={answer} />
     </div>
   </section>
 
@@ -69,14 +70,16 @@ const answer = `Sewa mobil dengan driver di ${hq?.name || 'Bogor'} bersama Arasy
   {liveCities.length > 0 && (
     <section class="section">
       <div class="wrap">
-        <div class="section-head"><div class="stack"><span class="eyebrow">Kota layanan</span><h2>Sewa mobil per kota</h2></div></div>
+        <div class="section-head"><div class="stack"><span class="eyebrow">Kota layanan</span><h2>Sewa mobil per kota</h2></div><a class="link-more" href="/sewa-mobil">Semua kota →</a></div>
         <div class="grid grid-3">
           {liveCities.map((c) => {
-            const dest = c.destinations?.[0];
+            const dest = c.destinations?.find((d) => d.image?.asset || d.imagePath);
             const img = dest ? photo(dest.image, dest.imagePath, 800) : null;
+            const car = img ? null : carImage(c.hero.car);
             return (
               <a class="city" href={`/${c.slug.current}`}>
                 {img && <img src={img.src} srcset={img.srcset} sizes="(max-width: 560px) 92vw, 380px" alt="" loading="lazy" width="800" height="450" />}
+                {car && <span class="city-car"><img src={car.src} srcset={car.srcset} sizes="380px" alt="" loading="lazy" width="960" height="600" /></span>}
                 <div><h3>Sewa mobil {c.name}</h3><p>{c.areaServed?.join(' · ')}</p></div>
               </a>
             );
@@ -117,7 +120,9 @@ const answer = `Sewa mobil dengan driver di ${hq?.name || 'Bogor'} bersama Arasy
   .svc p { color: var(--soft); font-size: 0.95rem; }
   .go { display: inline-flex; align-items: center; gap: 6px; font: 700 0.9rem/1 var(--display); color: var(--blue); margin-top: 4px; }
   .city { display: grid; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); text-decoration: none; color: var(--ink); }
-  .city img { aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
+  .city > img { aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
+  .city-car { aspect-ratio: 16 / 9; background: var(--sky); display: flex; align-items: flex-end; justify-content: center; padding: 16px 24px 8px; }
+  .city-car img { width: 100%; height: 100%; object-fit: contain; object-position: bottom; }
   .city div { padding: 16px; display: grid; gap: 4px; }
   .city p, .post p { color: var(--soft); font-size: 0.9rem; }
   .post { display: grid; gap: 8px; align-content: start; padding: 22px; background: #fff; border-radius: var(--radius); text-decoration: none; color: var(--ink); border: 1px solid var(--line); }

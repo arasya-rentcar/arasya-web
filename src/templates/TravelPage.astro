@@ -20,7 +20,7 @@ import { breadcrumbs, faqPage } from '../lib/schema';
 
 interface Props { page: ServicePage }
 const { page } = Astro.props;
-const { settings } = await getContent();
+const { settings, cities } = await getContent();
 const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
 const path = `/${page.slug.current}`;
 const crumbs = [{ name: 'Beranda', path: '/' }, { name: page.navLabel || 'Travel', path }];
@@ -41,6 +41,7 @@ const service = {
   name: page.seo?.title,
   serviceType: 'Private charter transfer with driver',
   provider: { '@id': `${site}/#business` },
+  areaServed: cities.map((c) => c.name),
   url: site + path,
   hasOfferCatalog: {
     '@type': 'OfferCatalog',
@@ -78,7 +79,7 @@ const service = {
     </div>
   </div>
 
-  {page.answer && <section class="section"><div class="wrap"><AnswerBox question="Berapa tarif travel carter dari Bogor?" answer={page.answer} /></div></section>}
+  {page.answer && <section class="section"><div class="wrap"><AnswerBox question={page.answerQuestion || "Berapa tarif travel carter Arasya?"} answer={page.answer} /></div></section>}
 
   {page.highlights && page.highlights.length > 0 && (
     <section class="section tint">
