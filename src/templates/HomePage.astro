@@ -15,6 +15,7 @@ import { getContent, hasEn } from '../lib/content';
 import { rupiah } from '../lib/format';
 import { listJoin, type Lang } from '../lib/i18n';
 import { paths } from '../lib/paths';
+import { waHref } from '../lib/wa';
 import { faqPage } from '../lib/schema';
 import { byPopularity, cityIsIndexable } from '../lib/quality';
 import { carImage, photo } from '../lib/images';
@@ -127,7 +128,11 @@ const homeFaqAll = withPolicy(homeFaq, settings, lang);
             {cityMore.map((c) => <a href={paths.city(c, lang)}>{c.name}</a>)}
           </p>
         )}
-        <p class="anywhere muted">{en ? "Don't see your city? We also drive between cities and across provinces, wherever you need to go." : 'Kota Anda belum ada di daftar? Kami tetap melayani perjalanan antar kota dan antarprovinsi, ke mana pun tujuan Anda.'}</p>
+        <div class="anywhere">
+          <span class="ic" aria-hidden="true"><Icon name="pin" size={20} /></span>
+          <p>{en ? "Don't see your city? We also drive between cities and across provinces, wherever you need to go." : 'Kota Anda belum ada di daftar? Kami tetap melayani perjalanan antar kota dan antarprovinsi, ke mana pun tujuan Anda.'}</p>
+          <a class="btn btn-outline" href={waHref(settings.waPhone, en ? "Hi Arasya, my city isn't on your list. I need a car with a driver. From: …, to: …, date: …" : 'Halo Arasya, kota saya belum ada di daftar. Saya mau konsultasi sewa mobil. Dari: …, tujuan: …, tanggal: …', en ? 'EN-HOME-othercity' : 'HOME-othercity')} data-cta="other-city" rel="nofollow"><Icon name="wa" />{en ? 'Ask about your city' : 'Konsultasi kota Anda'}</a>
+        </div>
       </div>
     </section>
   )}
@@ -193,7 +198,10 @@ const homeFaqAll = withPolicy(homeFaq, settings, lang);
   .more-cities span { font-weight: 700; color: var(--deep); margin-right: 4px; }
   .more-cities a { padding: 7px 13px; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; font-weight: 600; font-size: 0.9rem; color: var(--deep); background: #fff; }
   .more-cities a:hover { border-color: var(--blue); color: var(--blue); }
-  .anywhere { margin-top: 12px; font-size: 0.93rem; }
+  .anywhere { margin-top: 20px; display: grid; grid-template-columns: 40px 1fr auto; gap: 14px; align-items: center; padding: 14px 18px; border: 1px dashed var(--sky-2); border-radius: var(--radius); background: var(--paper); }
+  .anywhere .ic { width: 40px; height: 40px; border-radius: 10px; background: var(--sky); color: var(--blue); display: grid; place-items: center; }
+  .anywhere p { color: var(--body); font-size: 0.95rem; }
+  @media (max-width: 760px) { .anywhere { grid-template-columns: 1fr; } .anywhere .ic { display: none; } .anywhere .btn { width: 100%; } }
   @media (max-width: 760px) { .post.wide { grid-template-columns: 1fr; } .post.wide img { min-height: 0; aspect-ratio: 16 / 9; } }
   .post:hover, .city:hover { border-color: var(--blue); color: var(--ink); }
 </style>
