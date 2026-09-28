@@ -1,4 +1,5 @@
 import { defineArrayMember, defineField, defineType } from 'sanity';
+import { enHero, enObject } from './shared';
 
 export const siteSettings = defineType({
   name: 'siteSettings',
@@ -8,6 +9,8 @@ export const siteSettings = defineType({
     { name: 'contact', title: 'Kontak', default: true },
     { name: 'trust', title: 'Kepercayaan' },
     { name: 'rates', title: 'Tarif' },
+    { name: 'analytics', title: 'Analitik' },
+    { name: 'en', title: 'English' },
   ],
   fields: [
     defineField({ name: 'brandName', title: 'Nama brand', type: 'string', group: 'contact' }),
@@ -76,6 +79,23 @@ export const siteSettings = defineType({
       ],
     }),
     defineField({
+      name: 'analytics',
+      title: 'Google Analytics',
+      description: 'Tempel ID dari Google Analytics 4 (G-XXXXXXX) atau Google Tag Manager (GTM-XXXXXXX), lalu Publish. Situs dibangun ulang otomatis.',
+      type: 'object',
+      group: 'analytics',
+      fields: [
+        { name: 'ga4Id', type: 'string', title: 'GA4 Measurement ID', validation: (r: any) => r.regex(/^G-[A-Z0-9]{4,}$/, { name: 'G-XXXXXXX' }) },
+        { name: 'gtmId', type: 'string', title: 'GTM Container ID (opsional)', validation: (r: any) => r.regex(/^GTM-[A-Z0-9]{4,}$/, { name: 'GTM-XXXXXXX' }) },
+      ],
+    }),
+    enObject([
+      { name: 'paymentTerms', type: 'text', rows: 3, title: 'Payment terms' },
+      { name: 'rateNotes', type: 'object', title: 'Rate notes', fields: [{ name: 'city', type: 'text', rows: 2, title: '12 hours in town' }, { name: 'allIn', type: 'text', rows: 2, title: 'All-in' }] },
+      { name: 'trust', type: 'array', of: [defineArrayMember({ type: 'titledText' })], title: 'Trust points' },
+      { name: 'fraudWarning', type: 'object', title: 'Scam warning', fields: [{ name: 'title', type: 'string' }, { name: 'text', type: 'text', rows: 3 }, { name: 'points', type: 'array', of: [{ type: 'string' }] }] },
+    ], 'Teks bersama untuk semua halaman /en.'),
+    defineField({
       name: 'testimonials',
       title: 'Ulasan pelanggan',
       description: 'Hanya ulasan asli. Sertakan link ke ulasan Google bila ada.',
@@ -102,6 +122,7 @@ export const homePage = defineType({
   name: 'homePage',
   title: 'Beranda',
   type: 'document',
+  groups: [{ name: 'en', title: 'English' }],
   fields: [
     defineField({ name: 'seo', title: 'SEO', type: 'seo' }),
     defineField({ name: 'hero', title: 'Hero', type: 'hero' }),
@@ -112,6 +133,7 @@ export const homePage = defineType({
       of: [{ type: 'reference', to: [{ type: 'car' }] }],
       validation: (r) => r.max(8),
     }),
+    enObject([enHero, { name: 'seo', type: 'seo', title: 'SEO' }]),
   ],
   preview: { prepare: () => ({ title: 'Beranda' }) },
 });

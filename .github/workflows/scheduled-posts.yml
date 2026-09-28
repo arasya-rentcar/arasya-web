@@ -1,0 +1,31 @@
+name: Publish scheduled posts
+
+# Articles dated in the future stay hidden until that day (see isPublished in
+# src/lib/content.ts). Just after midnight WIB this checks whether any article
+# is dated today and, if so, rebuilds and deploys the site so it goes live.
+
+on:
+  schedule:
+    - cron: '5 17 * * *' # 00:05 WIB
+  workflow_dispatch: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      due: ${{ steps.due.outputs.due }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - id: due
+        run: node scripts/due-posts.mjs
+
+  deploy:
+    needs: check
+    if: needs.check.outputs.due != '0'
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit

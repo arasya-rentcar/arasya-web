@@ -1,4 +1,4 @@
-import type { City } from './content';
+import type { Car, City, TravelRoute } from './content';
 
 /**
  * A city page is indexable only when it has content that belongs to that city
@@ -14,4 +14,15 @@ export function cityIsIndexable(c: City): boolean {
     (c.routes?.length ?? 0) >= 2 &&
     (c.faq?.length ?? 0) >= 4
   );
+}
+
+/** A unit page needs its own copy, not just the name and price. */
+export function carIsIndexable(c: Car): boolean {
+  if (c.seo?.noindex) return false;
+  return !!c.summary && (c.idealFor?.length ?? 0) >= 3 && (c.faq?.length ?? 0) >= 2;
+}
+
+/** A route page needs a real description of the trip, not just the tariff row. */
+export function routeIsIndexable(r: TravelRoute): boolean {
+  return !!r.intro && !!r.duration && (r.faq?.length ?? 0) >= 2;
 }

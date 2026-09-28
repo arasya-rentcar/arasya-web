@@ -1,0 +1,206 @@
+---
+/**
+ * One page per travel route (/travel/bogor-bandung). The price table is the
+ * same data as the /travel checker; what makes each page its own is the
+ * route copy in Sanity (intro, via, tips, FAQ), and a route page is only
+ * built once that copy exists.
+ */
+import '@fontsource-variable/red-hat-mono';
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import { getContent, type ServicePage, type TravelRoute } from '../lib/content';
+import { rupiah } from '../lib/format';
+import { carImage } from '../lib/images';
+import { ui, type Lang } from '../lib/i18n';
+import { paths, type Alternates } from '../lib/paths';
+import { routeIsIndexable } from '../lib/quality';
+import { breadcrumbs, faqPage } from '../lib/schema';
+
+interface Props { page: ServicePage; route: TravelRoute; lang: Lang; alternates: Alternates }
+const { page, route: r, lang, alternates } = Astro.props;
+const en = lang === 'en';
+const t = ui(lang);
+const { settings, cars } = await getContent(lang);
+const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
+const path = paths.route(page, r, lang);
+const origin = page.origins?.find((o) => o.key === r.origin);
+const from = origin?.name || r.origin;
+const fromCode = origin?.code || r.origin.slice(0, 3).toUpperCase();
+const toCode = r.destCode || r.dest.slice(0, 3).toUpperCase();
+const label = `${from} → ${r.destName}`;
+const crumbs = [{ name: t.home, path: paths.home(lang) }, { name: page.navLabel || 'Travel', path: paths.service(page, lang) }, { name: label, path }];
+const code = `${en ? 'EN-' : ''}TRV-${fromCode}-${toCode}`;
+
+const units = (page.units || []).flatMap((u) => {
+  const p = r.prices.find((x) => x.unit === u.key);
+  if (!p) return [];
+  const car = cars.find((c) => c.travelUnit === u.key);
+  return [{ ...u, price: p.price, img: carImage(u), car }];
+});
+const cheapest = units.reduce((m, u) => (u.price < m.price ? u : m), units[0]);
+const msg = (unitName?: string) => en
+  ? `Hi Arasya, I'd like a private transfer from ${from} to ${r.destName}${unitName ? ` in a ${unitName}` : ''}. Date: …, passengers: …, pick-up address: …`
+  : `Halo Arasya, saya mau travel carter ${from} ke ${r.destName}${unitName ? ` dengan ${unitName}` : ''}. Tanggal: …, jumlah penumpang: …, alamat jemput: …`;
+const wa = (unitName?: string) => `https://wa.me/${settings.waPhone}?text=${encodeURIComponent(msg(unitName) + ` [Ref: ${code}]`)}`;
+
+const priceQ = en ? `How much is a private transfer from ${from} to ${r.destName}?` : `Berapa tarif travel carter ${from} ke ${r.destName}?`;
+const priceA = cheapest && (en
+  ? `From ${rupiah(cheapest.price)} one way for the whole car (${cheapest.name}), driver included. Prices are per car, not per person.${r.duration ? ` The drive usually takes ${r.duration}.` : ''}`
+  : `Mulai ${rupiah(cheapest.price)} sekali jalan per mobil (${cheapest.name}), sudah termasuk driver. Tarif dihitung per mobil, bukan per orang.${r.duration ? ` Perjalanan biasanya ${r.duration}.` : ''}`);
+const faq = priceA ? [{ question: priceQ, answer: priceA }, ...(r.faq || []).filter((f) => f.question !== priceQ)] : r.faq || [];
+
+// Other routes: same origin first, then the way back.
+const all = page.routes || [];
+const reverse = all.find((x) => x.dest === r.origin && x.origin === r.dest && x.intro);
+const siblings = all.filter((x) => x !== r && x.origin === r.origin && x.intro);
+const originName = (k: string) => page.origins?.find((o) => o.key === k)?.name || k;
+
+const title = en ? `${from} to ${r.destName} Private Transfer with Driver | Arasya` : `Travel Carter ${from} – ${r.destName}: Tarif & Waktu Tempuh | Arasya`;
+const description = en
+  ? `Door-to-door private car from ${from} to ${r.destName}${cheapest ? `, from ${rupiah(cheapest.price)} per car` : ''}. ${r.duration ? `About ${r.duration}. ` : ''}Book on WhatsApp.`
+  : `Carter mobil door to door ${from} ke ${r.destName}${cheapest ? ` mulai ${rupiah(cheapest.price)} per mobil` : ''}. ${r.duration ? `Waktu tempuh ${r.duration}. ` : ''}Pesan via WhatsApp.`;
+const service = {
+  '@type': 'Service',
+  name: en ? `Private transfer ${from} to ${r.destName}` : `Travel carter ${from} ke ${r.destName}`,
+  serviceType: 'Private charter transfer with driver',
+  provider: { '@id': `${site}/#business` },
+  areaServed: [{ '@type': 'City', name: from }, { '@type': 'Place', name: r.destName }],
+  url: site + path,
+  offers: units.map((u) => ({ '@type': 'Offer', name: `${label}, ${u.name}`, price: u.price, priceCurrency: 'IDR' })),
+};
+---
+<Base title={title} description={description} path={path} alternates={alternates} noindex={!routeIsIndexable(r)} jsonld={[service, faqPage(faq), breadcrumbs(site, crumbs)]} waRef={`${code}-fab`} waMessage={msg()}>
+  <section class="r-hero">
+    <div class="wrap copy">
+      <Breadcrumbs items={crumbs} />
+      <p class="codes"><span>{fromCode}</span><Icon name="arrow" size={20} /><span>{toCode}</span></p>
+      <h1>{en ? <>{from} to {r.destName} <span>private transfer</span></> : <>Travel carter {from} – {r.destName}</>}</h1>
+      <dl class="facts">
+        {r.duration && <div><dt>{en ? 'Driving time' : 'Waktu tempuh'}</dt><dd>{r.duration}</dd></div>}
+        {r.distance && <div><dt>{en ? 'Distance' : 'Jarak'}</dt><dd>{r.distance}</dd></div>}
+        {cheapest && <div><dt>{en ? 'From' : 'Mulai'}</dt><dd class="num">{rupiah(cheapest.price)}<small>{en ? ' / car' : ' / mobil'}</small></dd></div>}
+      </dl>
+    </div>
+  </section>
+
+  <div class="wrap price-wrap">
+    <div class="prices" data-fab-tuck>
+      <p class="cap">{en ? 'One way, per car, driver included' : 'Sekali jalan, per mobil, sudah termasuk driver'}</p>
+      <ul>
+        {units.map((u) => (
+          <li>
+            <span class="ph">{u.img && <img src={u.img.src} srcset={u.img.srcset} sizes="120px" alt="" loading="lazy" width="960" height="600" />}</span>
+            <span class="nm">{u.car ? <a href={paths.car(u.car.slug.current, lang)}>{u.name}</a> : <b>{u.name}</b>}<small>{t.passengers(u.capacity)}</small></span>
+            <span class="p num">{rupiah(u.price)}</span>
+            <a class="btn btn-outline" href={wa(u.name)} rel="nofollow" data-cta={`route-${u.key}`}>{en ? 'Book' : 'Pesan'}</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="wrap about">
+      <div class="stack">
+        <span class="eyebrow">{en ? 'The route' : 'Tentang rute'}</span>
+        <h2>{en ? `Getting from ${from} to ${r.destName}` : `Perjalanan ${from} ke ${r.destName}`}</h2>
+        {r.intro && r.intro.split(/\n\s*\n/).map((para) => <p class="intro">{para}</p>)}
+        {r.via && <p class="via"><Icon name="route" size={18} /><span><b>{en ? 'Usual route: ' : 'Jalur yang biasa dipakai: '}</b>{r.via}</span></p>}
+      </div>
+      {r.tips && r.tips.length > 0 && (
+        <aside class="tips">
+          <h3>{en ? 'Tips from our drivers' : 'Tips dari driver kami'}</h3>
+          <ul>{r.tips.map((x) => <li>{x}</li>)}</ul>
+        </aside>
+      )}
+    </div>
+  </section>
+
+  <section class="section tint">
+    <div class="wrap">
+      <div class="section-head"><div class="stack"><span class="eyebrow">{en ? "What's included" : 'Yang termasuk'}</span><h2>{en ? 'How a private transfer works' : 'Cara kerja travel carter'}</h2></div></div>
+      <div class="grid grid-3">
+        {(en
+          ? [
+              ['Door to door', `We pick you up at your address, hotel or the airport in ${from} and drop you at the exact address in ${r.destName}.`],
+              ['Your group only', 'The car is yours for the trip. No sharing with strangers and no stops for other passengers.'],
+              ['One price per car', 'The rate covers the car and the driver for the whole group, whether you are two people or six.'],
+            ]
+          : [
+              ['Door to door', `Dijemput di alamat Anda di ${from} dan diantar sampai alamat tujuan di ${r.destName}.`],
+              ['Hanya rombongan Anda', 'Satu mobil untuk rombongan Anda. Tidak digabung penumpang lain dan tidak mampir menjemput orang lain.'],
+              ['Satu harga per mobil', 'Tarif sudah mencakup mobil dan driver untuk seluruh rombongan, berdua atau berenam sama saja.'],
+            ]).map(([h, p]) => <div class="inc"><Icon name="check" size={20} /><h3>{h}</h3><p>{p}</p></div>)}
+      </div>
+    </div>
+  </section>
+
+  <Faq items={faq} title={en ? `${from} to ${r.destName}: questions` : `Tanya jawab travel ${from} – ${r.destName}`} />
+
+  {(reverse || siblings.length > 0) && (
+    <section class="section" style="padding-top:0">
+      <div class="wrap">
+        <div class="section-head"><div class="stack"><h2>{en ? 'Other routes' : 'Rute lainnya'}</h2></div><a class="link-more" href={paths.service(page, lang)}>{en ? 'All transfer rates →' : 'Semua tarif travel →'}</a></div>
+        <div class="others">
+          {reverse && <a href={paths.route(page, reverse, lang)}><Icon name="route" size={16} />{originName(reverse.origin)} → {reverse.destName}<small>{en ? 'return trip' : 'arah sebaliknya'}</small></a>}
+          {siblings.map((x) => <a href={paths.route(page, x, lang)}><Icon name="route" size={16} />{originName(x.origin)} → {x.destName}</a>)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {en ? (
+    <CtaBand settings={settings} title={`Book ${from} to ${r.destName}`} text="Send your date, number of passengers and pick-up address. We confirm the car and the price before you pay." message={msg()} waRef={`${code}-band`} />
+  ) : (
+    <CtaBand settings={settings} title={`Pesan travel ${from} – ${r.destName}`} text="Kirim tanggal, jumlah penumpang, dan alamat jemput. Admin kami mengonfirmasi unit dan tarif sebelum Anda membayar." message={msg()} waRef={`${code}-band`} />
+  )}
+</Base>
+
+<style>
+  .r-hero { background: var(--deep); color: #fff; padding-block: 24px 84px; background-image: radial-gradient(circle at 85% 20%, rgba(4, 107, 210, 0.45), transparent 55%); }
+  .copy { display: grid; gap: 14px; }
+  .copy :global(.crumbs a), .copy :global(.crumbs li) { color: #c9e2fb; }
+  .codes { display: flex; align-items: center; gap: 10px; font: 600 1rem/1 'Red Hat Mono Variable', monospace; letter-spacing: 0.08em; color: #93c5f6; }
+  .codes span { border: 1px solid rgba(147, 197, 246, 0.5); border-radius: 6px; padding: 6px 8px; }
+  h1 { color: #fff; max-width: 22ch; }
+  h1 span { color: #93c5f6; }
+  .facts { display: flex; flex-wrap: wrap; gap: 28px; margin: 6px 0 0; }
+  dt { font: 700 0.7rem/1.2 var(--text); letter-spacing: 0.06em; text-transform: uppercase; color: #93c5f6; }
+  dd { margin: 4px 0 0; font: 700 1.2rem/1.2 var(--display); color: #fff; }
+  dd small { font: 500 0.85rem/1 var(--text); color: #c9e2fb; }
+  .price-wrap { position: relative; margin-top: -52px; }
+  .prices { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 18px; display: grid; gap: 8px; }
+  .cap { font: 700 0.72rem/1.2 var(--text); letter-spacing: 0.05em; text-transform: uppercase; color: var(--soft); }
+  .prices ul { list-style: none; margin: 0; padding: 0; display: grid; }
+  .prices li { display: grid; grid-template-columns: 96px 1fr auto auto; gap: 16px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
+  .ph { background: var(--sky); border-radius: 8px; aspect-ratio: 16 / 10; display: flex; align-items: flex-end; padding: 4px; }
+  .ph img { width: 100%; height: 100%; object-fit: contain; object-position: bottom; }
+  .nm { display: grid; gap: 2px; }
+  .nm a, .nm b { font: 700 1rem/1.3 var(--display); color: var(--deep); text-decoration: none; }
+  .nm a:hover { color: var(--blue); }
+  .nm small { color: var(--soft); font-size: 0.82rem; }
+  .p { font: 800 1.2rem/1 var(--display); color: var(--blue); }
+  .prices .btn { padding: 9px 16px; font-size: 0.88rem; }
+  .about { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+  .via { display: flex; gap: 10px; align-items: flex-start; color: var(--body); background: var(--paper); border-radius: var(--radius-sm); padding: 12px 14px; max-width: 72ch; }
+  .via :global(svg) { color: var(--blue); flex: none; margin-top: 3px; }
+  .tips { border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: grid; gap: 12px; }
+  .tips h3 { font-size: 1.05rem; }
+  .tips ul { margin: 0; padding-left: 1.1em; display: grid; gap: 8px; color: var(--body); font-size: 0.95rem; }
+  .inc { background: #fff; border-radius: var(--radius); padding: 20px; display: grid; gap: 8px; align-content: start; color: var(--blue); }
+  .inc h3 { color: var(--deep); }
+  .inc p { color: var(--soft); font-size: 0.95rem; }
+  .others { display: flex; flex-wrap: wrap; gap: 10px; }
+  .others a { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; font-weight: 600; color: var(--deep); }
+  .others a:hover { border-color: var(--blue); color: var(--blue); }
+  .others small { color: var(--soft); font-weight: 500; }
+  @media (max-width: 860px) { .about { grid-template-columns: 1fr; gap: 24px; } }
+  @media (max-width: 600px) {
+    .prices li { grid-template-columns: 76px 1fr auto; grid-template-areas: 'ph nm nm' 'ph p btn'; row-gap: 4px; column-gap: 12px; }
+    .ph { grid-area: ph; } .nm { grid-area: nm; } .p { grid-area: p; font-size: 1.05rem; } .prices .btn { grid-area: btn; }
+    .facts { gap: 18px; }
+  }
+</style>

@@ -1,7 +1,8 @@
 ---
 import type { Faq } from '../lib/content';
+import { langOf, ui } from '../lib/i18n';
 interface Props { items: Faq[]; title?: string }
-const { items, title = 'Pertanyaan yang sering diajukan' } = Astro.props;
+const { items, title = ui(langOf(Astro.url.pathname)).faqTitle } = Astro.props;
 ---
 {items.length > 0 && (
   <section class="section" aria-labelledby="faq-title">

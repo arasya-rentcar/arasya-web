@@ -1,5 +1,6 @@
 ---
 import type { Car, Hero, Settings } from '../lib/content';
+import { langOf, ui } from '../lib/i18n';
 import { rupiah } from '../lib/format';
 import BookingBar from './BookingBar.astro';
 import CarImage from './CarImage.astro';
@@ -8,7 +9,8 @@ import Icon from './Icon.astro';
 
 interface Props { hero: Hero; settings: Settings; cars: Car[]; refCode: string; fromPrice?: number; crumbs?: { name: string; path: string }[]; pickup?: string }
 const { hero, settings, cars, refCode, fromPrice, crumbs, pickup } = Astro.props;
-const checks = ['Sudah termasuk driver', `Rekening resmi ${settings.legalName}`, 'Admin WhatsApp 24 jam'];
+const t = ui(langOf(Astro.url.pathname));
+const checks = t.heroChecks(settings.legalName);
 ---
 <section class="hero">
   <div class="wrap">
@@ -19,7 +21,7 @@ const checks = ['Sudah termasuk driver', `Rekening resmi ${settings.legalName}`,
         <h1>{hero.title}{hero.titleAccent && <> <span class="accent">{hero.titleAccent}</span></>}</h1>
         {hero.lead && <p class="lead">{hero.lead}</p>}
         {fromPrice && (
-          <p class="from">Mulai <b class="num">{rupiah(fromPrice)}</b> <span>/ 12 jam dalam kota</span></p>
+          <p class="from">{t.from} <b class="num">{rupiah(fromPrice)}</b> <span>{t.per12hShort}</span></p>
         )}
         <ul class="checks">
           {checks.map((c) => <li><Icon name="check" size={16} />{c}</li>)}

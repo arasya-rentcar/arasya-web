@@ -9,45 +9,57 @@ import PortableText from '../components/PortableText.astro';
 import Icon from '../components/Icon.astro';
 import FraudNotice from '../components/FraudNotice.astro';
 import { getContent, type City } from '../lib/content';
-import { dateId, rupiah } from '../lib/format';
+import { rupiah } from '../lib/format';
+import { dateFmt, ui, type Lang } from '../lib/i18n';
 import { photo } from '../lib/images';
+import { paths, type Alternates } from '../lib/paths';
 import { cityIsIndexable } from '../lib/quality';
 import { breadcrumbs, cityService, faqPage } from '../lib/schema';
 
-interface Props { city: City }
-const { city } = Astro.props;
-const { settings, cars, posts } = await getContent();
+interface Props { city: City; lang: Lang; alternates: Alternates }
+const { city, lang, alternates } = Astro.props;
+const en = lang === 'en';
+const t = ui(lang);
+const { settings, cars, posts, services } = await getContent(lang);
 const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
-const path = `/${city.slug.current}`;
-const crumbs = [{ name: 'Beranda', path: '/' }, { name: `Sewa mobil ${city.name}`, path }];
+const path = paths.city(city, lang);
+const crumbs = [{ name: t.home, path: paths.home(lang) }, { name: t.rentIn(city.name), path }];
+const travel = services.find((s) => s.template === 'travel');
+const originKey = travel?.origins?.find((o) => o.name === city.name || o.code === city.code)?.key;
+const cityTransfers = (travel?.routes || []).filter((r) => r.origin === originKey && r.intro);
 const priced = cars.filter((c) => c.priceCity).sort((a, b) => a.priceCity! - b.priceCity!);
+const lo = priced[0], hi = priced[priced.length - 1];
 const minAllIn = Math.min(...cars.map((c) => c.priceAllIn || Infinity));
 const cityPosts = posts.filter((p) => p.city?._id === city._id).slice(0, 3);
 const sections = city.sections?.length ? city.sections : ['answer', 'fleet', 'trust', 'editorial', 'destinations', 'routes', 'testimonials', 'faq'];
-const answer = `Tarif sewa mobil dengan driver di ${city.name} mulai ${rupiah(priced[0].priceCity!)} per 12 jam dalam kota (${priced[0].name}) sampai ${rupiah(priced[priced.length - 1].priceCity!)} (${priced[priced.length - 1].name}), belum termasuk BBM, tol, parkir, dan makan driver.${Number.isFinite(minAllIn) ? ` Tarif all-in mulai ${rupiah(minAllIn)}.` : ''} Penjemputan di ${city.pickupPoints || city.name}.`;
-const priceQuestion = `Berapa tarif sewa mobil dengan driver di ${city.name}?`;
+const code = `${en ? 'EN-' : ''}${city.code}`;
+const answer = en
+  ? `Renting a car with a driver in ${city.name} costs from ${rupiah(lo.priceCity!)} for 12 hours in town (${lo.name}) up to ${rupiah(hi.priceCity!)} (${hi.name}). Fuel, tolls, parking and the driver’s meals are extra.${Number.isFinite(minAllIn) ? ` All-in rates, which include them, start at ${rupiah(minAllIn)}.` : ''} We pick up anywhere in ${city.pickupPoints || city.name}.`
+  : `Tarif sewa mobil dengan driver di ${city.name} mulai ${rupiah(lo.priceCity!)} per 12 jam dalam kota (${lo.name}) sampai ${rupiah(hi.priceCity!)} (${hi.name}), belum termasuk BBM, tol, parkir, dan makan driver.${Number.isFinite(minAllIn) ? ` Tarif all-in mulai ${rupiah(minAllIn)}.` : ''} Penjemputan di ${city.pickupPoints || city.name}.`;
+const priceQuestion = en ? `How much is car rental with a driver in ${city.name}?` : `Berapa tarif sewa mobil dengan driver di ${city.name}?`;
 const faq = [{ question: priceQuestion, answer }, ...(city.faq || []).filter((f) => f.question !== priceQuestion)];
-const jsonld = [cityService(city, cars, site, settings), faqPage(faq), breadcrumbs(site, crumbs)];
+const jsonld = [cityService(city, cars, site, settings, lang), faqPage(faq), breadcrumbs(site, crumbs)];
+const waCity = en ? `Hi Arasya, I'd like to rent a car with a driver in ${city.name}.` : `Halo Arasya, saya mau sewa mobil di ${city.name}.`;
 ---
-<Base title={city.seo?.title || `Sewa Mobil ${city.name}`} description={city.seo?.description || ''} path={path} noindex={!cityIsIndexable(city)} jsonld={jsonld} waRef={`${city.code}-fab`} waMessage={`Halo Arasya, saya mau sewa mobil di ${city.name}.`}>
-  <HeroShowroom hero={city.hero} settings={settings} cars={cars} refCode={`${city.code}-booking`} fromPrice={priced[0]?.priceCity || undefined} crumbs={crumbs} />
+<Base title={city.seo?.title || t.rentIn(city.name)} description={city.seo?.description || ''} path={path} alternates={alternates} noindex={!cityIsIndexable(city)} jsonld={jsonld} waRef={`${code}-fab`} waMessage={waCity}>
+  <HeroShowroom hero={city.hero} settings={settings} cars={cars} refCode={`${code}-booking`} fromPrice={lo?.priceCity || undefined} crumbs={crumbs} />
 
   {sections.map((s) => {
     // 'answer' is kept for older documents: its text now opens the rates section.
     if (s === 'fleet') return (
       <section class="section" id="tarif">
         <div class="wrap">
-          <div class="section-head"><div class="stack"><span class="eyebrow">Armada & tarif {city.name}</span><h2>Tarif sewa mobil di {city.name}</h2><p class="intro">{answer}</p></div><a class="link-more" href="/armada">Bandingkan semua unit →</a></div>
+          <div class="section-head"><div class="stack"><span class="eyebrow">{en ? `Fleet & rates` : `Armada & tarif ${city.name}`}</span><h2>{en ? `Car rental rates in ${city.name}` : `Tarif sewa mobil di ${city.name}`}</h2><p class="intro">{answer}</p></div><a class="link-more" href={paths.fleet(lang)}>{en ? 'Compare all cars →' : 'Bandingkan semua unit →'}</a></div>
           <div class="table-wrap">
             <table class="rates">
-              <caption class="sr-only">Tarif sewa mobil dengan driver di {city.name}</caption>
-              <thead><tr><th scope="col">Unit</th><th scope="col">Kapasitas</th><th scope="col">Dalam kota 12 jam</th><th scope="col">All-in</th></tr></thead>
+              <caption class="sr-only">{en ? `Car rental rates with driver in ${city.name}` : `Tarif sewa mobil dengan driver di ${city.name}`}</caption>
+              <thead><tr><th scope="col">{en ? 'Car' : 'Unit'}</th><th scope="col">{en ? 'Seats' : 'Kapasitas'}</th><th scope="col">{en ? '12 hours in town' : 'Dalam kota 12 jam'}</th><th scope="col">All-in</th></tr></thead>
               <tbody>
                 {cars.map((c) => (
                   <tr>
-                    <th scope="row"><a href={`/armada#${c.slug.current}`}>{c.name}</a></th>
-                    <td class="num">{c.capacity ? `${c.capacity} kursi` : '–'}</td>
-                    <td class="num">{c.priceCity ? rupiah(c.priceCity) : 'Tanya admin'}</td>
+                    <th scope="row"><a href={paths.car(c.slug.current, lang)}>{c.name}</a></th>
+                    <td class="num">{c.capacity ? t.seats(c.capacity) : '–'}</td>
+                    <td class="num">{c.priceCity ? rupiah(c.priceCity) : t.askAdmin}</td>
                     <td class="num">{c.priceAllIn ? rupiah(c.priceAllIn) : '–'}</td>
                   </tr>
                 ))}
@@ -57,12 +69,12 @@ const jsonld = [cityService(city, cars, site, settings), faqPage(faq), breadcrum
           <div class="notes muted">
             {settings.rateNotes?.city && <p>{settings.rateNotes.city}</p>}
             {settings.rateNotes?.allIn && <p>{settings.rateNotes.allIn}</p>}
-            {city._updatedAt && <p>Tarif diperbarui {dateId(city._updatedAt)}.</p>}
+            {city._updatedAt && <p>{en ? 'Rates updated' : 'Tarif diperbarui'} {dateFmt(city._updatedAt, lang)}.</p>}
           </div>
         </div>
       </section>
     );
-    if (s === 'trust') return <TrustRow items={settings.trust} title={`Kenapa sewa mobil di ${city.name} bersama Arasya`} />;
+    if (s === 'trust') return <TrustRow items={settings.trust} title={en ? `Why rent with Arasya in ${city.name}` : `Kenapa sewa mobil di ${city.name} bersama Arasya`} />;
     if (s === 'editorial' && city.editorial) return (
       <section class="section">
         <div class="wrap editorial">
@@ -78,7 +90,7 @@ const jsonld = [cityService(city, cars, site, settings), faqPage(faq), breadcrum
     if (s === 'destinations' && city.destinations?.length) return (
       <section class="section tint">
         <div class="wrap">
-          <div class="section-head"><div class="stack"><span class="eyebrow">Destinasi</span><h2>Tujuan populer di sekitar {city.name}</h2><p class="muted">Sampaikan tujuan Anda, supir kami yang mengatur rute terbaiknya.</p></div></div>
+          <div class="section-head"><div class="stack"><span class="eyebrow">{en ? 'Places to go' : 'Destinasi'}</span><h2>{en ? `Popular trips around ${city.name}` : `Tujuan populer di sekitar ${city.name}`}</h2><p class="muted">{en ? 'Tell us where you want to go; your driver plans the best way there.' : 'Sampaikan tujuan Anda, supir kami yang mengatur rute terbaiknya.'}</p></div></div>
           <div class="grid grid-3">
             {city.destinations.map((d) => {
               const img = photo(d.image, d.imagePath, 800);
@@ -101,7 +113,7 @@ const jsonld = [cityService(city, cars, site, settings), faqPage(faq), breadcrum
     if (s === 'routes' && city.routes?.length) return (
       <section class="section">
         <div class="wrap">
-          <div class="section-head"><div class="stack"><span class="eyebrow">Rute dari {city.name}</span><h2>Perkiraan waktu tempuh</h2></div><a class="link-more" href="/travel">Tarif travel antar kota →</a></div>
+          <div class="section-head"><div class="stack"><span class="eyebrow">{en ? `From ${city.name}` : `Rute dari ${city.name}`}</span><h2>{en ? 'Typical driving times' : 'Perkiraan waktu tempuh'}</h2></div>{travel && <a class="link-more" href={paths.service(travel, lang)}>{en ? 'Intercity transfer rates →' : 'Tarif travel antar kota →'}</a>}</div>
           <div class="grid grid-2">
             {city.routes.map((r) => (
               <div class="route">
@@ -110,6 +122,9 @@ const jsonld = [cityService(city, cars, site, settings), faqPage(faq), breadcrum
               </div>
             ))}
           </div>
+          {cityTransfers.length > 0 && travel && (
+            <p class="transfers"><b>{en ? `Private transfers from ${city.name}:` : `Travel carter dari ${city.name}:`}</b> {cityTransfers.map((r, i) => <>{i > 0 && ' · '}<a href={paths.route(travel, r, lang)}>{r.destName}</a></>)}</p>
+          )}
         </div>
       </section>
     );
@@ -117,7 +132,7 @@ const jsonld = [cityService(city, cars, site, settings), faqPage(faq), breadcrum
     if (s === 'faq') return (
       <>
         <section class="section" style="padding-bottom:0"><div class="wrap"><FraudNotice settings={settings} /></div></section>
-        <Faq items={faq} title={`Tanya jawab sewa mobil ${city.name}`} />
+        <Faq items={faq} title={en ? `Renting a car in ${city.name}: questions` : `Tanya jawab sewa mobil ${city.name}`} />
       </>
     );
     return null;
@@ -134,7 +149,11 @@ const jsonld = [cityService(city, cars, site, settings), faqPage(faq), breadcrum
     </section>
   )}
 
-  <CtaBand settings={settings} title={`Pesan mobil di ${city.name} sekarang`} text={`Admin kami mengonfirmasi unit, tarif, dan titik jemput sebelum pemesanan dipastikan.`} message={`Halo Arasya, saya mau sewa mobil di ${city.name}. Tanggal: …, tujuan: …`} waRef={`${city.code}-band`} />
+  {en ? (
+    <CtaBand settings={settings} title={`Book a car and driver in ${city.name}`} text="We confirm the car, the rate and the pick-up point before your booking is final." message={`${waCity} Date: …, destination: …`} waRef={`${code}-band`} />
+  ) : (
+    <CtaBand settings={settings} title={`Pesan mobil di ${city.name} sekarang`} text="Admin kami mengonfirmasi unit, tarif, dan titik jemput sebelum pemesanan dipastikan." message={`${waCity} Tanggal: …, tujuan: …`} waRef={`${code}-band`} />
+  )}
 </Base>
 
 <style>
@@ -159,6 +178,8 @@ const jsonld = [cityService(city, cars, site, settings), faqPage(faq), breadcrum
   .route h3 { color: var(--deep); }
   .dur { font: 800 1.1rem/1.4 var(--display); color: var(--blue); }
   .route .muted { font-size: 0.9rem; }
+  .transfers { margin-top: 18px; color: var(--body); }
+  .transfers a { font-weight: 600; }
   .post { display: grid; gap: 8px; align-content: start; padding: 22px; background: #fff; border-radius: var(--radius); text-decoration: none; color: var(--ink); border: 1px solid var(--line); }
   .post:hover { border-color: var(--blue); color: var(--ink); }
   @media (max-width: 860px) { .editorial { grid-template-columns: 1fr; gap: 20px; } }

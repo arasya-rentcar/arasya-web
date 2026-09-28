@@ -1,8 +1,10 @@
 ---
 import type { TitledText } from '../lib/content';
+import { langOf, ui } from '../lib/i18n';
 import Icon from './Icon.astro';
 interface Props { items: TitledText[]; title?: string; eyebrow?: string }
-const { items, title = 'Kenapa memilih Arasya', eyebrow = 'Layanan kami' } = Astro.props;
+const t = ui(langOf(Astro.url.pathname));
+const { items, title = t.trustTitle, eyebrow = t.trustEyebrow } = Astro.props;
 const icons = ['shield', 'car', 'check', 'clock'] as const;
 ---
 <section class="section tint">

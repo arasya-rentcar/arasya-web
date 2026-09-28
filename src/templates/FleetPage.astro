@@ -1,0 +1,118 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import CarImage from '../components/CarImage.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import { getContent } from '../lib/content';
+import { rupiah } from '../lib/format';
+import { listJoin, ui, type Lang } from '../lib/i18n';
+import { paths } from '../lib/paths';
+import { breadcrumbs, offerCatalog } from '../lib/schema';
+import { refSlug, waHref } from '../lib/wa';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const en = lang === 'en';
+const t = ui(lang);
+const { settings, cars } = await getContent(lang);
+const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
+const path = paths.fleet(lang);
+const crumbs = [{ name: t.home, path: paths.home(lang) }, { name: en ? 'Fleet' : 'Armada', path }];
+const cats = [...new Set(cars.map((c) => c.category))];
+const priced = cars.filter((c) => c.priceCity).sort((a, b) => a.priceCity! - b.priceCity!);
+const lo = priced[0], hi = priced[priced.length - 1];
+const catList = listJoin(cats.map((c) => t.category[c]), lang);
+const answer = en
+  ? `${cars.length} cars, all rented with a driver: ${catList}. Twelve hours in town costs from ${rupiah(lo.priceCity!)} (${lo.name}) to ${rupiah(hi.priceCity!)} (${hi.name}).`
+  : `${cars.length} unit, semuanya disewakan bersama driver: ${cats.map((c) => t.category[c]).join(', ')}. Tarif dalam kota 12 jam mulai ${rupiah(lo.priceCity!)} (${lo.name}) sampai ${rupiah(hi.priceCity!)} (${hi.name}).`;
+const title = en ? 'Fleet & Rates: Car Rental with Driver in Indonesia | Arasya Rent Car' : 'Armada & Tarif Sewa Mobil dengan Driver — Arasya Rent Car';
+const description = en
+  ? `${cars.length} cars with a professional driver: Avanza, Xpander, Innova, Zenix, Fortuner, Alphard, Hiace. Compare seats and 12-hour or all-in rates.`
+  : `${cars.length} unit sewa mobil dengan driver: Avanza, Xpander, Innova, Zenix, Fortuner, Alphard, Hiace. Bandingkan kapasitas dan tarif 12 jam atau all-in.`;
+---
+<Base title={title} description={description} path={path} alternates={{ id: '/armada', en: '/en/fleet' }} jsonld={[{ '@type': 'ItemList', name: en ? 'Arasya fleet' : 'Armada Arasya', itemListElement: cars.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, url: site + paths.car(c.slug.current, lang) })) }, { '@id': `${site}/#business`, hasOfferCatalog: offerCatalog(cars, site, en ? 'Fleet rates' : 'Tarif armada', lang) }, breadcrumbs(site, crumbs)]} waRef={en ? 'EN-ARM-fab' : 'ARM-fab'}>
+  <section class="head">
+    <div class="wrap stack">
+      <Breadcrumbs items={crumbs} />
+      <h1>{en ? 'Pick a car, we bring the driver' : 'Pilih mobil, kami siapkan driver-nya'}</h1>
+      <p class="lead">{answer}</p>
+      <nav class="tabs" aria-label={en ? 'Categories' : 'Kategori'}>
+        <a href="#semua" class="on">{en ? 'All' : 'Semua'}</a>
+        {cats.map((c) => <a href={`#${c}`}>{t.category[c]}</a>)}
+      </nav>
+    </div>
+  </section>
+
+  <section class="section" id="semua" style="padding-top:28px">
+    <div class="wrap stack">
+      {cats.map((cat) => (
+        <div class="cat" id={cat}>
+          <h2>{t.category[cat]}</h2>
+          <div class="list">
+            {cars.filter((c) => c.category === cat).map((c) => (
+              <article class="item" id={c.slug.current}>
+                <a class="ph" href={paths.car(c.slug.current, lang)} tabindex="-1" aria-hidden="true"><CarImage car={c} sizes="(max-width: 760px) 90vw, 240px" /></a>
+                <div class="info">
+                  <h3><a href={paths.car(c.slug.current, lang)}>{c.name}</a>{c.badge && <span class="badge">{c.badge}</span>}</h3>
+                  <div class="specs"><span>{t.seats(c.capacity || 0)}</span><span>{t.passengers(c.capacity)}</span><span>{t.category[c.category]}</span></div>
+                  {c.description && <p class="muted">{c.description}</p>}
+                  <a class="more" href={paths.car(c.slug.current, lang)}>{en ? `About the ${c.name} →` : `Detail ${c.name} →`}</a>
+                </div>
+                <div class="buy">
+                  {c.priceCity ? <><small>{t.per12h}</small><b class="num">{rupiah(c.priceCity)}</b></> : <><small>{t.rate}</small><b>{t.askAdmin}</b></>}
+                  {c.priceAllIn && <small class="num">{t.allIn} {rupiah(c.priceAllIn)}</small>}
+                  <a class="btn btn-outline" href={waHref(settings.waPhone, t.waRent(c.name), `${en ? 'EN-' : ''}ARM-${refSlug(c.name)}`)} data-cta={`arm-${refSlug(c.name)}`} rel="nofollow"><Icon name="wa" />{en ? 'Book on WhatsApp' : 'Pesan via WA'}</a>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      ))}
+      <div class="notes muted">
+        {settings.rateNotes?.city && <p>{settings.rateNotes.city}</p>}
+        {settings.rateNotes?.allIn && <p>{settings.rateNotes.allIn}</p>}
+      </div>
+    </div>
+  </section>
+  {en ? (
+    <CtaBand settings={settings} title="Travelling in more than one car?" text="We can arrange several cars and drivers at once for events, tours or company trips." message="Hi Arasya, I need several cars at once. Date: …, number of passengers: …" waRef="EN-ARM-band" />
+  ) : (
+    <CtaBand settings={settings} title="Rombongan lebih dari satu mobil?" text="Admin kami bisa atur beberapa unit sekaligus untuk acara atau perjalanan kantor." message="Halo Arasya, saya butuh beberapa unit sekaligus. Tanggal: …, jumlah penumpang: …" waRef="ARM-band" />
+  )}
+</Base>
+
+<style>
+  .head { background: var(--paper); padding-block: 24px 28px; border-bottom: 1px solid var(--line); }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .tabs a { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--ink); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+  .tabs a:hover, .tabs a.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .cat { display: grid; gap: 14px; margin-top: 24px; scroll-margin-top: 88px; }
+  .cat h2 { font-size: 1.4rem; }
+  .list { display: grid; gap: 12px; }
+  .item { display: grid; grid-template-columns: 240px 1fr auto; gap: 24px; align-items: center; border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 20px; scroll-margin-top: 96px; }
+  .item:target { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
+  .ph { background: var(--sky); border-radius: 10px; aspect-ratio: 16 / 10; display: flex; align-items: flex-end; padding: 10px 8px 4px; }
+  .ph :global(img) { width: 100%; height: 100%; object-fit: contain; object-position: bottom; }
+  .info { display: grid; gap: 8px; }
+  h3 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 1.25rem; }
+  h3 a { color: inherit; text-decoration: none; }
+  h3 a:hover { color: var(--blue); }
+  .more { font: 700 0.88rem/1.3 var(--display); text-decoration: none; justify-self: start; }
+  .badge { background: var(--blue); color: #fff; font: 700 0.7rem/1 var(--text); padding: 5px 8px; border-radius: 6px; }
+  .specs { display: flex; flex-wrap: wrap; gap: 6px; }
+  .specs span { font-size: 0.8rem; background: var(--paper); border: 1px solid var(--line); padding: 5px 9px; border-radius: 6px; color: #364152; }
+  .buy { display: grid; gap: 4px; justify-items: end; text-align: right; }
+  .buy small { color: var(--soft); font-size: 0.8rem; }
+  .buy b { font: 800 1.4rem/1.1 var(--display); color: var(--deep); }
+  .buy .btn { margin-top: 8px; }
+  .notes { display: grid; gap: 4px; font-size: 0.9rem; margin-top: 16px; }
+  @media (max-width: 760px) {
+    .item { grid-template-columns: 112px 1fr; gap: 12px 14px; padding: 12px; }
+    .ph { padding: 6px 4px 2px; }
+    h3 { font-size: 1.05rem; }
+    .specs span:first-child { display: none; }
+    .buy { grid-column: 1 / -1; grid-template-columns: 1fr auto; align-items: end; justify-items: start; text-align: left; border-top: 1px solid var(--line); padding-top: 10px; column-gap: 12px; }
+    .buy .btn { grid-column: 2; grid-row: 1 / span 3; margin-top: 0; align-self: center; }
+  }
+</style>

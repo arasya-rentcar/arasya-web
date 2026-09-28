@@ -15,25 +15,66 @@ import FraudNotice from '../components/FraudNotice.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Icon from '../components/Icon.astro';
 import { getContent, type ServicePage } from '../lib/content';
-import { passengers } from '../lib/format';
+import { ui, type Lang } from '../lib/i18n';
+import { paths, type Alternates } from '../lib/paths';
 import { breadcrumbs, faqPage } from '../lib/schema';
 import { withAnswer } from '../lib/faq';
 import { refSlug, waHref } from '../lib/wa';
 
-interface Props { page: ServicePage }
-const { page } = Astro.props;
-const { settings, cars, cities } = await getContent();
+interface Props { page: ServicePage; lang: Lang; alternates: Alternates }
+const { page, lang, alternates } = Astro.props;
+const en = lang === 'en';
+const t = ui(lang);
+const { settings, cars, cities } = await getContent(lang);
 const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
-const path = `/${page.slug.current}`;
-const crumbs = [{ name: 'Beranda', path: '/' }, { name: page.navLabel || 'Korporat', path }];
-const faq = withAnswer(page.faq, page.answerQuestion || 'Apakah Arasya melayani sewa mobil untuk perusahaan?', page.answer);
+const path = paths.service(page, lang);
+const crumbs = [{ name: t.home, path: paths.home(lang) }, { name: page.navLabel || 'Korporat', path }];
+const faq = withAnswer(page.faq, page.answerQuestion || (en ? 'Does Arasya work with companies?' : 'Apakah Arasya melayani sewa mobil untuk perusahaan?'), page.answer);
 const units = page.cars?.length ? page.cars : cars;
 const bank = settings.bankAccounts[0];
-const quote = waHref(settings.waPhone, 'Halo Arasya, kami dari perusahaan … ingin minta penawaran sewa mobil. Tanggal: …, jumlah penumpang: …, rute: …', 'KOR-hero');
+const R = en ? 'EN-KOR' : 'KOR';
+const L = en
+  ? {
+      quote: "Hi Arasya, we're from … (company) and would like a quote for cars with drivers. Dates: …, passengers: …, route: …",
+      fab: "Hi Arasya, we'd like a quote for company car rental.",
+      managed: `Operated by ${settings.legalName}, an Indonesian registered company`,
+      pay: (b: any) => `Invoices paid to the ${b.bank} company account (${b.owner.replace(/^a\.n\.\s*/i, '')})`,
+      support: '24-hour WhatsApp support',
+      ask: 'Request a quote', see: 'See the cars',
+      caption: 'Available cars · all with a driver', askPrice: 'Get price',
+      panelMsg: (n: string) => `Hi Arasya, we'd like a quote for a ${n} for our company.`,
+      small: 'Prices depend on dates, hours, route and number of cars. We send a written quote on WhatsApp or email.',
+      consult: 'Get a quote on WhatsApp',
+      hlEyebrow: 'For admin, HR and travel managers', hlTitle: 'What companies usually ask us',
+      unitsEyebrow: 'Cars', unitsTitle: 'From VIP guests to the whole team',
+      unitMsg: (n: string) => `Hi Arasya, we'd like a quote for a ${n}.`, unitLink: 'Request a quote for this car →',
+      steps: 'How company bookings work', faq: 'Corporate questions',
+      bandTitle: 'Need a written quote?', bandText: "Send your dates, passengers and route. We'll reply with car options and a price.",
+      bandMsg: "Hi Arasya, we'd like a written quote. Company: …, dates: …, route: …",
+    }
+  : {
+      quote: 'Halo Arasya, kami dari perusahaan … ingin minta penawaran sewa mobil. Tanggal: …, jumlah penumpang: …, rute: …',
+      fab: 'Halo Arasya, kami ingin minta penawaran sewa mobil untuk perusahaan.',
+      managed: `Dikelola ${settings.legalName}`,
+      pay: (b: any) => `Pembayaran ke rekening ${b.bank} ${b.owner}`,
+      support: 'Admin WhatsApp 24 jam',
+      ask: 'Minta penawaran', see: 'Lihat unit',
+      caption: 'Unit tersedia · semua dengan driver', askPrice: 'Tanya harga',
+      panelMsg: (n: string) => `Halo Arasya, kami ingin konsultasi harga ${n} untuk perusahaan.`,
+      small: 'Harga menyesuaikan jadwal, durasi, rute, dan jumlah unit. Admin kami mengirim penawaran tertulis lewat WhatsApp.',
+      consult: 'Konsultasi harga via WhatsApp',
+      hlEyebrow: 'Untuk tim GA & purchasing', hlTitle: 'Yang biasanya ditanyakan perusahaan',
+      unitsEyebrow: 'Unit', unitsTitle: 'Dari tamu VIP sampai rombongan kantor',
+      unitMsg: (n: string) => `Halo Arasya, kami ingin penawaran untuk ${n}.`, unitLink: 'Minta penawaran unit ini →',
+      steps: 'Alur pemesanan perusahaan', faq: 'Tanya jawab layanan korporat',
+      bandTitle: 'Butuh penawaran tertulis?', bandText: 'Kirim tanggal, jumlah penumpang, dan rute. Admin kami mengirim pilihan unit dan penawaran harga.',
+      bandMsg: 'Halo Arasya, kami ingin minta penawaran tertulis. Perusahaan: …, tanggal: …, rute: …',
+    };
+const quote = waHref(settings.waPhone, L.quote, `${R}-hero`);
 const service = { '@type': 'Service', name: page.seo?.title, serviceType: 'Corporate car rental with driver', provider: { '@id': `${site}/#business` }, areaServed: cities.map((c) => c.name), url: site + path };
 const icons = ['shield', 'clock', 'users', 'check'] as const;
 ---
-<Base title={page.seo?.title || 'Korporat'} description={page.seo?.description || ''} path={path} noindex={page.seo?.noindex} jsonld={[service, faqPage(faq), breadcrumbs(site, crumbs)]} waRef="KOR-fab" waMessage="Halo Arasya, kami ingin minta penawaran sewa mobil untuk perusahaan.">
+<Base title={page.seo?.title || 'Korporat'} description={page.seo?.description || ''} path={path} alternates={alternates} noindex={page.seo?.noindex} jsonld={[service, faqPage(faq), breadcrumbs(site, crumbs)]} waRef={`${R}-fab`} waMessage={L.fab}>
   <section class="k-hero">
     <div class="wrap">
       <Breadcrumbs items={crumbs} />
@@ -43,30 +84,30 @@ const icons = ['shield', 'clock', 'users', 'check'] as const;
           <h1>{page.hero.title} <span class="accent">{page.hero.titleAccent}</span></h1>
           {page.hero.lead && <p class="lead">{page.hero.lead}</p>}
           <ul class="facts">
-            <li><Icon name="check" size={18} />Dikelola {settings.legalName}</li>
-            {bank && <li><Icon name="check" size={18} />Pembayaran ke rekening {bank.bank} {bank.owner}</li>}
-            <li><Icon name="check" size={18} />Admin WhatsApp 24 jam</li>
+            <li><Icon name="check" size={18} />{L.managed}</li>
+            {bank && <li><Icon name="check" size={18} />{L.pay(bank)}</li>}
+            <li><Icon name="check" size={18} />{L.support}</li>
           </ul>
           <div class="acts">
-            <a class="btn btn-blue" href={quote} data-cta="kor-quote" rel="nofollow">Minta penawaran</a>
-            <a class="btn btn-ghost" href="#unit">Lihat unit</a>
+            <a class="btn btn-blue" href={quote} data-cta="kor-quote" rel="nofollow">{L.ask}</a>
+            <a class="btn btn-ghost" href="#unit">{L.see}</a>
           </div>
         </div>
         <div class="panel" id="unit">
           <CarImage car={page.hero.car} eager class="panel-car" sizes="(max-width: 860px) 92vw, 520px" />
           <table>
-            <caption>Unit tersedia · semua dengan driver</caption>
+            <caption>{L.caption}</caption>
             <tbody>
               {units.map((c) => (
                 <tr>
-                  <th scope="row">{c.name}<small>{passengers(c.capacity)}</small></th>
-                  <td><a href={waHref(settings.waPhone, `Halo Arasya, kami ingin konsultasi harga ${c.name} untuk perusahaan.`, `KOR-panel-${refSlug(c.name)}`)} data-cta={`kor-panel-${refSlug(c.name)}`} rel="nofollow">Tanya harga</a></td>
+                  <th scope="row">{c.name}<small>{t.passengers(c.capacity)}</small></th>
+                  <td><a href={waHref(settings.waPhone, L.panelMsg(c.name), `${R}-panel-${refSlug(c.name)}`)} data-cta={`kor-panel-${refSlug(c.name)}`} rel="nofollow">{L.askPrice}</a></td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <p class="small">Harga menyesuaikan jadwal, durasi, rute, dan jumlah unit. Admin kami mengirim penawaran tertulis lewat WhatsApp.</p>
-          <a class="btn btn-wa" href={quote} data-cta="kor-panel" rel="nofollow"><Icon name="wa" />Konsultasi harga via WhatsApp</a>
+          <p class="small">{L.small}</p>
+          <a class="btn btn-wa" href={quote} data-cta="kor-panel" rel="nofollow"><Icon name="wa" />{L.consult}</a>
         </div>
       </div>
     </div>
@@ -75,7 +116,7 @@ const icons = ['shield', 'clock', 'users', 'check'] as const;
   {page.highlights && page.highlights.length > 0 && (
     <section class="section tint">
       <div class="wrap">
-        <div class="section-head"><div class="stack"><span class="eyebrow">Untuk tim GA & purchasing</span><h2>Yang biasanya ditanyakan perusahaan</h2>{page.answer && <p class="intro">{page.answer}</p>}</div></div>
+        <div class="section-head"><div class="stack"><span class="eyebrow">{L.hlEyebrow}</span><h2>{L.hlTitle}</h2>{page.answer && <p class="intro">{page.answer}</p>}</div></div>
         <div class="grid grid-4">
           {page.highlights.map((h, i) => (
             <div class="hl"><span class="ic"><Icon name={icons[i % icons.length]} size={22} /></span><h3>{h.title}</h3>{h.text && <p>{h.text}</p>}</div>
@@ -87,25 +128,25 @@ const icons = ['shield', 'clock', 'users', 'check'] as const;
 
   <section class="section">
     <div class="wrap">
-      <div class="section-head"><div class="stack"><span class="eyebrow">Unit</span><h2>Dari tamu VIP sampai rombongan kantor</h2></div></div>
+      <div class="section-head"><div class="stack"><span class="eyebrow">{L.unitsEyebrow}</span><h2>{L.unitsTitle}</h2></div></div>
       <div class="grid grid-3 units">
         {units.map((c) => (
           <article>
             <div class="ph"><CarImage car={c} /></div>
-            <h3>{c.name}</h3>
-            <p class="muted">{passengers(c.capacity)}</p>
-            <a href={waHref(settings.waPhone, `Halo Arasya, kami ingin penawaran untuk ${c.name}.`, `KOR-${refSlug(c.name)}`)} data-cta={`kor-${refSlug(c.name)}`} rel="nofollow">Minta penawaran unit ini →</a>
+            <h3><a class="nm" href={paths.car(c.slug.current, lang)}>{c.name}</a></h3>
+            <p class="muted">{t.passengers(c.capacity)}</p>
+            <a href={waHref(settings.waPhone, L.unitMsg(c.name), `${R}-${refSlug(c.name)}`)} data-cta={`kor-${refSlug(c.name)}`} rel="nofollow">{L.unitLink}</a>
           </article>
         ))}
       </div>
     </div>
   </section>
 
-  <Steps items={page.steps || []} title="Alur pemesanan perusahaan" />
+  <Steps items={page.steps || []} title={L.steps} />
   <Testimonials items={settings.testimonials} />
   <section class="section" style="padding-bottom:0"><div class="wrap"><FraudNotice settings={settings} /></div></section>
-  <Faq items={faq} title="Tanya jawab layanan korporat" />
-  <CtaBand settings={settings} title="Butuh penawaran tertulis?" text="Kirim tanggal, jumlah penumpang, dan rute. Admin kami mengirim pilihan unit dan penawaran harga." message="Halo Arasya, kami ingin minta penawaran tertulis. Perusahaan: …, tanggal: …, rute: …" waRef="KOR-band" />
+  <Faq items={faq} title={L.faq} />
+  <CtaBand settings={settings} title={L.bandTitle} text={L.bandText} message={L.bandMsg} waRef={`${R}-band`} />
 </Base>
 
 <style>
@@ -135,6 +176,8 @@ const icons = ['shield', 'clock', 'users', 'check'] as const;
   .units .ph { background: #eef2f7; border-radius: 10px; aspect-ratio: 16 / 10; display: flex; align-items: flex-end; padding: 12px 10px 4px; }
   .units .ph :global(img) { width: 100%; height: 100%; object-fit: contain; object-position: bottom; }
   .units a { font: 700 0.9rem/1.3 var(--display); text-decoration: none; }
+  .units h3 .nm { font: inherit; color: var(--deep); }
+  .units h3 .nm:hover { color: var(--blue); }
   @media (max-width: 860px) {
     .k-hero { padding-bottom: 32px; }
     .grid-hero { grid-template-columns: 1fr; gap: 24px; }

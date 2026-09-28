@@ -12,6 +12,7 @@
  */
 import { createClient } from '@sanity/client';
 import seed from '../data/seed.json';
+import { localize, type Lang } from './i18n';
 
 export const SANITY_PROJECT_ID = 'w5eya3q9';
 export const SANITY_DATASET = 'production';
@@ -35,6 +36,17 @@ export interface Car {
   image?: any;
   imagePath?: string;
   order?: number;
+  /** Longer copy for the unit's own page (/armada/{slug}). */
+  summary?: string;
+  idealFor?: string[];
+  features?: TitledText[];
+  luggage?: string;
+  /** Travel price class this car belongs to (key in the travel page's units). */
+  travelUnit?: string;
+  faq?: Faq[];
+  seo?: Seo;
+  en?: any;
+  _updatedAt?: string;
 }
 export interface Hero {
   eyebrow?: string;
@@ -56,9 +68,11 @@ export interface Settings {
   instagram?: string;
   paymentTerms?: string;
   fraudWarning?: { title?: string; text?: string; points?: string[] };
+  analytics?: { ga4Id?: string; gtmId?: string };
   rateNotes?: { city?: string; allIn?: string };
   trust: TitledText[];
   testimonials: { quote: string; name: string; context?: string; link?: string }[];
+  en?: any;
 }
 export interface Destination { name: string; area?: string; text?: string; image?: any; imagePath?: string; credit?: string; creditUrl?: string }
 export interface City {
@@ -77,12 +91,30 @@ export interface City {
   routes?: { to: string; duration?: string; note?: string }[];
   faq?: Faq[];
   seo?: Seo;
+  en?: any;
   _updatedAt?: string;
+}
+export interface TravelRoute {
+  _key?: string;
+  origin: string;
+  dest: string;
+  destCode?: string;
+  destName: string;
+  prices: { unit: string; price: number }[];
+  /** Route page (/travel/{slug}); built when `intro` is filled in. */
+  slug?: string;
+  distance?: string;
+  duration?: string;
+  via?: string;
+  intro?: string;
+  tips?: string[];
+  faq?: Faq[];
+  en?: any;
 }
 export interface TravelData {
   units: { key: string; name: string; capacity: number; image?: any; imagePath?: string }[];
   origins: { key: string; code: string; name: string }[];
-  routes: { origin: string; dest: string; destCode?: string; destName: string; prices: { unit: string; price: number }[] }[];
+  routes: TravelRoute[];
 }
 export interface ServicePage extends Partial<TravelData> {
   _id: string;
@@ -97,6 +129,7 @@ export interface ServicePage extends Partial<TravelData> {
   steps?: TitledText[];
   faq?: Faq[];
   seo?: Seo;
+  en?: any;
   _updatedAt?: string;
 }
 export interface Post {
@@ -115,9 +148,10 @@ export interface Post {
   faq?: Faq[];
   seo?: Seo;
 }
-export interface HomePage { seo?: Seo; hero: Hero; featuredCars?: Car[] }
+export interface HomePage { seo?: Seo; hero: Hero; featuredCars?: Car[]; en?: any }
 
 export interface Content {
+  lang: Lang;
   source: 'sanity' | 'seed';
   settings: Settings;
   home: HomePage;
@@ -168,10 +202,26 @@ function resolve(value: any, byId: Map<string, Doc>, depth = 0): any {
   return out;
 }
 
-let cache: Promise<Content> | null = null;
+/** Has this document been translated? English pages exist only for these. */
+export const hasEn = {
+  city: (c: City) => !!(c.en?.slug?.current && c.en?.hero?.title),
+  service: (s: ServicePage) => !!(s.en?.slug?.current && s.en?.hero?.title),
+  car: (c: Car) => !!c.en?.summary,
+  route: (r: TravelRoute) => !!r.en?.intro,
+  home: (h: HomePage) => !!h.en?.hero?.title,
+};
 
-export function getContent(): Promise<Content> {
-  cache ??= (async () => {
+/** Today in Indonesia (WIB), so a post dated tomorrow appears at local midnight, not 07:00. */
+const todayWib = () => new Date(Date.now() + 7 * 3600_000).toISOString().slice(0, 10);
+
+/** Posts dated in the future are scheduled: they appear on the first build on or after that date. */
+const isPublished = (p: Post, today = todayWib()) => p.publishedAt <= today;
+
+let raw: Promise<Content> | null = null;
+const cache = new Map<Lang, Promise<Content>>();
+
+function load(): Promise<Content> {
+  raw ??= (async () => {
     const { docs, source } = await fetchDocs();
     const byId = new Map(docs.map((d) => [d._id, d]));
     const of = <T>(type: string): T[] =>
@@ -188,14 +238,50 @@ export function getContent(): Promise<Content> {
     const services = of<ServicePage>('servicePage').map((s) => ({ ...s, cars: cleanList(s.cars) }));
 
     return {
+      lang: 'id' as Lang,
       source,
       settings: one<Settings>('siteSettings'),
       home,
       cars: of<Car>('car').sort((a, b) => (a.order ?? 100) - (b.order ?? 100) || a.name.localeCompare(b.name)),
       cities: of<City>('city').sort((a, b) => Number(!!b.isHeadquarters) - Number(!!a.isHeadquarters) || a.name.localeCompare(b.name)),
       services,
-      posts: of<Post>('post').sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)),
+      posts: of<Post>('post').filter((p) => isPublished(p)).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)),
     };
   })();
-  return cache;
+  return raw;
+}
+
+/**
+ * All content, in one language. English drops what hasn't been translated
+ * (cities, service pages, travel routes) and has no blog.
+ */
+export function getContent(lang: Lang = 'id'): Promise<Content> {
+  if (!cache.has(lang)) {
+    cache.set(lang, (async () => {
+      const c = await load();
+      if (lang === 'id') return c;
+      const car = (x: Car) => localize(x, lang);
+      const service = (s: ServicePage): ServicePage => {
+        const l = localize(s, lang);
+        return { ...l, hero: { ...l.hero, car: l.hero.car && car(l.hero.car) }, cars: (l.cars || []).map(car), routes: (s.routes || []).filter(hasEn.route).map((r) => localize(r, lang)) };
+      };
+      const city = (x: City): City => {
+        const l = localize(x, lang);
+        return { ...l, hero: { ...l.hero, car: l.hero.car && car(l.hero.car) } };
+      };
+      const home = localize(c.home, lang);
+      return {
+        ...c,
+        lang,
+        settings: localize(c.settings, lang),
+        home: { ...home, hero: { ...home.hero, car: home.hero.car && car(home.hero.car) }, featuredCars: (home.featuredCars || []).map(car) },
+        cars: c.cars.map(car),
+        cities: c.cities.filter(hasEn.city).map(city),
+        // Wedding and plain pages have a local audience and stay Indonesian-only.
+        services: c.services.filter((s) => hasEn.service(s) && (s.template === 'corporate' || s.template === 'travel')).map(service),
+        posts: [],
+      };
+    })());
+  }
+  return cache.get(lang)!;
 }

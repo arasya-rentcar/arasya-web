@@ -4,6 +4,8 @@
  * with confidence.
  */
 import type { Car, City, Faq, Post, Settings } from './content';
+import type { Lang } from './i18n';
+import { paths } from './paths';
 
 export function organization(s: Settings, site: string, areas: string[] = []) {
   return {
@@ -46,7 +48,7 @@ export function priceRange(cars: Car[]): string | undefined {
   return `IDR ${Math.min(...prices)} - ${Math.max(...prices)}`;
 }
 
-export function offerCatalog(cars: Car[], site: string, name: string) {
+export function offerCatalog(cars: Car[], site: string, name: string, lang: Lang = 'id') {
   return {
     '@type': 'OfferCatalog',
     name,
@@ -54,11 +56,29 @@ export function offerCatalog(cars: Car[], site: string, name: string) {
       .filter((c) => c.priceCity)
       .map((c) => ({
         '@type': 'Offer',
-        name: `Sewa ${c.name} dengan driver, 12 jam dalam kota`,
+        name: lang === 'en' ? `${c.name} with driver, 12 hours in town` : `Sewa ${c.name} dengan driver, 12 jam dalam kota`,
         price: c.priceCity,
         priceCurrency: 'IDR',
-        url: `${site}/armada#${c.slug.current}`,
+        url: site + paths.car(c.slug.current, lang),
       })),
+  };
+}
+
+/** A unit page: the car as a rentable product with its two tariffs. */
+export function carProduct(c: Car, site: string, lang: Lang, image?: string) {
+  const offers = [
+    c.priceCity && { '@type': 'Offer', name: lang === 'en' ? '12 hours in town, with driver' : '12 jam dalam kota, dengan driver', price: c.priceCity, priceCurrency: 'IDR' },
+    c.priceAllIn && { '@type': 'Offer', name: lang === 'en' ? 'All-in (fuel, tolls, driver meals)' : 'All-in (BBM, tol, makan driver)', price: c.priceAllIn, priceCurrency: 'IDR' },
+  ].filter(Boolean);
+  return {
+    '@type': 'Product',
+    name: lang === 'en' ? `${c.name} with driver` : `Sewa ${c.name} dengan driver`,
+    description: c.summary || c.description,
+    image,
+    brand: { '@type': 'Brand', name: c.name.split(' ')[0] },
+    category: lang === 'en' ? 'Car rental with driver' : 'Sewa mobil dengan driver',
+    url: site + paths.car(c.slug.current, lang),
+    ...(offers.length ? { offers: offers.map((o: any) => ({ ...o, seller: { '@id': `${site}/#business` }, availability: 'https://schema.org/InStock' })) } : {}),
   };
 }
 
@@ -97,18 +117,19 @@ export function article(p: Post, site: string, s: Settings) {
     publisher: { '@id': `${site}/#business` },
     mainEntityOfPage: `${site}/blog/${p.slug.current}`,
     inLanguage: 'id-ID',
+    ...(p.city ? { about: { '@type': 'City', name: p.city.name } } : {}),
   };
 }
 
-export function cityService(c: City, cars: Car[], site: string, s: Settings) {
+export function cityService(c: City, cars: Car[], site: string, s: Settings, lang: Lang = 'id') {
   return {
     '@type': 'Service',
-    name: `Sewa mobil dengan driver di ${c.name}`,
+    name: lang === 'en' ? `Car rental with driver in ${c.name}` : `Sewa mobil dengan driver di ${c.name}`,
     serviceType: 'Car rental with driver',
     provider: { '@id': `${site}/#business` },
     areaServed: (c.areaServed || [c.name]).map((n) => ({ '@type': 'Place', name: n })),
-    hasOfferCatalog: offerCatalog(cars, site, `Tarif sewa mobil ${c.name}`),
-    url: `${site}/${c.slug.current}`,
+    hasOfferCatalog: offerCatalog(cars, site, lang === 'en' ? `Car rental rates in ${c.name}` : `Tarif sewa mobil ${c.name}`, lang),
+    url: site + paths.city(c, lang),
     brand: s.brandName,
   };
 }

@@ -1,4 +1,5 @@
 import { defineArrayMember, defineField, defineType } from 'sanity';
+import { enHero, enObject, enSlug } from './shared';
 
 /**
  * Topic pages (/wedding, /korporat, /travel, …). `template` picks the layout,
@@ -12,6 +13,7 @@ export const servicePage = defineType({
     { name: 'main', title: 'Utama', default: true },
     { name: 'travel', title: 'Tarif travel' },
     { name: 'seo', title: 'SEO' },
+    { name: 'en', title: 'English' },
   ],
   fields: [
     defineField({
@@ -107,6 +109,28 @@ export const servicePage = defineType({
             { name: 'dest', type: 'string', title: 'Kode tujuan' },
             { name: 'destName', type: 'string', title: 'Nama tujuan' },
             { name: 'destCode', type: 'string', title: 'Kode 3 huruf tujuan (mis. BDG)' },
+            { name: 'slug', type: 'string', title: 'Slug halaman rute (mis. bogor-bandung)', description: 'Halaman /travel/{slug} dibuat bila Deskripsi rute diisi.' },
+            { name: 'duration', type: 'string', title: 'Waktu tempuh (mis. 3–4 jam)' },
+            { name: 'distance', type: 'string', title: 'Jarak (mis. ±150 km)' },
+            { name: 'via', type: 'string', title: 'Jalur yang biasa dipakai' },
+            { name: 'intro', type: 'text', rows: 5, title: 'Deskripsi rute', description: 'Pisahkan paragraf dengan baris kosong.' },
+            { name: 'tips', type: 'array', of: [{ type: 'string' }], title: 'Tips perjalanan' },
+            { name: 'faq', type: 'array', of: [{ type: 'faqItem' }], title: 'FAQ rute' },
+            {
+              name: 'en',
+              type: 'object',
+              title: 'English version',
+              options: { collapsible: true, collapsed: true },
+              fields: [
+                { name: 'destName', type: 'string', title: 'Destination name' },
+                { name: 'duration', type: 'string', title: 'Driving time' },
+                { name: 'distance', type: 'string', title: 'Distance' },
+                { name: 'via', type: 'string', title: 'Usual route' },
+                { name: 'intro', type: 'text', rows: 5, title: 'Route description' },
+                { name: 'tips', type: 'array', of: [{ type: 'string' }], title: 'Tips' },
+                { name: 'faq', type: 'array', of: [{ type: 'faqItem' }], title: 'FAQ' },
+              ],
+            },
             {
               name: 'prices',
               type: 'array',
@@ -128,6 +152,19 @@ export const servicePage = defineType({
       ],
     }),
     defineField({ name: 'seo', title: 'SEO', type: 'seo', group: 'seo' }),
+    enObject([
+      enSlug,
+      { name: 'navLabel', type: 'string', title: 'Menu label' },
+      enHero,
+      { name: 'answerQuestion', type: 'string', title: 'Short-answer question' },
+      { name: 'answer', type: 'text', rows: 3, title: 'Short answer' },
+      { name: 'highlights', type: 'array', of: [defineArrayMember({ type: 'titledText' })], title: 'Highlights' },
+      { name: 'steps', type: 'array', of: [defineArrayMember({ type: 'titledText' })], title: 'Booking steps' },
+      { name: 'faq', type: 'array', of: [defineArrayMember({ type: 'faqItem' })], title: 'FAQ' },
+      { name: 'origins', type: 'array', title: 'Origin names (travel, same order)', of: [defineArrayMember({ type: 'object', fields: [{ name: 'name', type: 'string' }] })] },
+      { name: 'units', type: 'array', title: 'Unit names (travel, same order)', of: [defineArrayMember({ type: 'object', fields: [{ name: 'name', type: 'string' }] })] },
+      { name: 'seo', type: 'seo', title: 'SEO' },
+    ], 'Hanya untuk Korporat dan Travel. Wedding tetap Bahasa Indonesia.'),
   ],
   preview: { select: { title: 'navLabel', subtitle: 'slug.current' } },
 });

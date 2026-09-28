@@ -1,6 +1,9 @@
 ---
 import type { Settings } from '../lib/content';
+import { langOf, ui } from '../lib/i18n';
 import Icon from './Icon.astro';
+const lang = langOf(Astro.url.pathname);
+const L = ui(lang);
 interface Props { items: Settings['testimonials']; limit?: number }
 const { items, limit = 3 } = Astro.props;
 const list = items.slice(0, limit);
@@ -8,16 +11,16 @@ const list = items.slice(0, limit);
 {list.length > 0 && (
   <section class="section">
     <div class="wrap">
-      <div class="section-head"><div class="stack"><span class="eyebrow">Ulasan Google</span><h2>Kata pelanggan kami</h2></div></div>
+      <div class="section-head"><div class="stack"><span class="eyebrow">{L.reviewsEyebrow}</span><h2>{L.reviewsTitle}</h2>{lang === 'en' && <p class="muted orig">Real Google reviews, shown in the original Indonesian.</p>}</div></div>
       <div class="grid grid-3">
         {list.map((t) => (
           <figure>
-            <div class="stars" aria-label="5 bintang">{[1, 2, 3, 4, 5].map(() => <Icon name="star" size={16} />)}</div>
-            <blockquote>{t.quote}</blockquote>
+            <div class="stars" aria-label={L.reviewsStars}>{[1, 2, 3, 4, 5].map(() => <Icon name="star" size={16} />)}</div>
+            <blockquote lang="id">{t.quote}</blockquote>
             <figcaption>
               <b>{t.name}</b>
               {t.context && <span>{t.context}</span>}
-              {t.link && <a href={t.link} rel="noopener nofollow">Lihat ulasan</a>}
+              {t.link && <a href={t.link} rel="noopener nofollow">{L.seeReview}</a>}
             </figcaption>
           </figure>
         ))}
@@ -33,4 +36,5 @@ const list = items.slice(0, limit);
   figcaption { display: grid; gap: 2px; font-size: 0.9rem; color: var(--soft); }
   figcaption b { color: var(--deep); }
   figcaption a { font-size: 0.85rem; }
+  .orig { font-size: 0.9rem; }
 </style>

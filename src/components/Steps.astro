@@ -1,12 +1,14 @@
 ---
 import type { TitledText } from '../lib/content';
+import { langOf, ui } from '../lib/i18n';
 interface Props { items: TitledText[]; title?: string }
-const { items, title = 'Cara pesan' } = Astro.props;
+const t = ui(langOf(Astro.url.pathname));
+const { items, title = t.stepsTitle } = Astro.props;
 ---
 {items.length > 0 && (
   <section class="section">
     <div class="wrap">
-      <div class="section-head"><div class="stack"><span class="eyebrow">Langkah</span><h2>{title}</h2></div></div>
+      <div class="section-head"><div class="stack"><span class="eyebrow">{t.stepsEyebrow}</span><h2>{title}</h2></div></div>
       <ol class="steps">
         {items.map((s, i) => (
           <li><span class="n num">{i + 1}</span><div><h3>{s.title}</h3>{s.text && <p>{s.text}</p>}</div></li>

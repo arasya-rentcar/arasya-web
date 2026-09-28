@@ -1,0 +1,221 @@
+---
+/**
+ * One page per unit (/armada/{slug}, /en/fleet/{slug}). Built for searches
+ * like "sewa innova reborn bogor": what the car is good for, both tariffs,
+ * which cities it serves, and the travel routes its price class covers.
+ * Pages without their own copy (see carIsIndexable) ship as noindex.
+ */
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import CarImage from '../components/CarImage.astro';
+import CarCard from '../components/CarCard.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import { getContent, type Car } from '../lib/content';
+import { rupiah } from '../lib/format';
+import { carImage } from '../lib/images';
+import { ui, type Lang } from '../lib/i18n';
+import { paths, type Alternates } from '../lib/paths';
+import { carIsIndexable, cityIsIndexable } from '../lib/quality';
+import { breadcrumbs, carProduct, faqPage } from '../lib/schema';
+import { refSlug, waHref } from '../lib/wa';
+
+interface Props { car: Car; lang: Lang; alternates: Alternates }
+const { car, lang, alternates } = Astro.props;
+const en = lang === 'en';
+const t = ui(lang);
+const { settings, cars, cities, services } = await getContent(lang);
+const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
+const path = paths.car(car.slug.current, lang);
+const crumbs = [{ name: t.home, path: paths.home(lang) }, { name: en ? 'Fleet' : 'Armada', path: paths.fleet(lang) }, { name: car.name, path }];
+const ref = `${en ? 'EN-' : ''}CAR-${refSlug(car.name)}`;
+const wa = waHref(settings.waPhone, t.waRent(car.name), ref);
+const liveCities = cities.filter(cityIsIndexable);
+
+// Travel routes this car's price class covers, with the price for that class.
+const travel = services.find((s) => s.template === 'travel');
+const unit = travel?.units?.find((u) => u.key === car.travelUnit);
+const originName = (k: string) => travel?.origins?.find((o) => o.key === k)?.name || k;
+const routes = unit && travel
+  ? (travel.routes || []).flatMap((r) => {
+      const p = r.prices.find((x) => x.unit === unit.key);
+      return p ? [{ r, price: p.price }] : [];
+    })
+  : [];
+
+const similar = cars.filter((c) => c._id !== car._id && c.category === car.category).slice(0, 3);
+const others = similar.length >= 2 ? similar : cars.filter((c) => c._id !== car._id && Math.abs((c.capacity || 0) - (car.capacity || 0)) <= 1).slice(0, 3);
+const img = carImage(car);
+
+const title = car.seo?.title || (en ? `${car.name} with Driver: Rates & Seats | Arasya Rent Car` : `Sewa ${car.name} dengan Driver — Tarif & Kapasitas | Arasya`);
+const description = car.seo?.description || (en
+  ? `Rent a ${car.name} with a professional driver. ${t.passengers(car.capacity)}${car.priceCity ? `, from ${rupiah(car.priceCity)} for 12 hours` : ''}. Book on WhatsApp.`
+  : `Sewa ${car.name} dengan driver. ${t.passengers(car.capacity)}${car.priceCity ? `, mulai ${rupiah(car.priceCity)} per 12 jam dalam kota` : ''}. Pesan via WhatsApp.`);
+
+const priceAnswer = car.priceCity
+  ? en
+    ? `${rupiah(car.priceCity)} for 12 hours in town, driver included; fuel, tolls, parking and the driver’s meals are paid separately.${car.priceAllIn ? ` The all-in rate, which covers those as well, is ${rupiah(car.priceAllIn)}.` : ''}`
+    : `${rupiah(car.priceCity)} per 12 jam dalam kota, sudah termasuk driver; BBM, tol, parkir, dan makan driver dibayar terpisah.${car.priceAllIn ? ` Tarif all-in yang sudah mencakup semuanya ${rupiah(car.priceAllIn)}.` : ''}`
+  : en
+    ? `The ${car.name} is quoted per trip, depending on date, duration and route. Send us the details on WhatsApp for a written quote.`
+    : `Tarif ${car.name} dihitung per perjalanan, menyesuaikan tanggal, durasi, dan rute. Kirim detailnya lewat WhatsApp untuk penawaran tertulis.`;
+const priceQ = en ? `How much does it cost to rent a ${car.name} with a driver?` : `Berapa tarif sewa ${car.name} dengan driver?`;
+const faq = [{ question: priceQ, answer: priceAnswer }, ...(car.faq || []).filter((f) => f.question !== priceQ)];
+---
+<Base title={title} description={description} path={path} alternates={alternates} noindex={!carIsIndexable(car)} ogImage={img?.src.startsWith('/') ? img.src : undefined} waRef={`${ref}-fab`} waMessage={t.waRent(car.name)}
+  jsonld={[carProduct(car, site, lang, img ? (img.src.startsWith('/') ? site + img.src : img.src) : undefined), faqPage(faq), breadcrumbs(site, crumbs)]}>
+  <section class="c-hero">
+    <div class="wrap">
+      <Breadcrumbs items={crumbs} />
+      <div class="grid-hero">
+        <div class="copy">
+          <span class="pill">{t.category[car.category]}{car.badge ? ` · ${car.badge}` : ''}</span>
+          <h1>{en ? <>{car.name} <span class="accent">with driver</span></> : <>Sewa {car.name} <span class="accent">dengan driver</span></>}</h1>
+          {(car.summary || car.description) && <p class="lead">{car.summary || car.description}</p>}
+          <dl class="specs">
+            <div><dt>{en ? 'Seats' : 'Kursi'}</dt><dd class="num">{car.capacity ?? '–'}</dd></div>
+            <div><dt>{en ? 'Passengers' : 'Penumpang'}</dt><dd class="num">{car.capacity ? car.capacity - 1 : '–'}</dd></div>
+            {car.luggage && <div class="wide"><dt>{en ? 'Luggage' : 'Bagasi'}</dt><dd>{car.luggage}</dd></div>}
+          </dl>
+        </div>
+        <div class="stage"><CarImage car={car} eager sizes="(max-width: 860px) 92vw, 560px" /></div>
+      </div>
+      <div class="price-bar" data-fab-tuck>
+        <div class="prices">
+          {car.priceCity ? (
+            <>
+              <div><span class="lbl">{t.per12h}</span><b class="num">{rupiah(car.priceCity)}</b></div>
+              {car.priceAllIn && <div><span class="lbl">{en ? 'All-in (fuel, tolls, meals)' : 'All-in (BBM, tol, makan driver)'}</span><b class="num">{rupiah(car.priceAllIn)}</b></div>}
+            </>
+          ) : (
+            <div><span class="lbl">{t.rate}</span><b>{en ? 'Quoted per trip' : 'Sesuai perjalanan'}</b></div>
+          )}
+        </div>
+        <a class="btn btn-wa" href={wa} data-cta="car-hero" rel="nofollow"><Icon name="wa" />{en ? `Book the ${car.name}` : `Pesan ${car.name}`}</a>
+      </div>
+    </div>
+  </section>
+
+  {(car.idealFor?.length || car.features?.length) && (
+    <section class="section">
+      <div class="wrap fit">
+        {car.idealFor && car.idealFor.length > 0 && (
+          <div class="stack">
+            <span class="eyebrow">{en ? 'Good for' : 'Cocok untuk'}</span>
+            <h2>{en ? `When to choose the ${car.name}` : `Kapan memilih ${car.name}`}</h2>
+            <ul class="ticks">{car.idealFor.map((x) => <li><Icon name="check" size={18} />{x}</li>)}</ul>
+          </div>
+        )}
+        {car.features && car.features.length > 0 && (
+          <div class="feats">
+            {car.features.map((f) => <div class="feat"><h3>{f.title}</h3>{f.text && <p>{f.text}</p>}</div>)}
+          </div>
+        )}
+      </div>
+    </section>
+  )}
+
+  <section class="section tint">
+    <div class="wrap">
+      <div class="section-head"><div class="stack"><span class="eyebrow">{en ? 'Rates' : 'Tarif'}</span><h2>{en ? `${car.name} rates` : `Tarif sewa ${car.name}`}</h2><p class="intro">{priceAnswer}</p></div></div>
+      <div class="notes muted">
+        {settings.rateNotes?.city && <p>{settings.rateNotes.city}</p>}
+        {settings.rateNotes?.allIn && <p>{settings.rateNotes.allIn}</p>}
+      </div>
+      {liveCities.length > 0 && (
+        <div class="cities">
+          <h3>{en ? 'Available in' : 'Tersedia di'}</h3>
+          <ul>{liveCities.map((c) => <li><a href={paths.city(c, lang)}><Icon name="pin" size={16} />{en ? `${c.name}` : `Sewa mobil ${c.name}`}</a></li>)}</ul>
+        </div>
+      )}
+    </div>
+  </section>
+
+  {routes.length > 0 && travel && unit && (
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="stack"><span class="eyebrow">{en ? 'Private transfer' : 'Travel carter'}</span><h2>{en ? `Intercity trips in this class` : `Rute antar kota untuk kelas ini`}</h2><p class="muted">{en ? `One-way price per car for the ${unit.name} class, driver included.` : `Tarif sekali jalan per mobil kelas ${unit.name}, sudah termasuk driver.`}</p></div>
+          <a class="link-more" href={paths.service(travel, lang)}>{en ? 'All transfer rates →' : 'Semua tarif travel →'}</a>
+        </div>
+        <div class="grid grid-2">
+          {routes.map(({ r, price }) => {
+            const linked = !!r.intro;
+            const label = `${originName(r.origin)} → ${r.destName}`;
+            return (
+              <div class="route">
+                <Icon name="route" size={20} />
+                <div>{linked ? <a href={paths.route(travel, r, lang)}>{label}</a> : <b>{label}</b>}{r.duration && <small>{r.duration}</small>}</div>
+                <span class="num">{rupiah(price)}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <Faq items={faq} title={en ? `${car.name} questions` : `Tanya jawab sewa ${car.name}`} />
+
+  {others.length > 0 && (
+    <section class="section tint">
+      <div class="wrap">
+        <div class="section-head"><div class="stack"><span class="eyebrow">{en ? 'Compare' : 'Bandingkan'}</span><h2>{en ? 'Similar cars' : 'Unit serupa'}</h2></div><a class="link-more" href={paths.fleet(lang)}>{en ? 'Full fleet →' : 'Semua armada →'}</a></div>
+        <div class="grid grid-3">{others.map((c) => <CarCard car={c} settings={settings} refPrefix={`${ref}-alt`} tone="white" />)}</div>
+      </div>
+    </section>
+  )}
+
+  {en ? (
+    <CtaBand settings={settings} title={`Book the ${car.name}`} text="Send your date, pick-up point and destination. We confirm the car, the driver and the rate before you pay anything." message={t.waRent(car.name)} waRef={`${ref}-band`} />
+  ) : (
+    <CtaBand settings={settings} title={`Pesan ${car.name} sekarang`} text="Kirim tanggal, titik jemput, dan tujuan. Admin kami mengonfirmasi unit, driver, dan tarif sebelum Anda membayar." message={t.waRent(car.name)} waRef={`${ref}-band`} />
+  )}
+</Base>
+
+<style>
+  .c-hero { background: linear-gradient(180deg, var(--sky) 0%, #f2f8fe 100%); padding-block: 24px 40px; border-bottom: 1px solid #dbe8f6; }
+  .grid-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 32px; align-items: center; margin-top: 20px; }
+  .copy { display: grid; gap: 16px; }
+  .pill { justify-self: start; }
+  .accent { color: var(--blue); }
+  .specs { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; }
+  .specs div { background: #fff; border: 1px solid #dbe8f6; border-radius: 10px; padding: 10px 14px; min-width: 96px; }
+  .specs .wide { flex: 1 1 220px; }
+  dt { font: 700 0.7rem/1.2 var(--text); letter-spacing: 0.05em; text-transform: uppercase; color: var(--soft); }
+  dd { margin: 4px 0 0; font: 700 1.05rem/1.3 var(--display); color: var(--deep); }
+  .specs .wide dd { font: 500 0.92rem/1.4 var(--text); color: var(--body); }
+  .stage { display: flex; justify-content: center; }
+  .stage :global(img) { width: 100%; max-width: 560px; max-height: 320px; object-fit: contain; filter: drop-shadow(0 18px 14px rgba(2, 38, 75, 0.18)); }
+  .price-bar { margin-top: 28px; background: #fff; border: 1px solid #e3ebf4; border-radius: var(--radius); box-shadow: 0 8px 24px rgba(2, 38, 75, 0.1); padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .prices { display: flex; gap: 28px; flex-wrap: wrap; }
+  .prices div { display: grid; gap: 4px; }
+  .lbl { font-size: 0.8rem; color: var(--soft); }
+  .prices b { font: 800 1.4rem/1 var(--display); color: var(--deep); }
+  .prices div:first-child b { color: var(--blue); }
+  .fit { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 40px; align-items: start; }
+  .ticks { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .ticks li { display: grid; grid-template-columns: 22px 1fr; gap: 8px; color: var(--body); }
+  .ticks :global(svg) { color: var(--blue); margin-top: 3px; }
+  .feats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .feat { border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; display: grid; gap: 6px; align-content: start; }
+  .feat p { color: var(--soft); font-size: 0.95rem; }
+  .notes { display: grid; gap: 4px; font-size: 0.9rem; }
+  .cities { margin-top: 24px; display: grid; gap: 10px; }
+  .cities h3 { font-size: 1rem; }
+  .cities ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .cities a { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px; background: #fff; text-decoration: none; font-weight: 600; font-size: 0.92rem; color: var(--deep); }
+  .cities a:hover { border-color: var(--blue); color: var(--blue); }
+  .route { display: grid; grid-template-columns: 24px 1fr auto; gap: 12px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius); color: var(--blue); }
+  .route a, .route b { font: 700 1rem/1.3 var(--display); color: var(--deep); text-decoration: none; }
+  .route a:hover { color: var(--blue); }
+  .route small { display: block; color: var(--soft); font-size: 0.85rem; }
+  .route .num { font: 800 1.05rem/1 var(--display); color: var(--blue); }
+  @media (max-width: 860px) {
+    .grid-hero, .fit { grid-template-columns: 1fr; gap: 20px; }
+    .stage :global(img) { max-height: 220px; }
+    .price-bar .btn { width: 100%; }
+  }
+  @media (max-width: 520px) { .feats { grid-template-columns: 1fr; } }
+</style>

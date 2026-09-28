@@ -1,6 +1,8 @@
 ---
 import type { Car, Settings } from '../lib/content';
-import { CATEGORY_LABEL, passengers, rupiah, rupiahShort } from '../lib/format';
+import { langOf, ui } from '../lib/i18n';
+import { rupiah, rupiahShort } from '../lib/format';
+import { paths } from '../lib/paths';
 import { waHref, refSlug } from '../lib/wa';
 import CarImage from './CarImage.astro';
 import Icon from './Icon.astro';
@@ -8,10 +10,11 @@ import Icon from './Icon.astro';
 /** `consult` hides prices and turns the button into a price consultation (wedding, corporate). */
 interface Props { car: Car; settings: Settings; refPrefix: string; context?: string; tone?: 'sky' | 'white' | 'ivory'; consult?: boolean }
 const { car, settings, refPrefix, context = '', tone = 'sky', consult = false } = Astro.props;
-const message = consult
-  ? `Halo Arasya, saya mau konsultasi harga ${car.name}${context ? ' ' + context : ''}. Tanggal: …, lokasi: …`
-  : `Halo Arasya, saya mau sewa ${car.name}${context ? ' ' + context : ''}. Tanggal: …, tujuan: …`;
+const lang = langOf(Astro.url.pathname);
+const t = ui(lang);
+const message = consult ? t.waConsult(car.name, context) : t.waRent(car.name, context);
 const href = waHref(settings.waPhone, message, `${refPrefix}-${refSlug(car.name)}`);
+const page = paths.car(car.slug.current, lang);
 ---
 <article class={`car-card tone-${tone}`} id={car.slug.current}>
   <div class="ph">
@@ -19,22 +22,22 @@ const href = waHref(settings.waPhone, message, `${refPrefix}-${refSlug(car.name)
     <CarImage car={car} />
   </div>
   <div class="body">
-    <h3>{car.name}</h3>
-    <p class="meta"><Icon name="users" size={16} />{passengers(car.capacity)} · {CATEGORY_LABEL[car.category]}</p>
+    <h3><a href={page}>{car.name}</a></h3>
+    <p class="meta"><Icon name="users" size={16} />{t.passengers(car.capacity)} · {t.category[car.category]}</p>
   </div>
   {consult ? (
-    <p class="consult">Harga menyesuaikan jadwal dan kebutuhan acara. Konsultasikan lewat WhatsApp.</p>
+    <p class="consult">{t.consultNote}</p>
   ) : (
   <div class="price">
     {car.priceCity ? (
-      <div><span class="lbl">12 jam dalam kota</span><strong class="num">{rupiahShort(car.priceCity)}</strong></div>
+      <div><span class="lbl">{t.per12h}</span><strong class="num">{lang === 'en' ? rupiah(car.priceCity) : rupiahShort(car.priceCity)}</strong></div>
     ) : (
-      <div><span class="lbl">Tarif</span><strong>Tanya admin</strong></div>
+      <div><span class="lbl">{t.rate}</span><strong>{t.askAdmin}</strong></div>
     )}
-    {car.priceAllIn && <div class="allin"><span class="lbl">All-in</span><span class="num">{rupiah(car.priceAllIn)}</span></div>}
+    {car.priceAllIn && <div class="allin"><span class="lbl">{t.allIn}</span><span class="num">{rupiah(car.priceAllIn)}</span></div>}
   </div>
   )}
-  <a class="btn btn-outline" href={href} data-cta={`car-${refSlug(car.name)}`} rel="nofollow"><Icon name="wa" />{consult ? 'Konsultasi harga' : 'Pesan unit ini'}</a>
+  <a class="btn btn-outline" href={href} data-cta={`car-${refSlug(car.name)}`} rel="nofollow"><Icon name="wa" />{consult ? t.consultPrice : t.bookThis}</a>
 </article>
 
 <style>
@@ -46,6 +49,8 @@ const href = waHref(settings.waPhone, message, `${refPrefix}-${refSlug(car.name)
   .ph { min-width: 0; overflow: hidden; }
   .badge { position: absolute; left: 10px; top: 10px; background: var(--deep); color: #fff; font: 700 0.72rem/1 var(--text); padding: 5px 8px; border-radius: 6px; }
   .body { display: grid; gap: 4px; padding-inline: 4px; align-content: start; }
+  .body h3 a { color: inherit; text-decoration: none; }
+  .body h3 a:hover { color: var(--blue); }
   .meta { display: flex; align-items: flex-start; gap: 6px; line-height: 1.4; font-size: 0.85rem; color: var(--soft); }
   .price { display: flex; justify-content: space-between; align-items: end; gap: 8px; border-top: 1px solid var(--line); padding: 10px 4px 0; }
   .price > div { display: grid; gap: 2px; }

@@ -12,6 +12,7 @@ export function rupiahShort(n: number): string {
 export const dateId = (iso: string) =>
   new Date(iso).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
+/** Indonesian labels; use ui(lang).category for pages that can be English. */
 export const CATEGORY_LABEL: Record<string, string> = {
   mpv: 'MPV',
   'mpv-premium': 'MPV premium',

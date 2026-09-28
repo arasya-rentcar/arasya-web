@@ -1,36 +1,43 @@
 ---
 import type { Content } from '../lib/content';
+import { ui } from '../lib/i18n';
+import { paths, type Alternates } from '../lib/paths';
 import { cityIsIndexable } from '../lib/quality';
 import { waHref } from '../lib/wa';
 import Icon from './Icon.astro';
 
-interface Props { content: Content; path: string }
-const { content, path } = Astro.props;
-const { settings, services, cities } = content;
+interface Props { content: Content; path: string; alternates: Alternates }
+const { content, path, alternates } = Astro.props;
+const { settings, services, cities, posts, lang } = content;
+const t = ui(lang);
 
 // Only cities that are live in search appear in the menu; thin drafts stay reachable by URL.
-const menuCities = cities.filter(cityIsIndexable).map((c) => ({ href: `/${c.slug.current}`, label: c.name }));
-const inCities = path === '/sewa-mobil' || menuCities.some((c) => c.href === path);
+const menuCities = cities.filter(cityIsIndexable).map((c) => ({ href: paths.city(c, lang), label: c.name }));
+const allCities = paths.cities(lang);
+const inCities = path === allCities || menuCities.some((c) => c.href === path);
 const links = [
-  { href: '/armada', label: 'Armada' },
-  ...services.map((s) => ({ href: `/${s.slug.current}`, label: s.navLabel || s.slug.current })),
-  { href: '/blog', label: 'Blog' },
+  { href: paths.fleet(lang), label: t.navFleet },
+  ...services.map((s) => ({ href: paths.service(s, lang), label: s.navLabel || s.slug.current })),
+  ...(posts.length ? [{ href: paths.blog(), label: t.navBlog }] : []),
 ];
 const isActive = (href: string) => path === href || path.startsWith(href + '/');
-const wa = waHref(settings.waPhone, 'Halo Arasya, saya mau tanya sewa mobil.', 'NAV');
+const wa = waHref(settings.waPhone, t.waHello, 'NAV');
+// Switcher: the same page in the other language, or that language's home page.
+const otherLang = lang === 'id' ? 'en' : 'id';
+const switchHref = alternates[otherLang] || paths.home(otherLang);
 ---
 <header class="site-header">
   <div class="wrap bar">
-    <a class="brand" href="/" aria-label={`${settings.brandName}, ke beranda`}>
+    <a class="brand" href={paths.home(lang)} aria-label={t.toHome(settings.brandName)}>
       <img src="/brand/logo-dark.png" alt={settings.brandName} width="140" height="54" />
     </a>
-    <nav class="nav" aria-label="Menu utama">
+    <nav class="nav" aria-label={t.navMain}>
       <ul>
         {menuCities.length > 0 && (
           <li>
             <details class="dd" data-dd>
               <summary class:list={['dd-toggle', { active: inCities }]}>
-                Kota <svg class="chev" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="m2.5 4.5 3.5 3.5 3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                {t.navCities} <svg class="chev" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="m2.5 4.5 3.5 3.5 3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
               </summary>
               <div class="dd-menu">
                 <ul class:list={['dd-list', { cols: menuCities.length > 8 }]}>
@@ -38,7 +45,7 @@ const wa = waHref(settings.waPhone, 'Halo Arasya, saya mau tanya sewa mobil.', '
                     <li><a href={c.href} aria-current={path === c.href ? 'page' : undefined}><Icon name="pin" size={16} />{c.label}</a></li>
                   ))}
                 </ul>
-                <a class="dd-all" href="/sewa-mobil" aria-current={path === '/sewa-mobil' ? 'page' : undefined}>Semua kota layanan →</a>
+                <a class="dd-all" href={allCities} aria-current={path === allCities ? 'page' : undefined}>{t.navAllCities} →</a>
               </div>
             </details>
           </li>
@@ -48,22 +55,24 @@ const wa = waHref(settings.waPhone, 'Halo Arasya, saya mau tanya sewa mobil.', '
     </nav>
     <div class="actions">
       <a class="phone num" href={`tel:+${settings.waPhone}`}><Icon name="phone" size={16} />{settings.phones[0]}</a>
-      <a class="btn btn-wa" href={wa} data-cta="nav-wa" rel="nofollow"><Icon name="wa" />Pesan</a>
+      <a class="lang" href={switchHref} hreflang={otherLang} lang={otherLang} data-lang-switch={otherLang} aria-label={t.switchLabel}><span aria-hidden="true">{otherLang.toUpperCase()}</span></a>
+      <a class="btn btn-wa" href={wa} data-cta="nav-wa" rel="nofollow"><Icon name="wa" />{t.navBook}</a>
       <details class="mnav" data-dd>
-        <summary aria-label="Buka menu"><Icon name="menu" size={24} /></summary>
+        <summary aria-label={t.navOpenMenu}><Icon name="menu" size={24} /></summary>
         <div class="mnav-panel">
           {menuCities.length > 0 && (
             <div class="mgroup">
-              <span class:list={['mlabel', { active: inCities }]}>Kota</span>
+              <span class:list={['mlabel', { active: inCities }]}>{t.navCities}</span>
               <ul class="mcities">
                 {menuCities.map((c) => <li><a href={c.href} aria-current={path === c.href ? 'page' : undefined}>{c.label}</a></li>)}
-                <li><a href="/sewa-mobil" aria-current={path === '/sewa-mobil' ? 'page' : undefined}>Semua kota</a></li>
+                <li><a href={allCities} aria-current={path === allCities ? 'page' : undefined}>{t.navAllCitiesShort}</a></li>
               </ul>
             </div>
           )}
           <ul>
             {links.map((n) => <li><a href={n.href} aria-current={isActive(n.href) ? 'page' : undefined}>{n.label}</a></li>)}
-            <li><a href={`tel:+${settings.waPhone}`} class="num">Telepon {settings.phones[0]}</a></li>
+            <li><a href={`tel:+${settings.waPhone}`} class="num">{t.call} {settings.phones[0]}</a></li>
+            <li><a href={switchHref} hreflang={otherLang} lang={otherLang} data-lang-switch={otherLang}>{otherLang === 'en' ? 'English' : 'Bahasa Indonesia'}</a></li>
           </ul>
         </div>
       </details>
@@ -115,6 +124,8 @@ const wa = waHref(settings.waPhone, 'Halo Arasya, saya mau tanya sewa mobil.', '
   .actions { display: flex; align-items: center; gap: 14px; margin-left: auto; }
   .phone { display: inline-flex; align-items: center; gap: 6px; color: var(--deep); text-decoration: none; font: 700 0.95rem/1 var(--display); }
   .actions .btn { padding: 11px 16px; }
+  .lang { font: 700 0.8rem/1 var(--text); letter-spacing: 0.04em; color: var(--deep); text-decoration: none; border: 1px solid var(--line); border-radius: 8px; padding: 8px 9px; }
+  .lang:hover { border-color: var(--blue); color: var(--blue); }
   .mnav { display: none; position: relative; }
   .mnav summary { list-style: none; cursor: pointer; padding: 8px; color: var(--deep); }
   .mnav summary::-webkit-details-marker { display: none; }
@@ -128,4 +139,5 @@ const wa = waHref(settings.waPhone, 'Halo Arasya, saya mau tanya sewa mobil.', '
   .mcities a { font-weight: 500; padding-block: 10px; }
   @media (max-width: 1080px) { .phone { display: none; } }
   @media (max-width: 920px) { .nav { display: none; } .mnav { display: block; } }
+  @media (max-width: 400px) { .lang { display: none; } }
 </style>

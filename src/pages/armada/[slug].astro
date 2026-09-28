@@ -1,0 +1,15 @@
+---
+import CarPage from '../../templates/CarPage.astro';
+import { getContent, hasEn, type Car } from '../../lib/content';
+import { paths } from '../../lib/paths';
+
+export async function getStaticPaths() {
+  const { cars } = await getContent('id');
+  return cars.map((car) => ({
+    params: { slug: car.slug.current },
+    props: { car, alternates: hasEn.car(car) ? { en: paths.car(car.slug.current, 'en') } : {} },
+  }));
+}
+const { car, alternates } = Astro.props as { car: Car; alternates: { en?: string } };
+---
+<CarPage car={car} lang="id" alternates={alternates} />

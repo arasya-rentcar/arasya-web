@@ -1,4 +1,5 @@
 import { defineArrayMember, defineField, defineType } from 'sanity';
+import { enHero, enObject, enSlug } from './shared';
 
 /**
  * One document = one location landing page (/sewa-mobil-{kota}).
@@ -27,6 +28,7 @@ export const city = defineType({
     { name: 'main', title: 'Utama', default: true },
     { name: 'local', title: 'Konten lokal' },
     { name: 'seo', title: 'SEO' },
+    { name: 'en', title: 'English' },
   ],
   fields: [
     defineField({ name: 'name', title: 'Nama kota', type: 'string', group: 'main', validation: (r) => r.required() }),
@@ -113,6 +115,27 @@ export const city = defineType({
     }),
     defineField({ name: 'faq', title: 'FAQ', type: 'array', of: [{ type: 'faqItem' }], group: 'local' }),
     defineField({ name: 'seo', title: 'SEO', type: 'seo', group: 'seo' }),
+    enObject([
+      enSlug,
+      enHero,
+      { name: 'editorial', type: 'object', title: 'Editorial', fields: [{ name: 'eyebrow', type: 'string' }, { name: 'title', type: 'string' }, { name: 'lead', type: 'text', rows: 3 }, { name: 'body', type: 'richText' }] },
+      { name: 'pickupPoints', type: 'string', title: 'Pick-up points' },
+      { name: 'areaServed', type: 'array', of: [defineArrayMember({ type: 'string' })], title: 'Areas' },
+      {
+        name: 'destinations',
+        type: 'array',
+        title: 'Destinations (same order as Indonesian; photos are shared)',
+        of: [defineArrayMember({ type: 'object', fields: [{ name: 'name', type: 'string' }, { name: 'area', type: 'string' }, { name: 'text', type: 'text', rows: 3 }] })],
+      },
+      {
+        name: 'routes',
+        type: 'array',
+        title: 'Routes (same order as Indonesian)',
+        of: [defineArrayMember({ type: 'object', fields: [{ name: 'to', type: 'string' }, { name: 'duration', type: 'string' }, { name: 'note', type: 'string' }] })],
+      },
+      { name: 'faq', type: 'array', of: [defineArrayMember({ type: 'faqItem' })], title: 'FAQ' },
+      { name: 'seo', type: 'seo', title: 'SEO' },
+    ]),
   ],
   validation: (r) =>
     r.custom((doc: any) => {

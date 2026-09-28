@@ -1,0 +1,36 @@
+---
+/**
+ * English versions of city and service pages, built only for documents whose
+ * `en` fields are filled in. Wedding and plain pages stay Indonesian-only:
+ * their audience is local.
+ */
+import CityPage from '../../templates/CityPage.astro';
+import CorporatePage from '../../templates/CorporatePage.astro';
+import TravelPage from '../../templates/TravelPage.astro';
+import { getContent } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const raw = await getContent('id');
+  const { cities, services } = await getContent('en');
+  const reserved = new Set(['fleet', 'cities', 'official-contacts']);
+  const idSlug = (id: string) => '/' + [...raw.cities, ...raw.services].find((d) => d._id === id)!.slug.current;
+  const paths = [
+    ...cities.map((city) => ({ params: { slug: city.slug.current }, props: { kind: 'city' as const, city, alternates: { id: idSlug(city._id) } } })),
+    ...services
+      .filter((s) => s.template === 'corporate' || s.template === 'travel')
+      .map((page) => ({ params: { slug: page.slug.current }, props: { kind: 'service' as const, page, alternates: { id: idSlug(page._id) } } })),
+  ];
+  const seen = new Set<string>();
+  for (const p of paths) {
+    if (reserved.has(p.params.slug) || seen.has(p.params.slug)) throw new Error(`English slug "${p.params.slug}" is already taken`);
+    seen.add(p.params.slug);
+  }
+  return paths;
+}
+
+const props = Astro.props as any;
+const alt = props.alternates;
+---
+{props.kind === 'city' && <CityPage city={props.city} lang="en" alternates={alt} />}
+{props.kind === 'service' && props.page.template === 'corporate' && <CorporatePage page={props.page} lang="en" alternates={alt} />}
+{props.kind === 'service' && props.page.template === 'travel' && <TravelPage page={props.page} lang="en" alternates={alt} />}

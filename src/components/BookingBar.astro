@@ -5,35 +5,37 @@
  * still works.
  */
 import type { Car, Settings } from '../lib/content';
+import { langOf, ui } from '../lib/i18n';
 import { waHref } from '../lib/wa';
 import Icon from './Icon.astro';
 
 interface Props { settings: Settings; cars: Car[]; refCode: string; defaultPickup?: string; defaultDest?: string; defaultCar?: string; destLabel?: string }
-const { settings, cars, refCode, defaultPickup = '', defaultDest = '', defaultCar = '', destLabel = 'Tujuan' } = Astro.props;
-const fallback = waHref(settings.waPhone, 'Halo Arasya, saya mau sewa mobil.', refCode);
+const t = ui(langOf(Astro.url.pathname));
+const { settings, cars, refCode, defaultPickup = '', defaultDest = '', defaultCar = '', destLabel = t.bkDest } = Astro.props;
+const fallback = waHref(settings.waPhone, t.bkMsg.hello, refCode);
 const uid = 'bk-' + refCode.toLowerCase();
 ---
-<form class="booking" data-booking data-fab-tuck data-phone={settings.waPhone} data-ref={refCode} action={fallback} method="get">
+<form class="booking" data-booking data-fab-tuck data-phone={settings.waPhone} data-ref={refCode} data-msg={JSON.stringify(t.bkMsg)} action={fallback} method="get">
   <div class="f">
-    <label for={`${uid}-date`}>Tanggal</label>
+    <label for={`${uid}-date`}>{t.bkDate}</label>
     <input id={`${uid}-date`} name="date" type="date" required />
   </div>
   <div class="f">
-    <label for={`${uid}-pickup`}>Jemput di</label>
-    <input id={`${uid}-pickup`} name="pickup" type="text" placeholder="Rumah, stasiun, hotel…" value={defaultPickup} autocomplete="street-address" />
+    <label for={`${uid}-pickup`}>{t.bkPickup}</label>
+    <input id={`${uid}-pickup`} name="pickup" type="text" placeholder={t.bkPickupPh} value={defaultPickup} autocomplete="street-address" />
   </div>
   <div class="f">
     <label for={`${uid}-dest`}>{destLabel}</label>
-    <input id={`${uid}-dest`} name="dest" type="text" placeholder="Puncak, bandara, dalam kota…" value={defaultDest} />
+    <input id={`${uid}-dest`} name="dest" type="text" placeholder={t.bkDestPh} value={defaultDest} />
   </div>
   <div class="f">
-    <label for={`${uid}-car`}>Unit</label>
+    <label for={`${uid}-car`}>{t.bkUnit}</label>
     <select id={`${uid}-car`} name="car">
-      <option value="">Bantu pilihkan</option>
+      <option value="">{t.bkHelp}</option>
       {cars.map((c) => <option value={c.name} selected={c.name === defaultCar}>{c.name}</option>)}
     </select>
   </div>
-  <button class="btn btn-wa" type="submit" data-cta="booking"><Icon name="wa" />Kirim ke WhatsApp</button>
+  <button class="btn btn-wa" type="submit" data-cta="booking"><Icon name="wa" />{t.bkSend}</button>
 </form>
 
 <script>
@@ -47,22 +49,23 @@ const uid = 'bk-' + refCode.toLowerCase();
     form.addEventListener('submit', (ev) => {
       ev.preventDefault();
       const f = new FormData(form);
+      const m = JSON.parse(form.dataset.msg || '{}');
       const get = (k: string) => String(f.get(k) || '').trim();
       const tanggal = get('date')
-        ? new Date(get('date') + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+        ? new Date(get('date') + 'T00:00:00').toLocaleDateString(m.locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
         : '…';
       const lines = [
-        'Halo Arasya, saya mau sewa mobil.',
-        `Tanggal: ${tanggal}`,
-        `Jemput di: ${get('pickup') || '…'}`,
-        `Tujuan: ${get('dest') || '…'}`,
-        `Unit: ${get('car') || 'mohon dibantu pilihkan'}`,
+        m.hello,
+        `${m.date}: ${tanggal}`,
+        `${m.pickup}: ${get('pickup') || '…'}`,
+        `${m.dest}: ${get('dest') || '…'}`,
+        `${m.unit}: ${get('car') || m.help}`,
       ];
       const text = lines.join('\n') + ` [Ref: ${form.dataset.ref}]`;
       let src = '';
       try { src = sessionStorage.getItem('arasya-campaign') || ''; } catch {}
       const url = `https://wa.me/${form.dataset.phone}?text=${encodeURIComponent(text + (src ? ` [Src: ${src}]` : ''))}`;
-      (window as any).dataLayer?.push({ event: 'quote_submit', page: location.pathname, unit: get('car') });
+      (window as any).arasyaTrack?.('generate_lead', { method: 'booking_form', unit: get('car') || 'any' });
       window.location.href = url;
     });
   });

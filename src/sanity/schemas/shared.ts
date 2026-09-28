@@ -101,3 +101,39 @@ export const richText = defineType({
     },
   ],
 });
+
+/**
+ * English version of a document. Only the fields that need rewriting for a
+ * foreign reader live here; everything else (photos, prices, cars) is shared
+ * with the Indonesian version. The /en page is built only once this is filled.
+ */
+export function enObject(fields: any[], description = 'Isi hanya bagian yang perlu dibaca tamu asing. Tulis ulang secara natural, bukan terjemahan kata per kata. Halaman /en dibuat hanya bila bagian ini diisi.') {
+  return defineField({
+    name: 'en',
+    title: 'English version',
+    type: 'object',
+    group: 'en',
+    description,
+    options: { collapsible: true, collapsed: false },
+    fields,
+  });
+}
+
+export const enSlug = defineField({
+  name: 'slug',
+  title: 'English slug',
+  type: 'slug',
+  description: 'Contoh: car-rental-bogor, private-transfer, corporate',
+});
+
+export const enHero = defineField({
+  name: 'hero',
+  title: 'Hero',
+  type: 'object',
+  fields: [
+    { name: 'eyebrow', type: 'string', title: 'Label kecil' },
+    { name: 'title', type: 'string', title: 'Judul (H1)' },
+    { name: 'titleAccent', type: 'string', title: 'Lanjutan judul (biru)' },
+    { name: 'lead', type: 'text', rows: 3, title: 'Paragraf pembuka' },
+  ],
+});

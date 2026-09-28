@@ -1,0 +1,21 @@
+---
+import RoutePage from '../../../templates/RoutePage.astro';
+import { getContent, type ServicePage, type TravelRoute } from '../../../lib/content';
+import { paths, routeSlug, type Alternates } from '../../../lib/paths';
+
+export async function getStaticPaths() {
+  const raw = await getContent('id');
+  const { services } = await getContent('en');
+  return services
+    .filter((s) => s.template === 'travel')
+    .flatMap((page) => {
+      const pageId = raw.services.find((s) => s._id === page._id)!;
+      return (page.routes || []).map((route) => ({
+        params: { slug: page.slug.current, route: routeSlug(route) },
+        props: { page, route, alternates: { id: paths.route(pageId, route, 'id') } },
+      }));
+    });
+}
+const { page, route, alternates } = Astro.props as { page: ServicePage; route: TravelRoute; alternates: Alternates };
+---
+<RoutePage page={page} route={route} lang="en" alternates={alternates} />

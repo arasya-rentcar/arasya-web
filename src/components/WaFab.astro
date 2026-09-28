@@ -1,11 +1,13 @@
 ---
+import { langOf, ui } from '../lib/i18n';
 import { waHref } from '../lib/wa';
 import Icon from './Icon.astro';
 interface Props { phone: string; message?: string; waRef?: string }
-const { phone, message = 'Halo Arasya, saya mau tanya sewa mobil.', waRef = 'FAB' } = Astro.props;
+const t = ui(langOf(Astro.url.pathname));
+const { phone, message = t.waHello, waRef = 'FAB' } = Astro.props;
 ---
-<a class="fab" href={waHref(phone, message, waRef)} data-cta="fab" rel="nofollow" aria-label="Chat WhatsApp admin Arasya">
-  <Icon name="wa" size={26} /><span>Chat admin</span>
+<a class="fab" href={waHref(phone, message, waRef)} data-cta="fab" rel="nofollow" aria-label={t.fabLabel}>
+  <Icon name="wa" size={26} /><span>{t.fab}</span>
 </a>
 <script>
   // Keep the chat button out of the way while a booking form or tariff checker is on screen.

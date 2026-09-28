@@ -4,6 +4,8 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import WaFab from '../components/WaFab.astro';
 import { getContent } from '../lib/content';
+import { bcp47, htmlLang, langOf, ogLocale, ui, type Lang } from '../lib/i18n';
+import type { Alternates } from '../lib/paths';
 import { graph, organization, priceRange } from '../lib/schema';
 
 interface Props {
@@ -15,18 +17,29 @@ interface Props {
   ogImage?: string;
   waMessage?: string;
   waRef?: string;
+  /** The same page in the other language, when it exists (hreflang + switcher). */
+  alternates?: Alternates;
 }
 
 const { title, description, path, noindex = false, jsonld = [], ogImage = '/og-default.png', waMessage, waRef } = Astro.props;
-const content = await getContent();
+const lang: Lang = langOf(path);
+const t = ui(lang);
+const alternates: Alternates = { [lang]: path, ...Astro.props.alternates };
+const bilingual = !!(alternates.id && alternates.en);
+const content = await getContent(lang);
 const site = (Astro.site?.toString() || content.settings.siteUrl).replace(/\/$/, '');
-const canonical = site + (path === '/' ? '' : path);
+const abs = (p: string) => site + (p === '/' ? '' : p);
+const canonical = abs(path);
 const org = { ...organization(content.settings, site, content.cities.map((c) => c.name)), priceRange: priceRange(content.cars) };
-const ld = graph({ '@type': 'WebSite', '@id': `${site}/#website`, url: site, name: content.settings.brandName, inLanguage: 'id-ID' }, org, ...jsonld);
-const gtm = import.meta.env.PUBLIC_GTM_ID;
+const ld = graph({ '@type': 'WebSite', '@id': `${site}/#website`, url: site, name: content.settings.brandName, inLanguage: ['id-ID', 'en'] }, org, { '@type': 'WebPage', '@id': canonical, url: canonical, name: title, inLanguage: bcp47(lang), isPartOf: { '@id': `${site}/#website` } }, ...jsonld);
+// Analytics IDs are set in the Studio (Pengaturan situs → Analitik); env vars are a fallback.
+const ga4 = content.settings.analytics?.ga4Id?.trim() || import.meta.env.PUBLIC_GA4_ID;
+const gtm = content.settings.analytics?.gtmId?.trim() || import.meta.env.PUBLIC_GTM_ID;
+const other: Lang = lang === 'id' ? 'en' : 'id';
+const banner = ui(other);
 ---
 <!doctype html>
-<html lang="id">
+<html lang={htmlLang(lang)}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -34,8 +47,16 @@ const gtm = import.meta.env.PUBLIC_GTM_ID;
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, follow" />}
+    {bilingual && !noindex && (
+      <>
+        <link rel="alternate" hreflang="id" href={abs(alternates.id!)} />
+        <link rel="alternate" hreflang="en" href={abs(alternates.en!)} />
+        <link rel="alternate" hreflang="x-default" href={abs(alternates.id!)} />
+      </>
+    )}
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content="id_ID" />
+    <meta property="og:locale" content={ogLocale(lang)} />
+    {bilingual && <meta property="og:locale:alternate" content={ogLocale(other)} />}
     <meta property="og:site_name" content={content.settings.brandName} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -48,27 +69,40 @@ const gtm = import.meta.env.PUBLIC_GTM_ID;
     <link rel="alternate" type="text/plain" href="/llms.txt" title="Ringkasan untuk AI" />
     <slot name="head" />
     <script type="application/ld+json" set:html={JSON.stringify(ld)} />
-    {gtm && (
-      <script is:inline define:vars={{ gtm }}>
+    {(ga4 || gtm) && (
+      <script is:inline define:vars={{ ga4, gtm }}>
+        /* Google Analytics 4 (and/or Tag Manager). The tag loads after the page
+           has rendered so it never delays the first paint; the page view is
+           queued before that, so nothing is lost. */
         window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
-        var s = document.createElement('script'); s.async = true; s.src = 'https://www.googletagmanager.com/gtm.js?id=' + gtm;
-        document.head.appendChild(s);
+        window.gtag = function () { dataLayer.push(arguments); };
+        var add = function (src) { var s = document.createElement('script'); s.async = true; s.src = src; document.head.appendChild(s); };
+        if (ga4) { gtag('js', new Date()); gtag('config', ga4); }
+        if (gtm) dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
+        var go = function () {
+          if (ga4) add('https://www.googletagmanager.com/gtag/js?id=' + ga4);
+          if (gtm) add('https://www.googletagmanager.com/gtm.js?id=' + gtm);
+        };
+        if (document.readyState === 'complete') setTimeout(go, 0); else addEventListener('load', function () { setTimeout(go, 0); });
       </script>
     )}
   </head>
   <body>
-    <a class="skip" href="#main">Langsung ke konten</a>
-    <Header content={content} path={path} />
+    <a class="skip" href="#main">{t.skip}</a>
+    <Header content={content} path={path} alternates={alternates} />
     <main id="main">
       <slot />
     </main>
     <Footer content={content} />
     <WaFab phone={content.settings.waPhone} message={waMessage} waRef={waRef} />
     <script is:inline>
-      /* Campaign attribution + CTA analytics. Captures utm/gclid on landing,
-         keeps them for the session, and appends them to every WhatsApp link so
-         the admin sees which ad a chat came from. */
+      /* Campaign attribution + conversion events. utm/gclid are captured on
+         landing, kept for the session, and appended to every WhatsApp link so
+         the admin sees which ad a chat came from. Events go to GA4 (gtag) and
+         to dataLayer for Tag Manager:
+           generate_lead  WhatsApp link or booking form (method: whatsapp | booking_form)
+           phone_click    tel: link
+           copy_official  copy button on an official number or account */
       (function () {
         var KEY = 'arasya-campaign', tag = '';
         try {
@@ -77,17 +111,61 @@ const gtm = import.meta.env.PUBLIC_GTM_ID;
           if (parts.length) sessionStorage.setItem(KEY, parts.join(' · '));
           tag = sessionStorage.getItem(KEY) || '';
         } catch (e) {}
-        document.addEventListener('click', function (ev) {
-          var a = ev.target.closest && ev.target.closest('a[href^="https://wa.me/"]');
-          if (!a) return;
-          if (tag && a.href.indexOf('%5BSrc%3A') < 0) {
-            var u = new URL(a.href);
-            u.searchParams.set('text', (u.searchParams.get('text') || '') + ' [Src: ' + tag + ']');
-            a.href = u.toString();
-          }
+        window.arasyaTrack = function (name, params) {
+          params = Object.assign({ page_path: location.pathname, language: document.documentElement.lang }, params || {});
           window.dataLayer = window.dataLayer || [];
-          window.dataLayer.push({ event: 'cta_click', cta: a.dataset.cta || 'wa', page: location.pathname });
+          window.dataLayer.push(Object.assign({ event: name }, params));
+          if (window.gtag && name !== 'cta_click') window.gtag('event', name, params);
+        };
+        document.addEventListener('click', function (ev) {
+          var el = ev.target.closest && ev.target.closest('a[href^="https://wa.me/"], a[href^="tel:"], button[data-copy]');
+          if (!el) return;
+          if (el.tagName === 'BUTTON') return arasyaTrack('copy_official', { item: el.dataset.copyKind || 'number' });
+          if (el.href.indexOf('tel:') === 0) return arasyaTrack('phone_click', { cta: el.dataset.cta || 'tel' });
+          if (tag && el.href.indexOf('%5BSrc%3A') < 0) {
+            var u = new URL(el.href);
+            u.searchParams.set('text', (u.searchParams.get('text') || '') + ' [Src: ' + tag + ']');
+            el.href = u.toString();
+          }
+          arasyaTrack('generate_lead', { method: 'whatsapp', cta: el.dataset.cta || 'wa' });
+          window.dataLayer.push({ event: 'cta_click', cta: el.dataset.cta || 'wa', page: location.pathname });
         }, true);
+      })();
+    </script>
+    {bilingual && (
+      <div class="lang-hint" id="lang-hint" hidden lang={htmlLang(other)}>
+        <p>{banner.bannerText}</p>
+        <div>
+          <a class="btn btn-blue" href={alternates[other]} data-lang-switch={other}>{banner.bannerGo}</a>
+          <button type="button" data-lang-stay>{banner.bannerStay}</button>
+        </div>
+      </div>
+    )}
+    <script is:inline define:vars={{ lang, other, target: bilingual ? alternates[other] : null }}>
+      /* Language: the URL decides what is served (so search engines index both
+         versions). A visitor's explicit choice is remembered and followed on
+         later visits; on a first visit we only suggest the other version when
+         the browser's language says they'd prefer it. We never redirect on
+         first sight: crawlers and Indonesians browsing on an English phone
+         would be sent to the wrong page. */
+      (function () {
+        var KEY = 'arasya-lang', pref = null;
+        try { pref = localStorage.getItem(KEY); } catch (e) {}
+        var save = function (v) { try { localStorage.setItem(KEY, v); } catch (e) {} };
+        document.addEventListener('click', function (ev) {
+          var a = ev.target.closest && ev.target.closest('[data-lang-switch]');
+          if (a) save(a.getAttribute('data-lang-switch'));
+        });
+        if (!target) return;
+        if (pref === other) { location.replace(target + location.search + location.hash); return; }
+        if (pref) return;
+        var langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+        var prefersId = /^(id|ms|jv|su)\b/i.test(langs[0] || '');
+        if ((prefersId ? 'id' : 'en') === lang) return;
+        var box = document.getElementById('lang-hint');
+        if (!box) return;
+        box.hidden = false;
+        box.querySelector('[data-lang-stay]').addEventListener('click', function () { save(lang); box.hidden = true; });
       })();
     </script>
   </body>
@@ -96,4 +174,10 @@ const gtm = import.meta.env.PUBLIC_GTM_ID;
 <style is:global>
   .skip { position: absolute; left: 8px; top: -60px; z-index: 100; background: var(--deep); color: #fff; padding: 10px 14px; border-radius: 8px; }
   .skip:focus { top: 8px; }
+  .lang-hint { position: fixed; left: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 70; max-width: 340px; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 14px 16px; display: grid; gap: 10px; font-size: 0.92rem; color: var(--body); }
+  .lang-hint[hidden] { display: none; }
+  .lang-hint div { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .lang-hint .btn { padding: 9px 14px; font-size: 0.88rem; }
+  .lang-hint button { background: none; border: 0; color: var(--soft); font: 600 0.88rem/1 var(--text); cursor: pointer; padding: 8px 4px; }
+  @media (max-width: 560px) { .lang-hint { right: 16px; max-width: none; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); } }
 </style>

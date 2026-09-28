@@ -1,0 +1,24 @@
+---
+/** Travel route pages: /travel/{origin}-{destination}. Only routes with their own copy get a page. */
+import RoutePage from '../../templates/RoutePage.astro';
+import { getContent, hasEn, type ServicePage, type TravelRoute } from '../../lib/content';
+import { paths, routeSlug, type Alternates } from '../../lib/paths';
+
+export async function getStaticPaths() {
+  const { services } = await getContent('id');
+  const en = await getContent('en');
+  return services
+    .filter((s) => s.template === 'travel')
+    .flatMap((page) => {
+      const pageEn = en.services.find((s) => s._id === page._id);
+      return (page.routes || [])
+        .filter((r) => r.intro)
+        .map((route) => ({
+          params: { slug: page.slug.current, route: routeSlug(route) },
+          props: { page, route, alternates: pageEn && hasEn.route(route) ? { en: paths.route(pageEn, route, 'en') } : {} },
+        }));
+    });
+}
+const { page, route, alternates } = Astro.props as { page: ServicePage; route: TravelRoute; alternates: Alternates };
+---
+<RoutePage page={page} route={route} lang="id" alternates={alternates} />

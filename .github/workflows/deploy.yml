@@ -11,6 +11,8 @@ on:
   repository_dispatch:
     types: [ sanity-publish ]
   workflow_dispatch: {}
+  # Called by scheduled-posts.yml on days a scheduled article goes live.
+  workflow_call: {}
 
 concurrency:
   group: deploy-vercel

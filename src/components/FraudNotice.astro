@@ -6,15 +6,19 @@
  * full with a copy button, and the page /rekening-resmi repeats it.
  */
 import type { Settings } from '../lib/content';
+import { langOf, ui } from '../lib/i18n';
+import { paths } from '../lib/paths';
 import Icon from './Icon.astro';
 
 interface Props { settings: Settings; heading?: 'h1' | 'h2'; withLink?: boolean }
 const { settings, heading = 'h2', withLink = true } = Astro.props;
+const lang = langOf(Astro.url.pathname);
+const t = ui(lang);
 const fw = settings.fraudWarning || {};
-const title = fw.title || 'Waspada penipuan yang mengatasnamakan Arasya';
+const title = fw.title || t.fraudTitle;
 const Heading = heading;
 ---
-<section class="fraud" aria-labelledby="fraud-title">
+<section class="fraud" aria-labelledby="fraud-title" data-copied={t.copied} data-copy-label={t.copy}>
   <div class="head">
     <span class="ic" aria-hidden="true"><Icon name="alert" size={22} /></span>
     <div class="stack">
@@ -26,23 +30,23 @@ const Heading = heading;
   <div class="cols">
     <div class="left">
     <div class="official">
-      <h3><Icon name="phone" size={18} />Nomor resmi</h3>
+      <h3><Icon name="phone" size={18} />{t.officialPhones}</h3>
       <ul>
         {settings.phones.map((p) => (
           <li>
             <span class="num val">{p}</span>
-            <button type="button" class="copy" data-copy={p} aria-label={`Salin nomor ${p}`}><Icon name="copy" size={16} /><span>Salin</span></button>
+            <button type="button" class="copy" data-copy={p} data-copy-kind="phone" aria-label={t.copyPhone(p)}><Icon name="copy" size={16} /><span>{t.copy}</span></button>
           </li>
         ))}
       </ul>
     </div>
     <div class="official">
-      <h3><Icon name="bank" size={18} />Rekening resmi</h3>
+      <h3><Icon name="bank" size={18} />{t.officialAccount}</h3>
       <ul>
         {settings.bankAccounts.map((b) => (
           <li>
             <span class="val"><b>{b.bank}</b> <span class="num">{b.number}</span><small>{b.owner}</small></span>
-            <button type="button" class="copy" data-copy={b.number.replace(/\s/g, '')} aria-label={`Salin nomor rekening ${b.bank}`}><Icon name="copy" size={16} /><span>Salin</span></button>
+            <button type="button" class="copy" data-copy={b.number.replace(/\s/g, '')} data-copy-kind="bank" aria-label={t.copyAcc(b.bank)}><Icon name="copy" size={16} /><span>{t.copy}</span></button>
           </li>
         ))}
       </ul>
@@ -50,21 +54,22 @@ const Heading = heading;
     </div>
     {fw.points && fw.points.length > 0 && (
       <div class="never">
-        <h3><Icon name="shield" size={18} />Yang perlu diwaspadai</h3>
+        <h3><Icon name="shield" size={18} />{t.watchOut}</h3>
         <ul>{fw.points.map((p) => <li>{p}</li>)}</ul>
       </div>
     )}
   </div>
-  {withLink && <a class="more" href="/rekening-resmi">Cara memastikan nomor dan rekening resmi →</a>}
+  {withLink && <a class="more" href={paths.verify(lang)}>{t.fraudMore}</a>}
 </section>
 
 <script>
   document.querySelectorAll<HTMLButtonElement>('.fraud .copy').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const label = btn.querySelector('span');
+      const box = btn.closest<HTMLElement>('.fraud');
       try {
         await navigator.clipboard.writeText(btn.dataset.copy || '');
-        if (label) { label.textContent = 'Tersalin'; setTimeout(() => (label.textContent = 'Salin'), 1600); }
+        if (label && box) { label.textContent = box.dataset.copied || ''; setTimeout(() => (label.textContent = box.dataset.copyLabel || ''), 1600); }
       } catch {
         const val = btn.previousElementSibling;
         if (val) { const r = document.createRange(); r.selectNodeContents(val); const s = getSelection(); s?.removeAllRanges(); s?.addRange(r); }

@@ -579,3 +579,8 @@ out = ROOT / "src" / "data" / "seed.json"
 out.parent.mkdir(parents=True, exist_ok=True)
 out.write_text(json.dumps(docs, ensure_ascii=False, indent=1))
 print(f"wrote {len(docs)} documents to {out}")
+
+# Content added after the migration (unit pages, routes, English, articles).
+import subprocess  # noqa: E402
+
+subprocess.run([sys.executable, str(ROOT / "scripts" / "content" / "apply.py")], check=True)

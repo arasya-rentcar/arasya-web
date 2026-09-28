@@ -1,0 +1,79 @@
+---
+/**
+ * Verification page people land on when they search "arasya rent car
+ * penipuan" or want to double-check an account before paying.
+ */
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import FraudNotice from '../components/FraudNotice.astro';
+import Faq from '../components/Faq.astro';
+import { getContent } from '../lib/content';
+import { ui, type Lang } from '../lib/i18n';
+import { paths } from '../lib/paths';
+import { breadcrumbs, faqPage } from '../lib/schema';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const en = lang === 'en';
+const t = ui(lang);
+const { settings } = await getContent(lang);
+const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
+const path = paths.verify(lang);
+const crumbs = [{ name: t.home, path: paths.home(lang) }, { name: en ? 'Official contacts' : 'Nomor & rekening resmi', path }];
+const bank = settings.bankAccounts[0];
+const owner = bank?.owner.replace(/^a\.n\.\s*/i, '') || settings.legalName;
+const faq = en ? [
+  { question: "What is Arasya Rent Car's official WhatsApp number?", answer: `Our official numbers are ${settings.phones.join(', ')}. Any other number is not us.` },
+  ...(bank ? [{ question: 'Which account do I pay into?', answer: `Only ${bank.bank} ${bank.number} in the name of ${owner}. We never take payment into a personal account.` }] : []),
+  { question: 'Someone asked me to pay into a different account. What should I do?', answer: `Don't pay. Call one of our official numbers (${settings.phones[0]}) to check, and let us know the number or account so we can report it.` },
+] : [
+  { question: 'Berapa nomor WhatsApp resmi Arasya Rent Car?', answer: `Nomor resmi Arasya Rent Car: ${settings.phones.join(', ')}. Di luar nomor tersebut bukan dari kami.` },
+  ...(bank ? [{ question: 'Ke rekening mana pembayaran Arasya Rent Car?', answer: `Hanya ke rekening ${bank.bank} ${bank.number} ${bank.owner}. Kami tidak menerima pembayaran ke rekening pribadi.` }] : []),
+  { question: 'Apa yang harus saya lakukan kalau diminta transfer ke rekening lain?', answer: `Jangan transfer. Hubungi nomor resmi kami (${settings.phones[0]}) untuk memastikan, dan laporkan nomor atau rekening tersebut kepada kami.` },
+];
+---
+<Base title={en ? 'Official Numbers & Bank Account | Arasya Rent Car' : 'Nomor & Rekening Resmi Arasya Rent Car — Waspada Penipuan'} description={en ? `Arasya Rent Car's official WhatsApp numbers and bank account (${settings.legalName}). Check them before you pay; we never ask for payment into a personal account.` : `Nomor WhatsApp dan rekening resmi Arasya Rent Car (${settings.legalName}). Cocokkan sebelum transfer; kami tidak pernah meminta transfer ke rekening pribadi.`} path={path} alternates={{ id: '/rekening-resmi', en: '/en/official-contacts' }} jsonld={[faqPage(faq), breadcrumbs(site, crumbs)]} waRef={en ? 'EN-VERIF-fab' : 'VERIF-fab'}>
+  <section class="head">
+    <div class="wrap stack">
+      <Breadcrumbs items={crumbs} />
+      <p class="lead">{en
+        ? `Scammers sometimes pose as rental companies to take deposits. These are the only official numbers and bank account of ${settings.brandName}, operated by ${settings.legalName}.`
+        : `Ada penipu yang memakai nama rental mobil untuk meminta transfer. Halaman ini berisi nomor dan rekening resmi ${settings.brandName}, dikelola ${settings.legalName}.`}</p>
+    </div>
+  </section>
+  <section class="section" style="padding-top:28px">
+    <div class="wrap stack">
+      <FraudNotice settings={settings} heading="h1" withLink={false} />
+      <div class="steps">
+        {en ? (
+          <>
+            <h2>Before you pay</h2>
+            <ol>
+              <li>Make sure the chat comes from one of the official numbers above.</li>
+              <li>Check the recipient name in your banking app: it must be <b>{owner}</b>.</li>
+              <li>Ask for an official invoice before paying the deposit.</li>
+              <li>If anything feels off, call {settings.phones[0]} first.</li>
+            </ol>
+          </>
+        ) : (
+          <>
+            <h2>Cara memastikan sebelum transfer</h2>
+            <ol>
+              <li>Pastikan chat datang dari salah satu nomor resmi di atas.</li>
+              <li>Cocokkan nama penerima di aplikasi bank: harus <b>{owner}</b>.</li>
+              <li>Minta invoice resmi sebelum membayar DP.</li>
+              <li>Kalau ada yang janggal, telepon {settings.phones[0]} dulu.</li>
+            </ol>
+          </>
+        )}
+      </div>
+    </div>
+  </section>
+  <Faq items={faq} title={en ? 'Checking it is really us' : 'Tanya jawab verifikasi'} />
+</Base>
+<style>
+  .head { background: var(--paper); padding-block: 24px 24px; border-bottom: 1px solid var(--line); }
+  .steps { display: grid; gap: 12px; max-width: 72ch; margin-top: 12px; }
+  .steps h2 { font-size: 1.35rem; }
+  .steps ol { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; color: var(--body); }
+</style>
