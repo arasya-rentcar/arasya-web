@@ -7,6 +7,7 @@ import Faq from '../components/Faq.astro';
 import CtaBand from '../components/CtaBand.astro';
 import PortableText from '../components/PortableText.astro';
 import Icon from '../components/Icon.astro';
+import FraudNotice from '../components/FraudNotice.astro';
 import { getContent, type City } from '../lib/content';
 import { dateId, rupiah } from '../lib/format';
 import { photo } from '../lib/images';
@@ -113,7 +114,12 @@ const jsonld = [cityService(city, cars, site, settings), faqPage(faq), breadcrum
       </section>
     );
     if (s === 'testimonials') return <Testimonials items={settings.testimonials} />;
-    if (s === 'faq') return <Faq items={faq} title={`Tanya jawab sewa mobil ${city.name}`} />;
+    if (s === 'faq') return (
+      <>
+        <section class="section" style="padding-bottom:0"><div class="wrap"><FraudNotice settings={settings} /></div></section>
+        <Faq items={faq} title={`Tanya jawab sewa mobil ${city.name}`} />
+      </>
+    );
     return null;
   })}
 

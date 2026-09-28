@@ -64,6 +64,18 @@ export const siteSettings = defineType({
     }),
     defineField({ name: 'trust', title: 'Poin kepercayaan', type: 'array', of: [{ type: 'titledText' }], group: 'trust' }),
     defineField({
+      name: 'fraudWarning',
+      title: 'Peringatan penipuan',
+      description: 'Tampil di beranda, halaman kota & layanan, dan /rekening-resmi. Nomor HP dan rekening diambil dari tab Kontak.',
+      type: 'object',
+      group: 'trust',
+      fields: [
+        { name: 'title', type: 'string', title: 'Judul' },
+        { name: 'text', type: 'text', rows: 3, title: 'Paragraf' },
+        { name: 'points', type: 'array', of: [{ type: 'string' }], title: 'Poin yang perlu diwaspadai' },
+      ],
+    }),
+    defineField({
       name: 'testimonials',
       title: 'Ulasan pelanggan',
       description: 'Hanya ulasan asli. Sertakan link ke ulasan Google bila ada.',

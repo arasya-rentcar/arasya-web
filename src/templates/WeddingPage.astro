@@ -13,6 +13,7 @@ import CarImage from '../components/CarImage.astro';
 import Steps from '../components/Steps.astro';
 import Testimonials from '../components/Testimonials.astro';
 import Faq from '../components/Faq.astro';
+import FraudNotice from '../components/FraudNotice.astro';
 import CtaBand from '../components/CtaBand.astro';
 import { getContent, type ServicePage } from '../lib/content';
 import { breadcrumbs, faqPage } from '../lib/schema';
@@ -71,6 +72,7 @@ const service = { '@type': 'Service', name: page.seo?.title, serviceType: 'Weddi
 
   <Steps items={page.steps || []} title="Cara memesan mobil pengantin" />
   <Testimonials items={settings.testimonials} />
+  <section class="section" style="padding-bottom:0"><div class="wrap"><FraudNotice settings={settings} /></div></section>
   <Faq items={faq} title="Tanya jawab mobil pengantin" />
   <CtaBand settings={settings} title="Cek ketersediaan untuk tanggal Anda" text="Tanggal pernikahan biasanya ramai dipesan. Kirim tanggal dan lokasi acara, admin kami cek unitnya." message="Halo Arasya, saya mau cek mobil pengantin. Tanggal acara: …, lokasi: …" waRef="WED-band" />
 </Base>

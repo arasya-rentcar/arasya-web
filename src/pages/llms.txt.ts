@@ -21,6 +21,7 @@ export const GET: APIRoute = async ({ site }) => {
     `- Telepon/WhatsApp: ${settings.phones.join(', ')}`,
     ...settings.bankAccounts.map((b) => `- Rekening resmi: ${b.bank} ${b.number} ${b.owner}`),
     `- Pembayaran: ${settings.paymentTerms || ''}`,
+    `- Waspada penipuan: pembayaran hanya ke rekening atas nama ${settings.legalName}; nomor resmi hanya yang tercantum di atas. Verifikasi: ${base}/rekening-resmi`,
     settings.rateNotes?.city ? `- Tarif Dalam Kota: ${settings.rateNotes.city}` : '',
     settings.rateNotes?.allIn ? `- Tarif All-in: ${settings.rateNotes.allIn}` : '',
     '',

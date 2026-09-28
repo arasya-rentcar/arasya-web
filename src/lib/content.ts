@@ -55,6 +55,7 @@ export interface Settings {
   bankAccounts: { bank: string; number: string; owner: string }[];
   instagram?: string;
   paymentTerms?: string;
+  fraudWarning?: { title?: string; text?: string; points?: string[] };
   rateNotes?: { city?: string; allIn?: string };
   trust: TitledText[];
   testimonials: { quote: string; name: string; context?: string; link?: string }[];

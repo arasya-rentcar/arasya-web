@@ -11,6 +11,7 @@ import CarImage from '../components/CarImage.astro';
 import Steps from '../components/Steps.astro';
 import Testimonials from '../components/Testimonials.astro';
 import Faq from '../components/Faq.astro';
+import FraudNotice from '../components/FraudNotice.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Icon from '../components/Icon.astro';
 import { getContent, type ServicePage } from '../lib/content';
@@ -102,6 +103,7 @@ const icons = ['shield', 'clock', 'users', 'check'] as const;
 
   <Steps items={page.steps || []} title="Alur pemesanan perusahaan" />
   <Testimonials items={settings.testimonials} />
+  <section class="section" style="padding-bottom:0"><div class="wrap"><FraudNotice settings={settings} /></div></section>
   <Faq items={faq} title="Tanya jawab layanan korporat" />
   <CtaBand settings={settings} title="Butuh penawaran tertulis?" text="Kirim tanggal, jumlah penumpang, dan rute. Admin kami mengirim pilihan unit dan penawaran harga." message="Halo Arasya, kami ingin minta penawaran tertulis. Perusahaan: …, tanggal: …, rute: …" waRef="KOR-band" />
 </Base>

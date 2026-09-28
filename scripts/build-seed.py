@@ -130,6 +130,16 @@ docs.append(
             {"_key": key(), "quote": t["quote"], "name": t["name"], "context": t["context"], "link": t.get("link")}
             for t in site["testimonials"]
         ],
+        "fraudWarning": {
+            "title": "Waspada penipuan yang mengatasnamakan Arasya",
+            "text": "Kami hanya berkomunikasi lewat nomor resmi di bawah ini dan hanya menerima pembayaran ke rekening atas nama PT. Ayomi Raya. Cocokkan dulu nomor dan rekening sebelum Anda mentransfer.",
+            "points": [
+                "Kami tidak pernah meminta transfer ke rekening pribadi atau atas nama perorangan.",
+                "Kami tidak pernah meminta kode OTP, PIN, atau password Anda.",
+                "Tagihan resmi berupa invoice atas nama PT. Ayomi Raya.",
+                "Ragu dengan nomor atau rekening yang menghubungi Anda? Konfirmasi dulu ke nomor resmi kami.",
+            ],
+        },
         "paymentTerms": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer.",
     }
 )

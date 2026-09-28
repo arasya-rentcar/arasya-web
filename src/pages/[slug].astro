@@ -13,7 +13,7 @@ import { getContent } from '../lib/content';
 
 export async function getStaticPaths() {
   const { cities, services } = await getContent();
-  const reserved = new Set(['armada', 'blog', 'studio', 'sewa-mobil']);
+  const reserved = new Set(['armada', 'blog', 'studio', 'sewa-mobil', 'rekening-resmi']);
   const seen = new Set<string>();
   const paths = [
     ...cities.map((city) => ({ params: { slug: city.slug.current }, props: { kind: 'city' as const, city } })),

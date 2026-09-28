@@ -1,0 +1,99 @@
+---
+/**
+ * "Waspada penipuan": the official phone numbers and bank account, side by
+ * side with what Arasya never asks for. Scammers impersonating rental
+ * companies usually swap the account number, so the real one is shown in
+ * full with a copy button, and the page /rekening-resmi repeats it.
+ */
+import type { Settings } from '../lib/content';
+import Icon from './Icon.astro';
+
+interface Props { settings: Settings; heading?: 'h1' | 'h2'; withLink?: boolean }
+const { settings, heading = 'h2', withLink = true } = Astro.props;
+const fw = settings.fraudWarning || {};
+const title = fw.title || 'Waspada penipuan yang mengatasnamakan Arasya';
+const Heading = heading;
+---
+<section class="fraud" aria-labelledby="fraud-title">
+  <div class="head">
+    <span class="ic" aria-hidden="true"><Icon name="alert" size={22} /></span>
+    <div class="stack">
+      <Heading id="fraud-title" class="title">{title}</Heading>
+      {fw.text && <p>{fw.text}</p>}
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="left">
+    <div class="official">
+      <h3><Icon name="phone" size={18} />Nomor resmi</h3>
+      <ul>
+        {settings.phones.map((p) => (
+          <li>
+            <span class="num val">{p}</span>
+            <button type="button" class="copy" data-copy={p} aria-label={`Salin nomor ${p}`}><Icon name="copy" size={16} /><span>Salin</span></button>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div class="official">
+      <h3><Icon name="bank" size={18} />Rekening resmi</h3>
+      <ul>
+        {settings.bankAccounts.map((b) => (
+          <li>
+            <span class="val"><b>{b.bank}</b> <span class="num">{b.number}</span><small>{b.owner}</small></span>
+            <button type="button" class="copy" data-copy={b.number.replace(/\s/g, '')} aria-label={`Salin nomor rekening ${b.bank}`}><Icon name="copy" size={16} /><span>Salin</span></button>
+          </li>
+        ))}
+      </ul>
+    </div>
+    </div>
+    {fw.points && fw.points.length > 0 && (
+      <div class="never">
+        <h3><Icon name="shield" size={18} />Yang perlu diwaspadai</h3>
+        <ul>{fw.points.map((p) => <li>{p}</li>)}</ul>
+      </div>
+    )}
+  </div>
+  {withLink && <a class="more" href="/rekening-resmi">Cara memastikan nomor dan rekening resmi →</a>}
+</section>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.fraud .copy').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const label = btn.querySelector('span');
+      try {
+        await navigator.clipboard.writeText(btn.dataset.copy || '');
+        if (label) { label.textContent = 'Tersalin'; setTimeout(() => (label.textContent = 'Salin'), 1600); }
+      } catch {
+        const val = btn.previousElementSibling;
+        if (val) { const r = document.createRange(); r.selectNodeContents(val); const s = getSelection(); s?.removeAllRanges(); s?.addRange(r); }
+      }
+    });
+  });
+</script>
+
+<style>
+  .fraud { border: 1px solid #f1d9a6; background: #fffaf0; border-radius: var(--radius); padding: clamp(18px, 3vw, 28px); display: grid; gap: 20px; }
+  .head { display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start; }
+  .ic { width: 44px; height: 44px; border-radius: 12px; background: #fdecc8; color: #9a5b0b; display: grid; place-items: center; }
+  .title { font: 750 clamp(1.25rem, 2.4vw, 1.6rem)/1.2 var(--display); color: var(--deep); margin: 0; }
+  .head p { color: var(--body); max-width: 70ch; }
+  .cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+  .left { display: grid; gap: 14px; }
+  .official, .never { background: #fff; border: 1px solid #f1e3c4; border-radius: 12px; padding: 14px 16px; display: grid; gap: 10px; align-content: start; }
+  h3 { display: flex; align-items: center; gap: 8px; font: 700 0.8rem/1.2 var(--text); letter-spacing: 0.06em; text-transform: uppercase; color: var(--soft); }
+  h3 :global(svg) { color: var(--blue); }
+  .never h3 :global(svg) { color: #9a5b0b; }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .official li { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .val { font: 700 1.02rem/1.35 var(--display); color: var(--deep); }
+  .val small { display: block; font: 500 0.82rem/1.3 var(--text); color: var(--soft); }
+  .copy { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--line); background: #fff; color: var(--blue); font: 600 0.78rem/1 var(--text); padding: 7px 9px; border-radius: 8px; cursor: pointer; flex: none; }
+  .copy:hover { border-color: var(--blue); }
+  .never li { position: relative; padding-left: 18px; font-size: 0.92rem; color: var(--body); }
+  .never li::before { content: ''; position: absolute; left: 2px; top: 0.6em; width: 7px; height: 7px; border-radius: 50%; background: #d08a1c; }
+  .more { font: 700 0.95rem/1.3 var(--display); text-decoration: none; justify-self: start; }
+  @media (max-width: 760px) { .cols { grid-template-columns: 1fr; } }
+  @media (max-width: 600px) { .head { grid-template-columns: 1fr; } }
+</style>

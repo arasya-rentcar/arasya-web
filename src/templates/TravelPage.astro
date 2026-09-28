@@ -10,6 +10,7 @@ import Base from '../layouts/Base.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Testimonials from '../components/Testimonials.astro';
 import Faq from '../components/Faq.astro';
+import FraudNotice from '../components/FraudNotice.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Icon from '../components/Icon.astro';
 import { getContent, type ServicePage } from '../lib/content';
@@ -108,6 +109,7 @@ const service = {
   </section>
 
   <Testimonials items={settings.testimonials} />
+  <section class="section" style="padding-bottom:0"><div class="wrap"><FraudNotice settings={settings} /></div></section>
   <Faq items={faq} title="Tanya jawab travel carter" />
   <CtaBand settings={settings} title="Rute Anda tidak ada di daftar?" text="Kirim kota asal dan tujuan, admin kami hitungkan tarifnya." message="Halo Arasya, saya mau tanya tarif travel carter. Dari: …, ke: …, tanggal: …" waRef="TRV-band" />
 </Base>

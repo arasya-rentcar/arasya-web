@@ -5,6 +5,7 @@ import CarCard from '../components/CarCard.astro';
 import TrustRow from '../components/TrustRow.astro';
 import Testimonials from '../components/Testimonials.astro';
 import Faq from '../components/Faq.astro';
+import FraudNotice from '../components/FraudNotice.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Icon from '../components/Icon.astro';
 import { getContent } from '../lib/content';
@@ -121,6 +122,8 @@ const homeFaq = [
       </div>
     </section>
   )}
+
+  <section class="section" style="padding-bottom:0"><div class="wrap"><FraudNotice settings={settings} /></div></section>
 
   <Faq items={homeFaq} />
 
