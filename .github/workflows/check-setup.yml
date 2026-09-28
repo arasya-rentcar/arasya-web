@@ -28,7 +28,7 @@ jobs:
             | jq '{name, link: (.link | if . then {type, org, repo, productionBranch} else "NOT CONNECTED" end)}'
           echo "Latest deployments:"
           curl -s -H "Authorization: Bearer $VERCEL_TOKEN" "https://api.vercel.com/v6/deployments?projectId=$PROJECT_ID&teamId=$ORG_ID&limit=5" \
-            | jq '.deployments[] | {created: (.created / 1000 | todate), state, target, source, commit: .meta.githubCommitSha[0:7]}'
+            | jq '.deployments[] | {created: (.created / 1000 | todate), state, target, source, commit: .meta.githubCommitSha[0:7], hook: (.meta.deployHookName // .meta.deployHookId // null)}'
       - name: Sanity CORS origins
         run: |
           curl -s -H "Authorization: Bearer $SANITY_API_TOKEN" https://api.sanity.io/v2021-06-07/projects/w5eya3q9/cors \
