@@ -1,0 +1,98 @@
+---
+/**
+ * /wedding: the Showroom layout (big car, booking bar, unit cards) in a softer
+ * register. Ivory instead of sky blue, a thin gold line, and one serif accent
+ * in the headline. Nothing floral.
+ */
+import '@fontsource-variable/cormorant-garamond';
+import Base from '../layouts/Base.astro';
+import BookingBar from '../components/BookingBar.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import AnswerBox from '../components/AnswerBox.astro';
+import CarCard from '../components/CarCard.astro';
+import CarImage from '../components/CarImage.astro';
+import Steps from '../components/Steps.astro';
+import Testimonials from '../components/Testimonials.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { getContent, type ServicePage } from '../lib/content';
+import { breadcrumbs, faqPage } from '../lib/schema';
+
+interface Props { page: ServicePage }
+const { page } = Astro.props;
+const { settings, cars } = await getContent();
+const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
+const path = `/${page.slug.current}`;
+const crumbs = [{ name: 'Beranda', path: '/' }, { name: page.navLabel || 'Wedding', path }];
+const units = page.cars?.length ? page.cars : cars.filter((c) => c.category === 'premium');
+const service = { '@type': 'Service', name: page.seo?.title, serviceType: 'Wedding car rental with driver', provider: { '@id': `${site}/#business` }, areaServed: 'Bogor', url: site + path };
+---
+<Base title={page.seo?.title || 'Wedding car'} description={page.seo?.description || ''} path={path} noindex={page.seo?.noindex} jsonld={[service, faqPage(page.faq), breadcrumbs(site, crumbs)]} waRef="WED-fab" waMessage="Halo Arasya, saya mau cek ketersediaan mobil pengantin.">
+  <section class="w-hero">
+    <div class="wrap">
+      <Breadcrumbs items={crumbs} />
+      <div class="grid-hero">
+        <div class="copy">
+          {page.hero.eyebrow && <span class="w-eyebrow">{page.hero.eyebrow}</span>}
+          <h1>{page.hero.title} {page.hero.titleAccent && <em>{page.hero.titleAccent}</em>}</h1>
+          {page.hero.lead && <p class="lead">{page.hero.lead}</p>}
+        </div>
+        <div class="stage">
+          <span class="arc" aria-hidden="true"></span>
+          <CarImage car={page.hero.car} eager sizes="(max-width: 860px) 92vw, 620px" />
+        </div>
+      </div>
+    </div>
+    <div class="wrap booking-wrap">
+      <BookingBar settings={settings} cars={units} refCode="WED-booking" destLabel="Lokasi acara" defaultCar={units[0]?.name} />
+    </div>
+  </section>
+
+  {page.answer && <section class="section"><div class="wrap"><AnswerBox question="Mobil pengantin apa saja yang tersedia di Arasya Bogor?" answer={page.answer} /></div></section>}
+
+  <section class="section" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head"><div class="stack"><span class="w-eyebrow">Pilihan unit</span><h2>Mobil untuk hari pernikahan</h2></div></div>
+      <div class="grid grid-3">
+        {units.map((c) => <CarCard car={c} settings={settings} refPrefix="WED" context="untuk acara pernikahan" tone="ivory" />)}
+      </div>
+    </div>
+  </section>
+
+  {page.highlights && page.highlights.length > 0 && (
+    <section class="section ivory">
+      <div class="wrap">
+        <div class="section-head"><div class="stack"><span class="w-eyebrow">Yang kami siapkan</span><h2>Tenang di hari yang sibuk</h2></div></div>
+        <div class="grid grid-2 hl">
+          {page.highlights.map((h) => <div><h3>{h.title}</h3>{h.text && <p>{h.text}</p>}</div>)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <Steps items={page.steps || []} title="Cara memesan mobil pengantin" />
+  <Testimonials items={settings.testimonials} />
+  <Faq items={page.faq || []} title="Tanya jawab mobil pengantin" />
+  <CtaBand settings={settings} title="Cek ketersediaan untuk tanggal Anda" text="Tanggal pernikahan biasanya ramai dipesan. Kirim tanggal dan lokasi acara, admin kami cek unitnya." message="Halo Arasya, saya mau cek mobil pengantin. Tanggal acara: …, lokasi: …" waRef="WED-band" />
+</Base>
+
+<style>
+  .w-hero { background: linear-gradient(180deg, #f6f2ea 0%, #f6f2ea 72%, #fff 72%); padding-top: 24px; }
+  .grid-hero { display: grid; grid-template-columns: 1fr 1.1fr; gap: 16px; align-items: end; margin-top: 16px; }
+  .copy { display: grid; gap: 16px; padding-bottom: 56px; }
+  .w-eyebrow { font: 600 0.78rem/1.2 var(--text); letter-spacing: 0.16em; text-transform: uppercase; color: #a87b1f; }
+  h1 em { font-family: 'Cormorant Garamond Variable', Georgia, serif; font-style: italic; font-weight: 500; color: var(--blue); letter-spacing: -0.01em; font-size: 1.08em; }
+  .lead { color: #4b5768; }
+  .stage { position: relative; }
+  .arc { position: absolute; inset: 6% 8% 18% 8%; border: 1px solid rgba(201, 150, 42, 0.55); border-radius: 50% 50% 0 0; border-bottom: 0; }
+  .stage :global(img) { position: relative; width: 100%; max-width: 600px; margin-inline: auto; filter: drop-shadow(0 22px 16px rgba(2, 38, 75, 0.18)); }
+  .booking-wrap { margin-top: -8px; position: relative; }
+  .ivory { background: #fbf8f2; }
+  .hl > div { padding: 22px 0 0; border-top: 1px solid rgba(201, 150, 42, 0.5); display: grid; gap: 6px; }
+  .hl p { color: var(--soft); }
+  @media (max-width: 860px) {
+    .w-hero { background: #f6f2ea; padding-bottom: 24px; }
+    .grid-hero { grid-template-columns: 1fr; }
+    .copy { padding-bottom: 0; }
+  }
+</style>

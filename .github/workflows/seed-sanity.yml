@@ -1,0 +1,27 @@
+name: Seed Sanity
+
+# One-off (or occasional) import of src/data/seed.json into the Sanity
+# dataset. Run it from the Actions tab. "replace" overwrites documents that
+# already exist, including edits made in the Studio.
+
+on:
+  workflow_dispatch:
+    inputs:
+      replace:
+        description: Overwrite existing documents
+        type: boolean
+        default: false
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: node scripts/seed-sanity.mjs ${{ inputs.replace && '--replace' || '' }}
+        env:
+          SANITY_API_TOKEN: ${{ secrets.SANITY_API_TOKEN }}

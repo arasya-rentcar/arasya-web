@@ -1,0 +1,138 @@
+---
+/**
+ * /korporat: the Showroom layout, tuned for a GA or purchasing reader. Cooler
+ * greys, a rate table they can paste into a request, and the company facts
+ * (legal entity, payment account) up front.
+ */
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import AnswerBox from '../components/AnswerBox.astro';
+import CarImage from '../components/CarImage.astro';
+import Steps from '../components/Steps.astro';
+import Testimonials from '../components/Testimonials.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import { getContent, type ServicePage } from '../lib/content';
+import { passengers, rupiah } from '../lib/format';
+import { breadcrumbs, faqPage, offerCatalog } from '../lib/schema';
+import { refSlug, waHref } from '../lib/wa';
+
+interface Props { page: ServicePage }
+const { page } = Astro.props;
+const { settings, cars } = await getContent();
+const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
+const path = `/${page.slug.current}`;
+const crumbs = [{ name: 'Beranda', path: '/' }, { name: page.navLabel || 'Korporat', path }];
+const units = page.cars?.length ? page.cars : cars;
+const bank = settings.bankAccounts[0];
+const quote = waHref(settings.waPhone, 'Halo Arasya, kami dari perusahaan … ingin minta penawaran sewa mobil. Tanggal: …, jumlah penumpang: …, rute: …', 'KOR-hero');
+const service = { '@type': 'Service', name: page.seo?.title, serviceType: 'Corporate car rental with driver', provider: { '@id': `${site}/#business` }, areaServed: 'Bogor', url: site + path, hasOfferCatalog: offerCatalog(units, site, 'Tarif korporat') };
+const icons = ['shield', 'clock', 'users', 'check'] as const;
+---
+<Base title={page.seo?.title || 'Korporat'} description={page.seo?.description || ''} path={path} noindex={page.seo?.noindex} jsonld={[service, faqPage(page.faq), breadcrumbs(site, crumbs)]} waRef="KOR-fab" waMessage="Halo Arasya, kami ingin minta penawaran sewa mobil untuk perusahaan.">
+  <section class="k-hero">
+    <div class="wrap">
+      <Breadcrumbs items={crumbs} />
+      <div class="grid-hero">
+        <div class="copy">
+          {page.hero.eyebrow && <span class="eyebrow">{page.hero.eyebrow}</span>}
+          <h1>{page.hero.title} <span class="accent">{page.hero.titleAccent}</span></h1>
+          {page.hero.lead && <p class="lead">{page.hero.lead}</p>}
+          <ul class="facts">
+            <li><Icon name="check" size={18} />Dikelola {settings.legalName}</li>
+            {bank && <li><Icon name="check" size={18} />Pembayaran ke rekening {bank.bank} {bank.owner}</li>}
+            <li><Icon name="check" size={18} />Admin WhatsApp 24 jam</li>
+          </ul>
+          <div class="acts">
+            <a class="btn btn-blue" href={quote} data-cta="kor-quote" rel="nofollow">Minta penawaran</a>
+            <a class="btn btn-ghost" href="#tarif">Lihat tarif</a>
+          </div>
+        </div>
+        <div class="panel" id="tarif">
+          <CarImage car={page.hero.car} eager class="panel-car" sizes="(max-width: 860px) 92vw, 520px" />
+          <table>
+            <caption>Tarif per unit · 12 jam dalam kota, dengan driver</caption>
+            <tbody>
+              {units.map((c) => (
+                <tr>
+                  <th scope="row">{c.name}<small>{passengers(c.capacity)}</small></th>
+                  <td class="num">{c.priceCity ? rupiah(c.priceCity) : 'Sesuai penawaran'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {settings.rateNotes?.city && <p class="small">{settings.rateNotes.city}</p>}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {page.answer && <section class="section"><div class="wrap"><AnswerBox question="Apakah Arasya melayani sewa mobil untuk perusahaan di Bogor?" answer={page.answer} /></div></section>}
+
+  {page.highlights && page.highlights.length > 0 && (
+    <section class="section tint">
+      <div class="wrap">
+        <div class="section-head"><div class="stack"><span class="eyebrow">Untuk tim GA & purchasing</span><h2>Yang biasanya ditanyakan perusahaan</h2></div></div>
+        <div class="grid grid-4">
+          {page.highlights.map((h, i) => (
+            <div class="hl"><span class="ic"><Icon name={icons[i % icons.length]} size={22} /></span><h3>{h.title}</h3>{h.text && <p>{h.text}</p>}</div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head"><div class="stack"><span class="eyebrow">Unit</span><h2>Dari tamu VIP sampai rombongan kantor</h2></div></div>
+      <div class="grid grid-3 units">
+        {units.map((c) => (
+          <article>
+            <div class="ph"><CarImage car={c} /></div>
+            <h3>{c.name}</h3>
+            <p class="muted">{passengers(c.capacity)}</p>
+            <a href={waHref(settings.waPhone, `Halo Arasya, kami ingin penawaran untuk ${c.name}.`, `KOR-${refSlug(c.name)}`)} data-cta={`kor-${refSlug(c.name)}`} rel="nofollow">Minta penawaran unit ini →</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Steps items={page.steps || []} title="Alur pemesanan perusahaan" />
+  <Testimonials items={settings.testimonials} />
+  <Faq items={page.faq || []} title="Tanya jawab layanan korporat" />
+  <CtaBand settings={settings} title="Butuh penawaran tertulis?" text="Kirim tanggal, jumlah penumpang, dan rute. Admin kami mengirim unit dan rincian tarif." message="Halo Arasya, kami ingin minta penawaran tertulis. Perusahaan: …, tanggal: …, rute: …" waRef="KOR-band" />
+</Base>
+
+<style>
+  .k-hero { background: linear-gradient(180deg, #eef2f7 0%, #eef2f7 80%, #fff 80%); padding-block: 24px 0; }
+  .grid-hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 32px; align-items: start; margin-top: 20px; }
+  .copy { display: grid; gap: 16px; padding-top: 12px; }
+  .accent { color: var(--blue); }
+  .facts { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .facts li { display: flex; gap: 8px; align-items: flex-start; }
+  .facts :global(svg) { color: var(--blue); flex: none; margin-top: 3px; }
+  .acts { display: flex; gap: 10px; flex-wrap: wrap; }
+  .panel { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 20px; display: grid; gap: 8px; }
+  .panel :global(.panel-car) { width: 78%; margin: -44px auto 0; filter: drop-shadow(0 14px 10px rgba(2, 38, 75, 0.16)); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+  caption { text-align: left; font: 700 0.75rem/1.3 var(--text); letter-spacing: 0.05em; text-transform: uppercase; color: var(--soft); padding-bottom: 6px; }
+  th, td { padding: 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { font-weight: 700; color: var(--deep); }
+  th small { display: block; font-weight: 400; color: var(--soft); font-size: 0.8rem; }
+  td { text-align: right; font-weight: 700; color: var(--blue); white-space: nowrap; }
+  .small { font-size: 0.8rem; color: var(--soft); }
+  .hl { background: #fff; border-radius: var(--radius); padding: 20px; display: grid; gap: 8px; align-content: start; }
+  .hl p { color: var(--soft); font-size: 0.95rem; }
+  .ic { width: 40px; height: 40px; border-radius: 10px; background: #eef2f7; color: var(--deep); display: grid; place-items: center; }
+  .units article { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; display: grid; gap: 6px; }
+  .units .ph { background: #eef2f7; border-radius: 10px; aspect-ratio: 16 / 10; display: flex; align-items: flex-end; padding: 12px 10px 4px; }
+  .units .ph :global(img) { width: 100%; height: 100%; object-fit: contain; object-position: bottom; }
+  .units a { font: 700 0.9rem/1.3 var(--display); text-decoration: none; }
+  @media (max-width: 860px) {
+    .k-hero { background: #eef2f7; padding-bottom: 24px; }
+    .grid-hero { grid-template-columns: 1fr; }
+    .panel :global(.panel-car) { margin-top: 0; }
+  }
+</style>

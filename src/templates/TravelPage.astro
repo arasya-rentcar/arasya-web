@@ -1,0 +1,187 @@
+---
+/**
+ * /travel: charter routes. The Showroom booking bar becomes a route checker
+ * (asal → tujuan → unit prices). Every route and price is also rendered as a
+ * plain table so search engines and AI crawlers can read the tariffs without
+ * running JavaScript.
+ */
+import '@fontsource-variable/red-hat-mono';
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import AnswerBox from '../components/AnswerBox.astro';
+import Testimonials from '../components/Testimonials.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import { getContent, type ServicePage } from '../lib/content';
+import { rupiah } from '../lib/format';
+import { carImage, photo } from '../lib/images';
+import { breadcrumbs, faqPage } from '../lib/schema';
+
+interface Props { page: ServicePage }
+const { page } = Astro.props;
+const { settings } = await getContent();
+const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
+const path = `/${page.slug.current}`;
+const crumbs = [{ name: 'Beranda', path: '/' }, { name: page.navLabel || 'Travel', path }];
+const units = (page.units || []).map((u) => ({ ...u, img: carImage(u) }));
+const origins = page.origins || [];
+const routes = page.routes || [];
+const bg = photo(page.hero.image, page.hero.imagePath, 1600);
+const originName = (k: string) => origins.find((o) => o.key === k)?.name || k;
+const originCode = (k: string) => origins.find((o) => o.key === k)?.code || k.slice(0, 3).toUpperCase();
+const data = {
+  phone: settings.waPhone,
+  units: units.map((u) => ({ key: u.key, name: u.name, capacity: u.capacity, src: u.img?.src, srcset: u.img?.srcset })),
+  origins,
+  routes: routes.map((r) => ({ origin: r.origin, dest: r.dest, destCode: r.destCode || r.dest.toUpperCase().slice(0, 3), destName: r.destName, prices: Object.fromEntries(r.prices.map((p) => [p.unit, p.price])) })),
+};
+const service = {
+  '@type': 'Service',
+  name: page.seo?.title,
+  serviceType: 'Private charter transfer with driver',
+  provider: { '@id': `${site}/#business` },
+  url: site + path,
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Tarif travel carter',
+    itemListElement: routes.flatMap((r) =>
+      r.prices.map((p) => ({
+        '@type': 'Offer',
+        name: `${originName(r.origin)} ke ${r.destName}, ${units.find((u) => u.key === p.unit)?.name || p.unit}`,
+        price: p.price,
+        priceCurrency: 'IDR',
+      }))
+    ),
+  },
+};
+---
+<Base title={page.seo?.title || 'Travel'} description={page.seo?.description || ''} path={path} noindex={page.seo?.noindex} jsonld={[service, faqPage(page.faq), breadcrumbs(site, crumbs)]} waRef="TRV-fab" waMessage="Halo Arasya, saya mau tanya travel carter.">
+  <section class="t-hero" style={bg ? `--bg:url('${bg.src}')` : undefined}>
+    <div class="wrap copy">
+      <Breadcrumbs items={crumbs} />
+      {page.hero.eyebrow && <span class="code-eyebrow">{page.hero.eyebrow.toUpperCase()}</span>}
+      <h1>{page.hero.title} <span>{page.hero.titleAccent}</span></h1>
+      {page.hero.lead && <p>{page.hero.lead}</p>}
+    </div>
+  </section>
+
+  <div class="wrap checker-wrap">
+    <div class="checker" id="cek-tarif" data-travel={JSON.stringify(data)}>
+      <div class="sel">
+        <label for="t-origin">Dari<select id="t-origin">{origins.map((o) => <option value={o.key}>{o.name}</option>)}</select></label>
+        <span class="arrow" aria-hidden="true"><Icon name="arrow" size={20} /></span>
+        <label for="t-dest">Ke<select id="t-dest"></select></label>
+      </div>
+      <p class="codes" id="t-codes" aria-live="polite"></p>
+      <div class="units" id="t-units"></div>
+    </div>
+  </div>
+
+  {page.answer && <section class="section"><div class="wrap"><AnswerBox question="Berapa tarif travel carter dari Bogor?" answer={page.answer} /></div></section>}
+
+  {page.highlights && page.highlights.length > 0 && (
+    <section class="section tint">
+      <div class="wrap grid grid-3">
+        {page.highlights.map((h) => <div class="hl"><Icon name="route" size={22} /><h3>{h.title}</h3>{h.text && <p>{h.text}</p>}</div>)}
+      </div>
+    </section>
+  )}
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head"><div class="stack"><span class="eyebrow">Semua rute</span><h2>Daftar tarif travel carter</h2><p class="muted">Tarif sekali jalan per mobil, sudah termasuk driver.</p></div></div>
+      <div class="table-wrap">
+        <table class="all">
+          <thead><tr><th scope="col">Rute</th>{units.map((u) => <th scope="col">{u.name}</th>)}</tr></thead>
+          <tbody>
+            {routes.map((r) => (
+              <tr>
+                <th scope="row"><span class="mono">{originCode(r.origin)} → {r.destCode || r.dest.toUpperCase().slice(0, 3)}</span>{originName(r.origin)} → {r.destName}</th>
+                {units.map((u) => { const p = r.prices.find((x) => x.unit === u.key); return <td class="num">{p ? rupiah(p.price) : '–'}</td>; })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <Testimonials items={settings.testimonials} />
+  <Faq items={page.faq || []} title="Tanya jawab travel carter" />
+  <CtaBand settings={settings} title="Rute Anda tidak ada di daftar?" text="Kirim kota asal dan tujuan, admin kami hitungkan tarifnya." message="Halo Arasya, saya mau tanya tarif travel carter. Dari: …, ke: …, tanggal: …" waRef="TRV-band" />
+</Base>
+
+<script>
+  type Data = { phone: string; units: { key: string; name: string; capacity: number; src?: string; srcset?: string }[]; origins: { key: string; code: string; name: string }[]; routes: { origin: string; dest: string; destCode: string; destName: string; prices: Record<string, number> }[] };
+  const root = document.querySelector<HTMLElement>('[data-travel]');
+  if (root) {
+    const data: Data = JSON.parse(root.dataset.travel || '{}');
+    const origin = root.querySelector<HTMLSelectElement>('#t-origin')!;
+    const dest = root.querySelector<HTMLSelectElement>('#t-dest')!;
+    const grid = root.querySelector<HTMLElement>('#t-units')!;
+    const codes = root.querySelector<HTMLElement>('#t-codes')!;
+    const rp = (n: number) => 'Rp' + n.toLocaleString('id-ID');
+    const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+    const fillDest = () => {
+      const list = data.routes.filter((r) => r.origin === origin.value);
+      dest.innerHTML = list.map((r) => `<option value="${esc(r.dest)}">${esc(r.destName)}</option>`).join('');
+      render();
+    };
+    const render = () => {
+      const r = data.routes.find((x) => x.origin === origin.value && x.dest === dest.value);
+      const o = data.origins.find((x) => x.key === origin.value);
+      if (!r || !o) { grid.innerHTML = ''; return; }
+      codes.textContent = `${o.code} → ${r.destCode} · ${o.name} ke ${r.destName}`;
+      grid.innerHTML = data.units.map((u) => {
+        const p = r.prices[u.key];
+        const msg = `Halo Arasya, saya mau travel carter ${o.name} ke ${r.destName} dengan ${u.name}. Tanggal: …, jumlah penumpang: … [Ref: TRV-${o.code}-${r.dest}-${u.key}]`;
+        const href = `https://wa.me/${data.phone}?text=${encodeURIComponent(msg)}`;
+        return `<div class="u${p ? '' : ' na'}"><div class="ph">${u.src ? `<img src="${u.src}" srcset="${u.srcset || ''}" sizes="200px" alt="" loading="lazy" width="960" height="600">` : ''}</div>
+          <b>${esc(u.name)}</b><small>${u.capacity - 1} penumpang + driver</small>
+          <span class="p">${p ? rp(p) : 'Tidak tersedia'}</span>
+          ${p ? `<a class="btn btn-wa" href="${href}" rel="nofollow" data-cta="trv-${u.key}">Pesan</a>` : ''}</div>`;
+      }).join('');
+    };
+    origin.addEventListener('change', fillDest);
+    dest.addEventListener('change', render);
+    fillDest();
+  }
+</script>
+
+<style>
+  .t-hero { position: relative; background: var(--deep) var(--bg) center 40% / cover no-repeat; color: #fff; padding-block: 28px 84px; }
+  .t-hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(1, 24, 48, 0.92) 0%, rgba(2, 38, 75, 0.6) 55%, rgba(2, 38, 75, 0.2) 100%); }
+  .copy { position: relative; display: grid; gap: 14px; }
+  .copy :global(.crumbs a), .copy :global(.crumbs li) { color: #c9e2fb; }
+  .code-eyebrow { font: 600 0.8rem/1 'Red Hat Mono Variable', monospace; letter-spacing: 0.08em; color: #93c5f6; }
+  h1 { color: #fff; max-width: 18ch; }
+  h1 span { color: #93c5f6; }
+  .copy p { max-width: 50ch; color: #e8f2fd; font-size: 1.1rem; }
+  .checker-wrap { position: relative; margin-top: -56px; }
+  .checker { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; display: grid; gap: 14px; }
+  .sel { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: end; }
+  .sel label { display: grid; gap: 5px; font: 700 0.7rem/1 var(--text); letter-spacing: 0.05em; text-transform: uppercase; color: var(--soft); }
+  select { font: 500 1rem/1.2 var(--text); padding: 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: #fff; color: var(--ink); }
+  .arrow { color: var(--blue); padding-bottom: 12px; }
+  .codes { font: 600 0.85rem/1.3 'Red Hat Mono Variable', monospace; color: var(--deep); }
+  .units { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+  .units :global(.u) { border: 1px solid var(--line); border-radius: 12px; padding: 10px; display: grid; gap: 6px; align-content: start; }
+  .units :global(.ph) { background: var(--sky); border-radius: 8px; aspect-ratio: 16 / 10; display: flex; align-items: flex-end; padding: 8px 6px 2px; }
+  .units :global(.ph img) { width: 100%; height: 100%; object-fit: contain; object-position: bottom; }
+  .units :global(small) { color: var(--soft); font-size: 0.8rem; }
+  .units :global(.p) { font: 800 1.15rem/1 var(--display); color: var(--blue); font-variant-numeric: tabular-nums; }
+  .units :global(.na) { opacity: 0.45; }
+  .units :global(.btn) { padding: 10px; font-size: 0.85rem; }
+  .hl { display: grid; gap: 8px; color: var(--blue); }
+  .hl h3 { color: var(--deep); }
+  .hl p { color: var(--soft); }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+  .all { width: 100%; border-collapse: collapse; min-width: 720px; font-size: 0.92rem; }
+  .all th, .all td { padding: 12px 14px; border-bottom: 1px solid var(--line); text-align: left; }
+  .all thead th { background: var(--paper); font: 700 0.72rem/1.3 var(--text); letter-spacing: 0.04em; text-transform: uppercase; color: var(--soft); }
+  .all tbody th { color: var(--deep); }
+  .mono { display: block; font: 600 0.72rem/1.4 'Red Hat Mono Variable', monospace; color: var(--blue); }
+  .all tbody tr:last-child > * { border-bottom: 0; }
+  @media (max-width: 640px) { .sel { grid-template-columns: 1fr; } .arrow { display: none; } }
+</style>

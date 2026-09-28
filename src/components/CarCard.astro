@@ -1,0 +1,49 @@
+---
+import type { Car, Settings } from '../lib/content';
+import { CATEGORY_LABEL, passengers, rupiah, rupiahShort } from '../lib/format';
+import { waHref, refSlug } from '../lib/wa';
+import CarImage from './CarImage.astro';
+import Icon from './Icon.astro';
+
+interface Props { car: Car; settings: Settings; refPrefix: string; context?: string; tone?: 'sky' | 'white' | 'ivory' }
+const { car, settings, refPrefix, context = '', tone = 'sky' } = Astro.props;
+const message = `Halo Arasya, saya mau sewa ${car.name}${context ? ' ' + context : ''}. Tanggal: …, tujuan: …`;
+const href = waHref(settings.waPhone, message, `${refPrefix}-${refSlug(car.name)}`);
+---
+<article class={`car-card tone-${tone}`} id={car.slug.current}>
+  <div class="ph">
+    {car.badge && <span class="badge">{car.badge}</span>}
+    <CarImage car={car} />
+  </div>
+  <div class="body">
+    <h3>{car.name}</h3>
+    <p class="meta"><Icon name="users" size={16} />{passengers(car.capacity)} · {CATEGORY_LABEL[car.category]}</p>
+  </div>
+  <div class="price">
+    {car.priceCity ? (
+      <div><span class="lbl">12 jam dalam kota</span><strong class="num">{rupiahShort(car.priceCity)}</strong></div>
+    ) : (
+      <div><span class="lbl">Tarif</span><strong>Tanya admin</strong></div>
+    )}
+    {car.priceAllIn && <div class="allin"><span class="lbl">All-in</span><span class="num">{rupiah(car.priceAllIn)}</span></div>}
+  </div>
+  <a class="btn btn-wa" href={href} data-cta={`car-${refSlug(car.name)}`} rel="nofollow"><Icon name="wa" />Pesan unit ini</a>
+</article>
+
+<style>
+  .car-card { border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; display: grid; grid-template-rows: auto 1fr auto auto; gap: 12px; background: #fff; min-width: 0; }
+  .ph { position: relative; background: var(--sky); border-radius: 10px; padding: 14px 10px 6px; aspect-ratio: 16 / 10; display: flex; align-items: flex-end; justify-content: center; }
+  .tone-ivory .ph { background: #f3efe6; }
+  .tone-white .ph { background: var(--paper); }
+  .ph img { width: 100%; height: 100%; min-height: 0; object-fit: contain; object-position: bottom; }
+  .ph { min-width: 0; overflow: hidden; }
+  .badge { position: absolute; left: 10px; top: 10px; background: var(--deep); color: #fff; font: 700 0.72rem/1 var(--text); padding: 5px 8px; border-radius: 6px; }
+  .body { display: grid; gap: 4px; padding-inline: 4px; }
+  .meta { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--soft); }
+  .price { display: flex; justify-content: space-between; align-items: end; gap: 8px; border-top: 1px solid var(--line); padding: 10px 4px 0; }
+  .price > div { display: grid; gap: 2px; }
+  .lbl { font-size: 0.75rem; color: var(--soft); }
+  .price strong { font: 800 1.25rem/1 var(--display); color: var(--blue); }
+  .allin { text-align: right; font-size: 0.85rem; color: var(--deep); font-weight: 600; }
+  .btn { width: 100%; }
+</style>

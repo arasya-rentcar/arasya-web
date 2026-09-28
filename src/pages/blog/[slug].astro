@@ -1,0 +1,90 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import PortableText from '../../components/PortableText.astro';
+import Faq from '../../components/Faq.astro';
+import CarCard from '../../components/CarCard.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { getContent, type Post } from '../../lib/content';
+import { dateId } from '../../lib/format';
+import { photo } from '../../lib/images';
+import { article, breadcrumbs, faqPage } from '../../lib/schema';
+
+export async function getStaticPaths() {
+  const { posts } = await getContent();
+  return posts.map((post) => ({ params: { slug: post.slug.current }, props: { post } }));
+}
+
+const { post } = Astro.props as { post: Post };
+const { settings, cars, posts } = await getContent();
+const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
+const path = `/blog/${post.slug.current}`;
+const crumbs = [{ name: 'Beranda', path: '/' }, { name: 'Blog', path: '/blog' }, { name: post.title, path }];
+const cover = photo(post.cover, post.coverPath, 1400);
+const related = posts.filter((p) => p._id !== post._id && (!post.city || p.city?._id === post.city._id)).slice(0, 3);
+const suggest = cars.filter((c) => c.badge).concat(cars.filter((c) => c.priceCity)).slice(0, 2);
+const code = post.city?.code || 'BLOG';
+---
+<Base title={post.seo?.title || post.title} description={post.seo?.description || post.excerpt} path={path} noindex={post.seo?.noindex} ogImage={cover?.src.startsWith('/') ? cover.src : undefined} jsonld={[{ ...article(post, site, settings), image: cover ? (cover.src.startsWith('/') ? site + cover.src : cover.src) : undefined }, faqPage(post.faq), breadcrumbs(site, crumbs)]} waRef={`${code}-blog`}>
+  <article>
+    <header class="head">
+      <div class="wrap narrow stack">
+        <Breadcrumbs items={crumbs} />
+        <span class="eyebrow">{post.category}</span>
+        <h1>{post.title}</h1>
+        <p class="meta muted">
+          {post.author} · <time datetime={post.publishedAt}>{dateId(post.publishedAt)}</time>
+          {post.updatedAt && post.updatedAt !== post.publishedAt && <> · diperbarui <time datetime={post.updatedAt}>{dateId(post.updatedAt)}</time></>}
+        </p>
+      </div>
+    </header>
+    {cover && <div class="wrap narrow"><img class="cover" src={cover.src} srcset={cover.srcset} sizes="(max-width: 820px) 92vw, 760px" alt="" width="1400" height="788" fetchpriority="high" /></div>}
+    <div class="wrap narrow body">
+      <p class="summary"><b>Ringkasan:</b> {post.excerpt}</p>
+      <PortableText value={post.body} />
+      {post.city && (
+        <aside class="city-link">
+          <p>Butuh mobil dengan driver di {post.city.name}?</p>
+          <a href={`/${post.city.slug.current}`}>Lihat tarif sewa mobil {post.city.name} →</a>
+        </aside>
+      )}
+    </div>
+  </article>
+
+  {suggest.length > 0 && (
+    <section class="section tint">
+      <div class="wrap">
+        <div class="section-head"><div class="stack"><span class="eyebrow">Unit yang cocok</span><h2>Mobil untuk perjalanan ini</h2></div></div>
+        <div class="grid grid-2 cars">{suggest.map((c) => <CarCard car={c} settings={settings} refPrefix={`${code}-blog`} />)}</div>
+      </div>
+    </section>
+  )}
+
+  <Faq items={post.faq || []} />
+
+  {related.length > 0 && (
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head"><div class="stack"><h2>Artikel terkait</h2></div></div>
+        <div class="grid grid-3">{related.map((p) => <a class="rel" href={`/blog/${p.slug.current}`}><span class="eyebrow">{p.category}</span><h3>{p.title}</h3></a>)}</div>
+      </div>
+    </section>
+  )}
+
+  <CtaBand settings={settings} title="Rencanakan perjalanan Anda bersama Arasya" message={`Halo Arasya, saya baca artikel "${post.title}" dan mau tanya sewa mobil.`} waRef={`${code}-blog-band`} />
+</Base>
+
+<style>
+  .narrow { max-width: 820px; }
+  .head { padding-block: 28px 20px; }
+  .head h1 { font-size: clamp(1.9rem, 4.4vw, 3rem); }
+  .meta { font-size: 0.9rem; }
+  .cover { border-radius: var(--radius); aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
+  .body { padding-block: 28px 56px; display: grid; gap: 24px; }
+  .summary { background: var(--paper); border-left: 4px solid var(--blue); padding: 16px 20px; border-radius: 0 var(--radius) var(--radius) 0; max-width: 68ch; }
+  .city-link { border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; display: grid; gap: 4px; max-width: 68ch; }
+  .city-link a { font: 700 1rem/1.3 var(--display); text-decoration: none; }
+  .cars { max-width: 760px; }
+  .rel { display: grid; gap: 8px; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); text-decoration: none; color: var(--ink); }
+  .rel:hover { border-color: var(--blue); color: var(--ink); }
+</style>

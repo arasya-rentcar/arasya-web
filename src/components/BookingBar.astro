@@ -1,0 +1,80 @@
+---
+/**
+ * Quick-booking form. Nothing is submitted to a server: on submit it builds a
+ * WhatsApp message from the fields and opens wa.me. Without JS the plain link
+ * still works.
+ */
+import type { Car, Settings } from '../lib/content';
+import { waHref } from '../lib/wa';
+import Icon from './Icon.astro';
+
+interface Props { settings: Settings; cars: Car[]; refCode: string; defaultPickup?: string; defaultDest?: string; defaultCar?: string; destLabel?: string }
+const { settings, cars, refCode, defaultPickup = '', defaultDest = '', defaultCar = '', destLabel = 'Tujuan' } = Astro.props;
+const fallback = waHref(settings.waPhone, 'Halo Arasya, saya mau sewa mobil.', refCode);
+const uid = 'bk-' + refCode.toLowerCase();
+---
+<form class="booking" data-booking data-phone={settings.waPhone} data-ref={refCode} action={fallback} method="get">
+  <div class="f">
+    <label for={`${uid}-date`}>Tanggal</label>
+    <input id={`${uid}-date`} name="date" type="date" required />
+  </div>
+  <div class="f">
+    <label for={`${uid}-pickup`}>Jemput di</label>
+    <input id={`${uid}-pickup`} name="pickup" type="text" placeholder="Rumah, stasiun, hotel…" value={defaultPickup} autocomplete="street-address" />
+  </div>
+  <div class="f">
+    <label for={`${uid}-dest`}>{destLabel}</label>
+    <input id={`${uid}-dest`} name="dest" type="text" placeholder="Puncak, bandara, dalam kota…" value={defaultDest} />
+  </div>
+  <div class="f">
+    <label for={`${uid}-car`}>Unit</label>
+    <select id={`${uid}-car`} name="car">
+      <option value="">Bantu pilihkan</option>
+      {cars.map((c) => <option value={c.name} selected={c.name === defaultCar}>{c.name}</option>)}
+    </select>
+  </div>
+  <button class="btn btn-wa" type="submit" data-cta="booking"><Icon name="wa" />Kirim ke WhatsApp</button>
+</form>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('form[data-booking]').forEach((form) => {
+    const date = form.querySelector<HTMLInputElement>('input[name=date]');
+    if (date && !date.value) {
+      const d = new Date(Date.now() + 86400000);
+      date.min = new Date().toISOString().slice(0, 10);
+      date.value = d.toISOString().slice(0, 10);
+    }
+    form.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      const f = new FormData(form);
+      const get = (k: string) => String(f.get(k) || '').trim();
+      const tanggal = get('date')
+        ? new Date(get('date') + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+        : '…';
+      const lines = [
+        'Halo Arasya, saya mau sewa mobil.',
+        `Tanggal: ${tanggal}`,
+        `Jemput di: ${get('pickup') || '…'}`,
+        `Tujuan: ${get('dest') || '…'}`,
+        `Unit: ${get('car') || 'mohon dibantu pilihkan'}`,
+      ];
+      const text = lines.join('\n') + ` [Ref: ${form.dataset.ref}]`;
+      let src = '';
+      try { src = sessionStorage.getItem('arasya-campaign') || ''; } catch {}
+      const url = `https://wa.me/${form.dataset.phone}?text=${encodeURIComponent(text + (src ? ` [Src: ${src}]` : ''))}`;
+      (window as any).dataLayer?.push({ event: 'quote_submit', page: location.pathname, unit: get('car') });
+      window.location.href = url;
+    });
+  });
+</script>
+
+<style>
+  .booking { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto; gap: 10px; align-items: end; }
+  .f { display: grid; gap: 5px; min-width: 0; }
+  label { font: 700 0.7rem/1 var(--text); color: var(--soft); letter-spacing: 0.05em; text-transform: uppercase; }
+  input, select { width: 100%; min-width: 0; font: 500 0.95rem/1.2 var(--text); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 11px 12px; background: #fff; }
+  input:focus, select:focus { outline: 2px solid var(--blue); outline-offset: 0; border-color: var(--blue); }
+  .btn { height: 44px; }
+  @media (max-width: 920px) { .booking { grid-template-columns: 1fr 1fr; } .btn { grid-column: 1 / -1; } }
+  @media (max-width: 480px) { .booking { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,36 @@
+---
+/**
+ * Every top-level content page lives here: city landing pages
+ * (/sewa-mobil-bogor) and topic pages (/wedding, /korporat, /travel). Each
+ * picks its own template, so page types differ in structure, not just copy.
+ */
+import CityPage from '../templates/CityPage.astro';
+import WeddingPage from '../templates/WeddingPage.astro';
+import CorporatePage from '../templates/CorporatePage.astro';
+import TravelPage from '../templates/TravelPage.astro';
+import StandardPage from '../templates/StandardPage.astro';
+import { getContent } from '../lib/content';
+
+export async function getStaticPaths() {
+  const { cities, services } = await getContent();
+  const reserved = new Set(['armada', 'blog', 'studio']);
+  const seen = new Set<string>();
+  const paths = [
+    ...cities.map((city) => ({ params: { slug: city.slug.current }, props: { kind: 'city' as const, city } })),
+    ...services.map((page) => ({ params: { slug: page.slug.current }, props: { kind: 'service' as const, page } })),
+  ];
+  for (const p of paths) {
+    if (reserved.has(p.params.slug)) throw new Error(`Slug "${p.params.slug}" dipakai halaman sistem`);
+    if (seen.has(p.params.slug)) throw new Error(`Slug "${p.params.slug}" dipakai lebih dari satu halaman`);
+    seen.add(p.params.slug);
+  }
+  return paths;
+}
+
+const props = Astro.props as any;
+---
+{props.kind === 'city' && <CityPage city={props.city} />}
+{props.kind === 'service' && props.page.template === 'wedding' && <WeddingPage page={props.page} />}
+{props.kind === 'service' && props.page.template === 'corporate' && <CorporatePage page={props.page} />}
+{props.kind === 'service' && props.page.template === 'travel' && <TravelPage page={props.page} />}
+{props.kind === 'service' && props.page.template === 'standard' && <StandardPage page={props.page} />}

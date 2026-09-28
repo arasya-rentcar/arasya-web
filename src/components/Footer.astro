@@ -1,0 +1,64 @@
+---
+import type { Content } from '../lib/content';
+import { cityIsIndexable } from '../lib/quality';
+import Icon from './Icon.astro';
+
+interface Props { content: Content }
+const { settings, cities, services, posts } = Astro.props.content;
+const year = new Date().getFullYear();
+const liveCities = cities.filter(cityIsIndexable);
+---
+<footer class="site-footer">
+  <div class="wrap cols">
+    <div class="stack about">
+      <img src="/brand/logo-light.png" alt={settings.brandName} width="140" height="54" loading="lazy" />
+      <p>Rental mobil dengan driver. Dikelola oleh {settings.legalName}, berkantor di {settings.address.locality}.</p>
+      <p class="addr"><Icon name="pin" size={18} /><span>{settings.address.full}</span></p>
+    </div>
+    <div class="stack">
+      <h2 class="h">Kontak</h2>
+      <ul>
+        {settings.phones.map((p) => <li class="num">{p}</li>)}
+        <li>WhatsApp admin 24 jam</li>
+        {settings.instagram && <li><a href={settings.instagram} rel="noopener">Instagram</a></li>}
+      </ul>
+    </div>
+    <div class="stack">
+      <h2 class="h">Rekening resmi</h2>
+      <ul>
+        {settings.bankAccounts.map((b) => <li><b>{b.bank}</b> <span class="num">{b.number}</span><br />{b.owner}</li>)}
+      </ul>
+      <p class="warn">Kami tidak pernah meminta transfer ke rekening pribadi.</p>
+    </div>
+    <div class="stack">
+      <h2 class="h">Layanan</h2>
+      <ul>
+        {liveCities.map((c) => <li><a href={`/${c.slug.current}`}>Sewa mobil {c.name}</a></li>)}
+        <li><a href="/armada">Armada &amp; tarif</a></li>
+        {services.map((s) => <li><a href={`/${s.slug.current}`}>{s.navLabel}</a></li>)}
+        {posts.length > 0 && <li><a href="/blog">Blog</a></li>}
+      </ul>
+    </div>
+  </div>
+  <div class="wrap legal">
+    <span>© {year} {settings.legalName}. {settings.brandName}.</span>
+  </div>
+</footer>
+
+<style>
+  .site-footer { background: var(--night); color: #c3ccd6; padding-top: 56px; margin-top: 0; font-size: 0.95rem; }
+  .cols { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 32px; }
+  .about img { height: 40px; width: auto; }
+  .about p { max-width: 36ch; }
+  .addr { display: flex; gap: 8px; align-items: flex-start; }
+  .addr :global(svg) { flex: none; margin-top: 3px; color: #5da8f0; }
+  .h { font: 700 0.8rem/1 var(--text); letter-spacing: 0.08em; text-transform: uppercase; color: #fff; }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  a { color: #c3ccd6; text-decoration: none; }
+  a:hover { color: #fff; text-decoration: underline; }
+  b { color: #fff; }
+  .warn { font-size: 0.85rem; color: #97a3b2; }
+  .legal { border-top: 1px solid #1d2c44; margin-top: 40px; padding-block: 20px 96px; font-size: 0.85rem; color: #97a3b2; }
+  @media (max-width: 860px) { .cols { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 520px) { .cols { grid-template-columns: 1fr; } }
+</style>

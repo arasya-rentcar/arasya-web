@@ -1,0 +1,125 @@
+---
+import Base from '../layouts/Base.astro';
+import HeroShowroom from '../components/HeroShowroom.astro';
+import CarCard from '../components/CarCard.astro';
+import TrustRow from '../components/TrustRow.astro';
+import Testimonials from '../components/Testimonials.astro';
+import AnswerBox from '../components/AnswerBox.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import { getContent } from '../lib/content';
+import { rupiah } from '../lib/format';
+import { cityIsIndexable } from '../lib/quality';
+import { photo } from '../lib/images';
+
+const { settings, home, cars, cities, services, posts } = await getContent();
+const priced = cars.filter((c) => c.priceCity);
+const cheapest = priced.reduce((m, c) => (c.priceCity! < m.priceCity! ? c : m), priced[0]);
+const cheapestAllIn = Math.min(...cars.map((c) => c.priceAllIn || Infinity));
+const hq = cities.find((c) => c.isHeadquarters) || cities[0];
+const liveCities = cities.filter(cityIsIndexable);
+const featured = home.featuredCars?.length ? home.featuredCars : cars.slice(0, 4);
+const serviceText: Record<string, string> = {
+  wedding: 'Mobil bersih dan elegan untuk akad dan resepsi, dengan driver rapi.',
+  corporate: 'Transportasi karyawan dan tamu bisnis, pembayaran ke rekening perusahaan.',
+  travel: 'Carter door to door ke bandara dan antar kota, satu mobil untuk rombongan Anda.',
+};
+const answer = `Sewa mobil dengan driver di ${hq?.name || 'Bogor'} bersama Arasya Rent Car mulai ${rupiah(cheapest.priceCity!)} per 12 jam dalam kota (${cheapest.name}), belum termasuk BBM, tol, parkir, dan makan driver.${Number.isFinite(cheapestAllIn) ? ` Paket all-in yang sudah termasuk BBM, tol, dan makan driver mulai ${rupiah(cheapestAllIn)}.` : ''} Pemesanan melalui WhatsApp ${settings.phones[0]}, admin siaga 24 jam.`;
+---
+<Base title={home.seo?.title || settings.brandName} description={home.seo?.description || ''} path="/" waRef="HOME-fab">
+  <HeroShowroom hero={home.hero} settings={settings} cars={cars} refCode="HOME-booking" fromPrice={cheapest?.priceCity || undefined} />
+
+  <section class="section">
+    <div class="wrap">
+      <AnswerBox question={`Berapa harga sewa mobil dengan driver di ${hq?.name || 'Bogor'}?`} answer={answer} />
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="stack"><span class="eyebrow">Armada</span><h2>Pilih mobil untuk perjalanan Anda</h2></div>
+        <a class="link-more" href="/armada">Lihat semua {cars.length} unit →</a>
+      </div>
+      <div class="grid grid-4">
+        {featured.map((c) => <CarCard car={c} settings={settings} refPrefix="HOME" />)}
+      </div>
+      {settings.rateNotes?.city && <p class="note muted">{settings.rateNotes.city}</p>}
+    </div>
+  </section>
+
+  <section class="section tint">
+    <div class="wrap">
+      <div class="section-head"><div class="stack"><span class="eyebrow">Layanan</span><h2>Satu admin untuk semua kebutuhan perjalanan</h2></div></div>
+      <div class="grid grid-3">
+        {services.map((s) => (
+          <a class={`svc svc-${s.template}`} href={`/${s.slug.current}`}>
+            <span class="svc-label">{s.navLabel}</span>
+            <h3>{s.hero.title} {s.hero.titleAccent}</h3>
+            <p>{serviceText[s.template] || s.hero.lead}</p>
+            <span class="go">Selengkapnya <Icon name="arrow" size={16} /></span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <TrustRow items={settings.trust} />
+
+  {liveCities.length > 0 && (
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head"><div class="stack"><span class="eyebrow">Kota layanan</span><h2>Sewa mobil per kota</h2></div></div>
+        <div class="grid grid-3">
+          {liveCities.map((c) => {
+            const dest = c.destinations?.[0];
+            const img = dest ? photo(dest.image, dest.imagePath, 800) : null;
+            return (
+              <a class="city" href={`/${c.slug.current}`}>
+                {img && <img src={img.src} srcset={img.srcset} sizes="(max-width: 560px) 92vw, 380px" alt="" loading="lazy" width="800" height="450" />}
+                <div><h3>Sewa mobil {c.name}</h3><p>{c.areaServed?.join(' · ')}</p></div>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <Testimonials items={settings.testimonials} />
+
+  {posts.length > 0 && (
+    <section class="section tint">
+      <div class="wrap">
+        <div class="section-head"><div class="stack"><span class="eyebrow">Blog</span><h2>Panduan perjalanan</h2></div><a class="link-more" href="/blog">Semua artikel →</a></div>
+        <div class="grid grid-3">
+          {posts.slice(0, 3).map((p) => (
+            <a class="post" href={`/blog/${p.slug.current}`}>
+              <span class="eyebrow">{p.category}</span>
+              <h3>{p.title}</h3>
+              <p>{p.excerpt}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <CtaBand settings={settings} title="Belum yakin unit mana yang cocok?" text="Kirim jumlah penumpang dan tujuan Anda, admin kami bantu pilihkan unit dan tarifnya." message="Halo Arasya, saya mau dibantu pilih unit. Penumpang: …, tujuan: …" waRef="HOME-band" />
+</Base>
+
+<style>
+  .note { margin-top: 16px; font-size: 0.9rem; }
+  .svc { display: grid; gap: 10px; align-content: start; padding: 24px; border-radius: var(--radius); background: #fff; text-decoration: none; color: var(--ink); border: 1px solid var(--line); transition: border-color 0.15s, transform 0.15s; }
+  .svc:hover { border-color: var(--blue); color: var(--ink); transform: translateY(-2px); }
+  .svc-label { font: 700 0.75rem/1 var(--text); letter-spacing: 0.06em; text-transform: uppercase; color: var(--blue); }
+  .svc-wedding .svc-label { color: #a87b1f; }
+  .svc p { color: var(--soft); font-size: 0.95rem; }
+  .go { display: inline-flex; align-items: center; gap: 6px; font: 700 0.9rem/1 var(--display); color: var(--blue); margin-top: 4px; }
+  .city { display: grid; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); text-decoration: none; color: var(--ink); }
+  .city img { aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
+  .city div { padding: 16px; display: grid; gap: 4px; }
+  .city p, .post p { color: var(--soft); font-size: 0.9rem; }
+  .post { display: grid; gap: 8px; align-content: start; padding: 22px; background: #fff; border-radius: var(--radius); text-decoration: none; color: var(--ink); border: 1px solid var(--line); }
+  .post:hover, .city:hover { border-color: var(--blue); color: var(--ink); }
+</style>

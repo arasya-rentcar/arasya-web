@@ -1,0 +1,164 @@
+---
+import Base from '../layouts/Base.astro';
+import HeroShowroom from '../components/HeroShowroom.astro';
+import AnswerBox from '../components/AnswerBox.astro';
+import CarCard from '../components/CarCard.astro';
+import TrustRow from '../components/TrustRow.astro';
+import Testimonials from '../components/Testimonials.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import PortableText from '../components/PortableText.astro';
+import Icon from '../components/Icon.astro';
+import { getContent, type City } from '../lib/content';
+import { dateId, rupiah } from '../lib/format';
+import { photo } from '../lib/images';
+import { cityIsIndexable } from '../lib/quality';
+import { breadcrumbs, cityService, faqPage } from '../lib/schema';
+
+interface Props { city: City }
+const { city } = Astro.props;
+const { settings, cars, posts } = await getContent();
+const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
+const path = `/${city.slug.current}`;
+const crumbs = [{ name: 'Beranda', path: '/' }, { name: `Sewa mobil ${city.name}`, path }];
+const priced = cars.filter((c) => c.priceCity).sort((a, b) => a.priceCity! - b.priceCity!);
+const minAllIn = Math.min(...cars.map((c) => c.priceAllIn || Infinity));
+const cityPosts = posts.filter((p) => p.city?._id === city._id).slice(0, 3);
+const sections = city.sections?.length ? city.sections : ['answer', 'fleet', 'trust', 'editorial', 'destinations', 'routes', 'testimonials', 'faq'];
+const answer = `Tarif sewa mobil dengan driver di ${city.name} mulai ${rupiah(priced[0].priceCity!)} per 12 jam dalam kota (${priced[0].name}) sampai ${rupiah(priced[priced.length - 1].priceCity!)} (${priced[priced.length - 1].name}), belum termasuk BBM, tol, parkir, dan makan driver.${Number.isFinite(minAllIn) ? ` Tarif all-in mulai ${rupiah(minAllIn)}.` : ''} Penjemputan di ${city.pickupPoints || city.name}.`;
+const jsonld = [cityService(city, cars, site, settings), faqPage(city.faq), breadcrumbs(site, crumbs)];
+---
+<Base title={city.seo?.title || `Sewa Mobil ${city.name}`} description={city.seo?.description || ''} path={path} noindex={!cityIsIndexable(city)} jsonld={jsonld} waRef={`${city.code}-fab`} waMessage={`Halo Arasya, saya mau sewa mobil di ${city.name}.`}>
+  <HeroShowroom hero={city.hero} settings={settings} cars={cars} refCode={`${city.code}-booking`} fromPrice={priced[0]?.priceCity || undefined} crumbs={crumbs} />
+
+  {sections.map((s) => {
+    if (s === 'answer') return (
+      <section class="section"><div class="wrap"><AnswerBox question={`Berapa tarif sewa mobil dengan driver di ${city.name}?`} answer={answer} updated={city._updatedAt ? dateId(city._updatedAt) : undefined} /></div></section>
+    );
+    if (s === 'fleet') return (
+      <section class="section" style="padding-top:0" id="tarif">
+        <div class="wrap">
+          <div class="section-head"><div class="stack"><span class="eyebrow">Armada & tarif {city.name}</span><h2>Tarif sewa mobil di {city.name}</h2></div><a class="link-more" href="/armada">Bandingkan semua unit →</a></div>
+          <div class="table-wrap">
+            <table class="rates">
+              <caption class="sr-only">Tarif sewa mobil dengan driver di {city.name}</caption>
+              <thead><tr><th scope="col">Unit</th><th scope="col">Kapasitas</th><th scope="col">Dalam kota 12 jam</th><th scope="col">All-in</th></tr></thead>
+              <tbody>
+                {cars.map((c) => (
+                  <tr>
+                    <th scope="row"><a href={`/armada#${c.slug.current}`}>{c.name}</a></th>
+                    <td class="num">{c.capacity ? `${c.capacity} kursi` : '–'}</td>
+                    <td class="num">{c.priceCity ? rupiah(c.priceCity) : 'Tanya admin'}</td>
+                    <td class="num">{c.priceAllIn ? rupiah(c.priceAllIn) : '–'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div class="notes muted">
+            {settings.rateNotes?.city && <p>{settings.rateNotes.city}</p>}
+            {settings.rateNotes?.allIn && <p>{settings.rateNotes.allIn}</p>}
+          </div>
+          <div class="grid grid-4 cards">
+            {priced.slice(0, 4).map((c) => <CarCard car={c} settings={settings} refPrefix={city.code} context={`di ${city.name}`} />)}
+          </div>
+        </div>
+      </section>
+    );
+    if (s === 'trust') return <TrustRow items={settings.trust} title={`Kenapa sewa mobil di ${city.name} bersama Arasya`} />;
+    if (s === 'editorial' && city.editorial) return (
+      <section class="section">
+        <div class="wrap editorial">
+          <div class="stack">
+            {city.editorial.eyebrow && <span class="eyebrow">{city.editorial.eyebrow}</span>}
+            <h2>{city.editorial.title}</h2>
+            {city.editorial.lead && <p class="lead">{city.editorial.lead}</p>}
+          </div>
+          <PortableText value={city.editorial.body} />
+        </div>
+      </section>
+    );
+    if (s === 'destinations' && city.destinations?.length) return (
+      <section class="section tint">
+        <div class="wrap">
+          <div class="section-head"><div class="stack"><span class="eyebrow">Destinasi</span><h2>Tujuan populer di sekitar {city.name}</h2><p class="muted">Sampaikan tujuan Anda, supir kami yang mengatur rute terbaiknya.</p></div></div>
+          <div class="grid grid-3">
+            {city.destinations.map((d) => {
+              const img = photo(d.image, d.imagePath, 800);
+              return (
+                <article class="dest">
+                  {img && <img src={img.src} srcset={img.srcset} sizes="(max-width: 560px) 92vw, 380px" alt={d.name} loading="lazy" width="800" height="450" />}
+                  <div class="stack">
+                    {d.area && <span class="area"><Icon name="pin" size={14} />{d.area}</span>}
+                    <h3>{d.name}</h3>
+                    {d.text && <p>{d.text}</p>}
+                    {d.credit && <small>{d.creditUrl ? <a href={d.creditUrl} rel="noopener nofollow">{d.credit}</a> : d.credit}</small>}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    );
+    if (s === 'routes' && city.routes?.length) return (
+      <section class="section">
+        <div class="wrap">
+          <div class="section-head"><div class="stack"><span class="eyebrow">Rute dari {city.name}</span><h2>Perkiraan waktu tempuh</h2></div><a class="link-more" href="/travel">Tarif travel antar kota →</a></div>
+          <div class="grid grid-2">
+            {city.routes.map((r) => (
+              <div class="route">
+                <Icon name="route" size={22} />
+                <div><h3>{city.name} → {r.to}</h3>{r.duration && <p class="dur num">{r.duration}</p>}{r.note && <p class="muted">{r.note}</p>}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+    if (s === 'testimonials') return <Testimonials items={settings.testimonials} />;
+    if (s === 'faq') return <Faq items={city.faq || []} title={`Tanya jawab sewa mobil ${city.name}`} />;
+    return null;
+  })}
+
+  {cityPosts.length > 0 && (
+    <section class="section tint">
+      <div class="wrap">
+        <div class="section-head"><div class="stack"><span class="eyebrow">Panduan {city.name}</span><h2>Bacaan sebelum berangkat</h2></div></div>
+        <div class="grid grid-3">
+          {cityPosts.map((p) => <a class="post" href={`/blog/${p.slug.current}`}><span class="eyebrow">{p.category}</span><h3>{p.title}</h3><p class="muted">{p.excerpt}</p></a>)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <CtaBand settings={settings} title={`Pesan mobil di ${city.name} sekarang`} text={`Admin kami mengonfirmasi unit, tarif, dan titik jemput sebelum pemesanan dipastikan.`} message={`Halo Arasya, saya mau sewa mobil di ${city.name}. Tanggal: …, tujuan: …`} waRef={`${city.code}-band`} />
+</Base>
+
+<style>
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+  .rates { width: 100%; border-collapse: collapse; font-size: 0.95rem; min-width: 560px; }
+  .rates th, .rates td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--line); }
+  .rates thead th { background: var(--paper); font: 700 0.75rem/1.2 var(--text); letter-spacing: 0.05em; text-transform: uppercase; color: var(--soft); }
+  .rates tbody th a { color: var(--deep); font-weight: 700; text-decoration: none; }
+  .rates tbody th a:hover { color: var(--blue); }
+  .rates tbody tr:last-child > * { border-bottom: 0; }
+  .rates td:nth-child(3) { color: var(--blue); font-weight: 700; }
+  .notes { display: grid; gap: 4px; margin-top: 12px; font-size: 0.9rem; }
+  .cards { margin-top: 28px; }
+  .editorial { display: grid; grid-template-columns: 1fr 1.3fr; gap: 40px; }
+  .dest { background: #fff; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); }
+  .dest img { aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
+  .dest .stack { padding: 16px; gap: 6px; }
+  .dest p { color: var(--soft); font-size: 0.95rem; }
+  .dest small { font-size: 0.75rem; color: var(--soft); }
+  .dest small a { color: var(--soft); }
+  .area { display: inline-flex; align-items: center; gap: 4px; font-size: 0.8rem; font-weight: 700; color: var(--blue); }
+  .route { display: grid; grid-template-columns: 28px 1fr; gap: 12px; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); color: var(--blue); }
+  .route h3 { color: var(--deep); }
+  .dur { font: 800 1.1rem/1.4 var(--display); color: var(--blue); }
+  .route .muted { font-size: 0.9rem; }
+  .post { display: grid; gap: 8px; align-content: start; padding: 22px; background: #fff; border-radius: var(--radius); text-decoration: none; color: var(--ink); border: 1px solid var(--line); }
+  .post:hover { border-color: var(--blue); color: var(--ink); }
+  @media (max-width: 860px) { .editorial { grid-template-columns: 1fr; gap: 20px; } }
+</style>

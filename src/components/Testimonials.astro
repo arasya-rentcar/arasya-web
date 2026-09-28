@@ -1,0 +1,36 @@
+---
+import type { Settings } from '../lib/content';
+import Icon from './Icon.astro';
+interface Props { items: Settings['testimonials']; limit?: number }
+const { items, limit = 3 } = Astro.props;
+const list = items.slice(0, limit);
+---
+{list.length > 0 && (
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head"><div class="stack"><span class="eyebrow">Ulasan Google</span><h2>Kata pelanggan kami</h2></div></div>
+      <div class="grid grid-3">
+        {list.map((t) => (
+          <figure>
+            <div class="stars" aria-label="5 bintang">{[1, 2, 3, 4, 5].map(() => <Icon name="star" size={16} />)}</div>
+            <blockquote>{t.quote}</blockquote>
+            <figcaption>
+              <b>{t.name}</b>
+              {t.context && <span>{t.context}</span>}
+              {t.link && <a href={t.link} rel="noopener nofollow">Lihat ulasan</a>}
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+<style>
+  figure { margin: 0; border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; display: grid; gap: 14px; align-content: start; }
+  .stars { display: flex; gap: 2px; color: var(--gold); }
+  .stars :global(svg) { fill: currentColor; }
+  blockquote { margin: 0; color: var(--ink); }
+  figcaption { display: grid; gap: 2px; font-size: 0.9rem; color: var(--soft); }
+  figcaption b { color: var(--deep); }
+  figcaption a { font-size: 0.85rem; }
+</style>

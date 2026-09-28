@@ -1,0 +1,23 @@
+---
+import type { Settings } from '../lib/content';
+import { waHref } from '../lib/wa';
+import Icon from './Icon.astro';
+interface Props { settings: Settings; title: string; text?: string; message: string; waRef: string }
+const { settings, title, text, message, waRef } = Astro.props;
+---
+<section class="band">
+  <div class="wrap inner">
+    <div class="stack"><h2>{title}</h2>{text && <p>{text}</p>}</div>
+    <div class="acts">
+      <a class="btn btn-wa" href={waHref(settings.waPhone, message, waRef)} data-cta={`band-${waRef}`} rel="nofollow"><Icon name="wa" />Chat admin sekarang</a>
+      <span class="num">atau telepon {settings.phones[0]}</span>
+    </div>
+  </div>
+</section>
+<style>
+  .band { background: var(--blue); color: #fff; padding-block: 44px; }
+  .inner { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
+  h2 { color: #fff; }
+  p { color: #e8f2fd; max-width: 56ch; }
+  .acts { display: grid; gap: 8px; justify-items: start; font-size: 0.9rem; color: #e8f2fd; }
+</style>

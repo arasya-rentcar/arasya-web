@@ -1,0 +1,52 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { getContent } from '../../lib/content';
+import { dateId } from '../../lib/format';
+import { photo } from '../../lib/images';
+import { breadcrumbs } from '../../lib/schema';
+
+const { settings, posts } = await getContent();
+const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
+const crumbs = [{ name: 'Beranda', path: '/' }, { name: 'Blog', path: '/blog' }];
+const cats = [...new Set(posts.map((p) => p.category).filter(Boolean))];
+---
+<Base title="Blog Perjalanan & Tips Sewa Mobil — Arasya Rent Car" description="Itinerari, panduan rute, dan tips perjalanan dengan mobil dan driver dari tim Arasya Rent Car." path="/blog" jsonld={[breadcrumbs(site, crumbs)]} waRef="BLOG-fab">
+  <section class="head">
+    <div class="wrap stack">
+      <Breadcrumbs items={crumbs} />
+      <h1>Panduan perjalanan</h1>
+      <p class="lead">Itinerari, rute, dan tips dari driver dan admin Arasya.</p>
+      {cats.length > 1 && <p class="cats">{cats.map((c) => <span>{c}</span>)}</p>}
+    </div>
+  </section>
+  <section class="section" style="padding-top:32px">
+    <div class="wrap grid grid-3">
+      {posts.map((p, i) => {
+        const img = photo(p.cover, p.coverPath, 800);
+        return (
+          <a class="card" href={`/blog/${p.slug.current}`}>
+            {img && <img src={img.src} srcset={img.srcset} sizes="(max-width: 560px) 92vw, 380px" alt="" loading={i < 3 ? 'eager' : 'lazy'} width="800" height="450" />}
+            <div class="stack">
+              <span class="eyebrow">{p.category}{p.city ? ` · ${p.city.name}` : ''}</span>
+              <h2>{p.title}</h2>
+              <p class="muted">{p.excerpt}</p>
+              <time datetime={p.publishedAt} class="muted">{dateId(p.publishedAt)}</time>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+</Base>
+<style>
+  .head { background: var(--paper); padding-block: 24px 32px; border-bottom: 1px solid var(--line); }
+  .cats { display: flex; gap: 8px; flex-wrap: wrap; }
+  .cats span { padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: 0.85rem; }
+  .card { display: grid; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; text-decoration: none; color: var(--ink); align-content: start; }
+  .card:hover { border-color: var(--blue); color: var(--ink); }
+  .card img { aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
+  .card .stack { padding: 18px; gap: 8px; }
+  .card h2 { font-size: 1.2rem; }
+  time { font-size: 0.85rem; }
+</style>

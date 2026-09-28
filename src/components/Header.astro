@@ -1,0 +1,62 @@
+---
+import type { Content } from '../lib/content';
+import { waHref } from '../lib/wa';
+import Icon from './Icon.astro';
+
+interface Props { content: Content; path: string }
+const { content, path } = Astro.props;
+const { settings, services, cities } = content;
+const hq = cities.find((c) => c.isHeadquarters) || cities[0];
+const nav = [
+  ...(hq ? [{ href: `/${hq.slug.current}`, label: `Sewa Mobil ${hq.name}` }] : []),
+  { href: '/armada', label: 'Armada' },
+  ...services.map((s) => ({ href: `/${s.slug.current}`, label: s.navLabel || s.slug.current })),
+  { href: '/blog', label: 'Blog' },
+];
+const isActive = (href: string) => path === href || (href !== '/' && path.startsWith(href + '/'));
+const wa = waHref(settings.waPhone, 'Halo Arasya, saya mau tanya sewa mobil.', 'NAV');
+---
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="/" aria-label={`${settings.brandName}, ke beranda`}>
+      <img src="/brand/logo-dark.png" alt={settings.brandName} width="140" height="54" />
+    </a>
+    <nav class="nav" aria-label="Menu utama">
+      <ul>
+        {nav.map((n) => <li><a href={n.href} aria-current={isActive(n.href) ? 'page' : undefined}>{n.label}</a></li>)}
+      </ul>
+    </nav>
+    <div class="actions">
+      <a class="phone num" href={`tel:+${settings.waPhone}`}><Icon name="phone" size={16} />{settings.phones[0]}</a>
+      <a class="btn btn-wa" href={wa} data-cta="nav-wa" rel="nofollow"><Icon name="wa" />Pesan</a>
+      <details class="mnav">
+        <summary aria-label="Buka menu"><Icon name="menu" size={24} /></summary>
+        <ul>
+          {nav.map((n) => <li><a href={n.href} aria-current={isActive(n.href) ? 'page' : undefined}>{n.label}</a></li>)}
+          <li><a href={`tel:+${settings.waPhone}`} class="num">Telepon {settings.phones[0]}</a></li>
+        </ul>
+      </details>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header { position: sticky; top: 0; z-index: 50; background: rgba(255, 255, 255, 0.94); backdrop-filter: saturate(1.4) blur(8px); border-bottom: 1px solid var(--line); }
+  .bar { display: flex; align-items: center; gap: 24px; min-height: 68px; }
+  .brand img { height: 38px; width: auto; }
+  .nav { flex: 1; }
+  .nav ul { display: flex; gap: 22px; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; }
+  .nav a { color: var(--ink); text-decoration: none; font-weight: 500; font-size: 0.95rem; padding-block: 6px; border-bottom: 2px solid transparent; }
+  .nav a:hover, .nav a[aria-current='page'] { color: var(--blue); border-bottom-color: var(--blue); }
+  .actions { display: flex; align-items: center; gap: 14px; margin-left: auto; }
+  .phone { display: inline-flex; align-items: center; gap: 6px; color: var(--deep); text-decoration: none; font: 700 0.95rem/1 var(--display); }
+  .actions .btn { padding: 11px 16px; }
+  .mnav { display: none; position: relative; }
+  .mnav summary { list-style: none; cursor: pointer; padding: 8px; color: var(--deep); }
+  .mnav summary::-webkit-details-marker { display: none; }
+  .mnav ul { position: absolute; right: 0; top: calc(100% + 10px); width: min(280px, 86vw); background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); list-style: none; margin: 0; padding: 8px; }
+  .mnav a { display: block; padding: 12px; color: var(--ink); text-decoration: none; border-radius: 8px; font-weight: 600; }
+  .mnav a:hover, .mnav a[aria-current='page'] { background: var(--sky); color: var(--blue); }
+  @media (max-width: 1080px) { .phone { display: none; } }
+  @media (max-width: 920px) { .nav { display: none; } .mnav { display: block; } }
+</style>

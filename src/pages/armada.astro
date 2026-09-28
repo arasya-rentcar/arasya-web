@@ -1,0 +1,90 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import AnswerBox from '../components/AnswerBox.astro';
+import CarImage from '../components/CarImage.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import { getContent } from '../lib/content';
+import { CATEGORY_LABEL, passengers, rupiah } from '../lib/format';
+import { breadcrumbs, offerCatalog } from '../lib/schema';
+import { refSlug, waHref } from '../lib/wa';
+
+const { settings, cars } = await getContent();
+const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
+const crumbs = [{ name: 'Beranda', path: '/' }, { name: 'Armada', path: '/armada' }];
+const cats = [...new Set(cars.map((c) => c.category))];
+const priced = cars.filter((c) => c.priceCity).sort((a, b) => a.priceCity! - b.priceCity!);
+const answer = `Arasya Rent Car memiliki ${cars.length} unit dengan driver: ${cats.map((c) => CATEGORY_LABEL[c]).join(', ')}. Tarif dalam kota 12 jam mulai ${rupiah(priced[0].priceCity!)} (${priced[0].name}) sampai ${rupiah(priced[priced.length - 1].priceCity!)} (${priced[priced.length - 1].name}).`;
+---
+<Base title="Armada & Tarif Sewa Mobil dengan Driver — Arasya Rent Car" description={`${cars.length} unit sewa mobil dengan driver: Avanza, Xpander, Innova, Zenix, Fortuner, Alphard, Hiace. Bandingkan kapasitas dan tarif 12 jam atau all-in.`} path="/armada" jsonld={[{ '@type': 'ItemList', name: 'Armada Arasya', itemListElement: cars.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, url: `${site}/armada#${c.slug.current}` })) }, { '@id': `${site}/#business`, hasOfferCatalog: offerCatalog(cars, site, 'Tarif armada') }, breadcrumbs(site, crumbs)]} waRef="ARM-fab">
+  <section class="head">
+    <div class="wrap stack">
+      <Breadcrumbs items={crumbs} />
+      <h1>Pilih mobil, kami siapkan driver-nya</h1>
+      <p class="lead">{cars.length} unit, dari MPV keluarga sampai van rombongan. Semua tarif sudah termasuk driver.</p>
+      <nav class="tabs" aria-label="Kategori">
+        <a href="#semua" class="on">Semua</a>
+        {cats.map((c) => <a href={`#${c}`}>{CATEGORY_LABEL[c]}</a>)}
+      </nav>
+    </div>
+  </section>
+
+  <section class="section" id="semua" style="padding-top:28px">
+    <div class="wrap stack">
+      <AnswerBox question="Mobil apa saja yang bisa disewa di Arasya?" answer={answer} />
+      {cats.map((cat) => (
+        <div class="cat" id={cat}>
+          <h2>{CATEGORY_LABEL[cat]}</h2>
+          <div class="list">
+            {cars.filter((c) => c.category === cat).map((c) => (
+              <article class="item" id={c.slug.current}>
+                <div class="ph"><CarImage car={c} sizes="(max-width: 760px) 90vw, 240px" /></div>
+                <div class="info">
+                  <h3>{c.name}{c.badge && <span class="badge">{c.badge}</span>}</h3>
+                  <div class="specs"><span>{c.capacity} kursi</span><span>{passengers(c.capacity)}</span><span>{CATEGORY_LABEL[c.category]}</span></div>
+                  {c.description && <p class="muted">{c.description}</p>}
+                </div>
+                <div class="buy">
+                  {c.priceCity ? <><small>12 jam dalam kota</small><b class="num">{rupiah(c.priceCity)}</b></> : <><small>Tarif</small><b>Tanya admin</b></>}
+                  {c.priceAllIn && <small class="num">All-in {rupiah(c.priceAllIn)}</small>}
+                  <a class="btn btn-wa" href={waHref(settings.waPhone, `Halo Arasya, saya mau sewa ${c.name}. Tanggal: …, tujuan: …`, `ARM-${refSlug(c.name)}`)} data-cta={`arm-${refSlug(c.name)}`} rel="nofollow"><Icon name="wa" />Pesan via WA</a>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      ))}
+      <div class="notes muted">
+        {settings.rateNotes?.city && <p>{settings.rateNotes.city}</p>}
+        {settings.rateNotes?.allIn && <p>{settings.rateNotes.allIn}</p>}
+      </div>
+    </div>
+  </section>
+  <CtaBand settings={settings} title="Rombongan lebih dari satu mobil?" text="Admin kami bisa atur beberapa unit sekaligus untuk acara atau perjalanan kantor." message="Halo Arasya, saya butuh beberapa unit sekaligus. Tanggal: …, jumlah penumpang: …" waRef="ARM-band" />
+</Base>
+
+<style>
+  .head { background: var(--paper); padding-block: 24px 28px; border-bottom: 1px solid var(--line); }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .tabs a { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--ink); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+  .tabs a:hover, .tabs a.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .cat { display: grid; gap: 14px; margin-top: 24px; scroll-margin-top: 88px; }
+  .cat h2 { font-size: 1.4rem; }
+  .list { display: grid; gap: 12px; }
+  .item { display: grid; grid-template-columns: 240px 1fr auto; gap: 24px; align-items: center; border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 20px; scroll-margin-top: 96px; }
+  .item:target { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
+  .ph { background: var(--sky); border-radius: 10px; aspect-ratio: 16 / 10; display: flex; align-items: flex-end; padding: 10px 8px 4px; }
+  .ph :global(img) { width: 100%; height: 100%; object-fit: contain; object-position: bottom; }
+  .info { display: grid; gap: 8px; }
+  h3 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 1.25rem; }
+  .badge { background: var(--blue); color: #fff; font: 700 0.7rem/1 var(--text); padding: 5px 8px; border-radius: 6px; }
+  .specs { display: flex; flex-wrap: wrap; gap: 6px; }
+  .specs span { font-size: 0.8rem; background: var(--paper); border: 1px solid var(--line); padding: 5px 9px; border-radius: 6px; color: #364152; }
+  .buy { display: grid; gap: 4px; justify-items: end; text-align: right; }
+  .buy small { color: var(--soft); font-size: 0.8rem; }
+  .buy b { font: 800 1.4rem/1.1 var(--display); color: var(--deep); }
+  .buy .btn { margin-top: 8px; }
+  .notes { display: grid; gap: 4px; font-size: 0.9rem; margin-top: 16px; }
+  @media (max-width: 760px) { .item { grid-template-columns: 1fr; } .buy { justify-items: start; text-align: left; } }
+</style>

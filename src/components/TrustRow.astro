@@ -1,0 +1,26 @@
+---
+import type { TitledText } from '../lib/content';
+import Icon from './Icon.astro';
+interface Props { items: TitledText[]; title?: string; eyebrow?: string }
+const { items, title = 'Kenapa memilih Arasya', eyebrow = 'Layanan kami' } = Astro.props;
+const icons = ['shield', 'car', 'check', 'clock'] as const;
+---
+<section class="section tint">
+  <div class="wrap">
+    <div class="section-head"><div class="stack"><span class="eyebrow">{eyebrow}</span><h2>{title}</h2></div></div>
+    <div class="grid grid-4">
+      {items.map((t, i) => (
+        <div class="item">
+          <span class="ic"><Icon name={icons[i % icons.length]} size={22} /></span>
+          <h3>{t.title}</h3>
+          {t.text && <p>{t.text}</p>}
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+<style>
+  .item { background: #fff; border-radius: var(--radius); padding: 20px; display: grid; gap: 8px; align-content: start; }
+  .ic { width: 40px; height: 40px; border-radius: 10px; background: var(--sky); color: var(--blue); display: grid; place-items: center; }
+  p { color: var(--soft); font-size: 0.95rem; }
+</style>
