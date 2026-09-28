@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import { withPolicy } from '../lib/faq';
 import HeroShowroom from '../components/HeroShowroom.astro';
 import TrustRow from '../components/TrustRow.astro';
 import Testimonials from '../components/Testimonials.astro';
@@ -8,6 +9,7 @@ import CtaBand from '../components/CtaBand.astro';
 import PortableText from '../components/PortableText.astro';
 import Icon from '../components/Icon.astro';
 import FraudNotice from '../components/FraudNotice.astro';
+import PolicyNotice from '../components/PolicyNotice.astro';
 import { getContent, type City } from '../lib/content';
 import { rupiah } from '../lib/format';
 import { dateFmt, ui, type Lang } from '../lib/i18n';
@@ -49,7 +51,8 @@ const priceText = quote ? quoteAnswer : answer;
 const bookingCars = quote ? (city.unitClasses || []).map((u) => ({ name: u.name }) as any) : cars;
 const priceQuestion = en ? `How much is car rental with a driver in ${city.name}?` : `Berapa tarif sewa mobil dengan driver di ${city.name}?`;
 const faq = [{ question: priceQuestion, answer: priceText }, ...(city.faq || []).filter((f) => f.question !== priceQuestion)];
-const jsonld = [cityService(city, cars, site, settings, lang), faqPage(faq), breadcrumbs(site, crumbs)];
+const faqAll = withPolicy(faq, settings, lang);
+const jsonld = [cityService(city, cars, site, settings, lang), faqPage(faqAll), breadcrumbs(site, crumbs)];
 const waCity = en ? `Hi Arasya, I'd like to rent a car with a driver in ${city.name}.` : `Halo Arasya, saya mau sewa mobil di ${city.name}.`;
 ---
 <Base title={city.seo?.title || t.rentIn(city.name)} description={city.seo?.description || ''} path={path} alternates={alternates} noindex={!cityIsIndexable(city)} jsonld={jsonld} waRef={`${code}-fab`} waMessage={waCity}>
@@ -80,7 +83,7 @@ const waCity = en ? `Hi Arasya, I'd like to rent a car with a driver in ${city.n
     if (s === 'fleet') return (
       <section class="section" id="tarif">
         <div class="wrap">
-          <div class="section-head"><div class="stack"><span class="eyebrow">{en ? `Fleet & rates` : `Armada & tarif ${city.name}`}</span><h2>{en ? `Car rental rates in ${city.name}` : `Tarif sewa mobil di ${city.name}`}</h2><p class="intro">{answer}</p>{reference && <p class="ref-note">{refNote}</p>}</div><a class="link-more" href={paths.fleet(lang)}>{en ? 'Compare all cars →' : 'Bandingkan semua unit →'}</a></div>
+          <div class="section-head"><div class="stack"><span class="eyebrow">{reference && <span class="ref-badge">{en ? 'Reference rates' : 'Tarif acuan'}</span>}{en ? `Fleet & rates` : `Armada & tarif ${city.name}`}</span><h2>{reference ? (en ? `Reference rates in ${city.name}` : `Tarif acuan sewa mobil di ${city.name}`) : en ? `Car rental rates in ${city.name}` : `Tarif sewa mobil di ${city.name}`}</h2><p class="intro">{answer}</p>{reference && <p class="ref-note">{refNote}</p>}</div><a class="link-more" href={paths.fleet(lang)}>{en ? 'Compare all cars →' : 'Bandingkan semua unit →'}</a></div>
           <div class="table-wrap">
             <table class="rates">
               <caption class="sr-only">{en ? `Car rental rates with driver in ${city.name}` : `Tarif sewa mobil dengan driver di ${city.name}`}</caption>
@@ -162,8 +165,8 @@ const waCity = en ? `Hi Arasya, I'd like to rent a car with a driver in ${city.n
     if (s === 'testimonials') return <Testimonials items={settings.testimonials} />;
     if (s === 'faq') return (
       <>
-        <section class="section" style="padding-bottom:0"><div class="wrap"><FraudNotice settings={settings} /></div></section>
-        <Faq items={faq} title={en ? `Renting a car in ${city.name}: questions` : `Tanya jawab sewa mobil ${city.name}`} />
+        <section class="section" style="padding-bottom:0"><div class="wrap"><div class="notices"><PolicyNotice settings={settings} /><FraudNotice settings={settings} /></div></div></section>
+        <Faq items={faqAll} title={en ? `Renting a car in ${city.name}: questions` : `Tanya jawab sewa mobil ${city.name}`} />
       </>
     );
     return null;
@@ -209,7 +212,8 @@ const waCity = en ? `Hi Arasya, I'd like to rent a car with a driver in ${city.n
   .route h3 { color: var(--deep); }
   .dur { font: 800 1.1rem/1.4 var(--display); color: var(--blue); }
   .route .muted { font-size: 0.9rem; }
-  .ref-note { font-size: 0.9rem; color: var(--soft); border-left: 3px solid var(--sky-2); padding-left: 10px; max-width: 72ch; }
+  .ref-note { font-size: 0.92rem; color: var(--deep); background: var(--sky); border-radius: var(--radius-sm); padding: 10px 14px; max-width: 72ch; }
+  .ref-badge { display: inline-block; margin-right: 8px; padding: 3px 8px; border-radius: 6px; background: var(--blue); color: #fff; font-size: 0.7rem; letter-spacing: 0.04em; }
   .uclass { border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: grid; gap: 10px; align-content: start; }
   .uclass dl { display: grid; gap: 6px; margin: 0; }
   .uclass dl div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 6px; font-size: 0.92rem; }

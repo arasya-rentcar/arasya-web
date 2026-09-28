@@ -11,6 +11,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Testimonials from '../components/Testimonials.astro';
 import Faq from '../components/Faq.astro';
 import FraudNotice from '../components/FraudNotice.astro';
+import PolicyNotice from '../components/PolicyNotice.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Icon from '../components/Icon.astro';
 import { getContent, type ServicePage } from '../lib/content';
@@ -19,7 +20,7 @@ import { ui, type Lang } from '../lib/i18n';
 import { carImage, photo } from '../lib/images';
 import { paths, type Alternates } from '../lib/paths';
 import { breadcrumbs, faqPage } from '../lib/schema';
-import { withAnswer } from '../lib/faq';
+import { withAnswer, withPolicy } from '../lib/faq';
 
 interface Props { page: ServicePage; lang: Lang; alternates: Alternates }
 const { page, lang, alternates } = Astro.props;
@@ -67,8 +68,9 @@ const service = {
     ),
   },
 };
+const faqAll = withPolicy(faq, settings, lang);
 ---
-<Base title={page.seo?.title || 'Travel'} description={page.seo?.description || ''} path={path} alternates={alternates} noindex={page.seo?.noindex} jsonld={[service, faqPage(faq), breadcrumbs(site, crumbs)]} waRef={`${L.ref}-fab`} waMessage={en ? "Hi Arasya, I'd like to ask about a private transfer." : 'Halo Arasya, saya mau tanya travel carter.'}>
+<Base title={page.seo?.title || 'Travel'} description={page.seo?.description || ''} path={path} alternates={alternates} noindex={page.seo?.noindex} jsonld={[service, faqPage(faqAll), breadcrumbs(site, crumbs)]} waRef={`${L.ref}-fab`} waMessage={en ? "Hi Arasya, I'd like to ask about a private transfer." : 'Halo Arasya, saya mau tanya travel carter.'}>
   <section class="t-hero" style={bg ? `--bg:url('${bg.src}')` : undefined}>
     <div class="wrap copy">
       <Breadcrumbs items={crumbs} />
@@ -118,8 +120,8 @@ const service = {
   </section>
 
   <Testimonials items={settings.testimonials} />
-  <section class="section" style="padding-bottom:0"><div class="wrap"><FraudNotice settings={settings} /></div></section>
-  <Faq items={faq} title={en ? 'Private transfer questions' : 'Tanya jawab travel carter'} />
+  <section class="section" style="padding-bottom:0"><div class="wrap"><div class="notices"><PolicyNotice settings={settings} /><FraudNotice settings={settings} /></div></div></section>
+  <Faq items={faqAll} title={en ? 'Private transfer questions' : 'Tanya jawab travel carter'} />
   {en ? (
     <CtaBand settings={settings} title="Your route isn't listed?" text="Send us where you're starting and where you're going, and we'll quote a price." message="Hi Arasya, could you quote a private transfer? From: …, to: …, date: …" waRef="EN-TRV-band" />
   ) : (

@@ -56,6 +56,24 @@ export const siteSettings = defineType({
     defineField({ name: 'instagram', title: 'Instagram', type: 'url', group: 'contact' }),
     defineField({ name: 'paymentTerms', title: 'Ketentuan pembayaran', type: 'text', rows: 3, group: 'rates' }),
     defineField({
+      name: 'cancellationPolicy',
+      title: 'Kebijakan pembatalan',
+      description: 'Tampil di beranda, halaman kota & layanan, dan /ketentuan-pemesanan.',
+      type: 'object',
+      group: 'rates',
+      fields: [
+        { name: 'title', type: 'string', title: 'Judul' },
+        { name: 'intro', type: 'text', rows: 2, title: 'Paragraf pembuka' },
+        {
+          name: 'items',
+          type: 'array',
+          title: 'Ketentuan',
+          of: [defineArrayMember({ type: 'object', fields: [{ name: 'when', type: 'string', title: 'Kapan' }, { name: 'fee', type: 'string', title: 'Biaya' }, { name: 'text', type: 'string', title: 'Keterangan' }], preview: { select: { title: 'when', subtitle: 'fee' } } })],
+        },
+        { name: 'closing', type: 'string', title: 'Penutup' },
+      ],
+    }),
+    defineField({
       name: 'rateNotes',
       title: 'Catatan tarif',
       type: 'object',
@@ -93,6 +111,7 @@ export const siteSettings = defineType({
       { name: 'paymentTerms', type: 'text', rows: 3, title: 'Payment terms' },
       { name: 'rateNotes', type: 'object', title: 'Rate notes', fields: [{ name: 'city', type: 'text', rows: 2, title: '12 hours in town' }, { name: 'allIn', type: 'text', rows: 2, title: 'All-in' }] },
       { name: 'trust', type: 'array', of: [defineArrayMember({ type: 'titledText' })], title: 'Trust points' },
+      { name: 'cancellationPolicy', type: 'object', title: 'Cancellation policy', fields: [{ name: 'title', type: 'string' }, { name: 'intro', type: 'text', rows: 2 }, { name: 'items', type: 'array', of: [{ type: 'object', fields: [{ name: 'when', type: 'string' }, { name: 'fee', type: 'string' }, { name: 'text', type: 'string' }] }] }, { name: 'closing', type: 'string' }] },
       { name: 'fraudWarning', type: 'object', title: 'Scam warning', fields: [{ name: 'title', type: 'string' }, { name: 'text', type: 'text', rows: 3 }, { name: 'points', type: 'array', of: [{ type: 'string' }] }] },
     ], 'Teks bersama untuk semua halaman /en.'),
     defineField({

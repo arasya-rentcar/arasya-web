@@ -1,8 +1,9 @@
 ---
 /**
- * Quick-booking form. Nothing is submitted to a server: on submit it builds a
- * WhatsApp message from the fields and opens wa.me. Without JS the plain link
- * still works.
+ * Booking form. Collects what the admin would otherwise ask one by one
+ * (name, date, time, pick-up, destination, car) and sends it as a single
+ * structured WhatsApp message. Nothing is stored on a server. Without JS the
+ * form falls back to a plain wa.me link.
  */
 import type { Car, Settings } from '../lib/content';
 import { langOf, ui } from '../lib/i18n';
@@ -16,26 +17,54 @@ const fallback = waHref(settings.waPhone, t.bkMsg.hello, refCode);
 const uid = 'bk-' + refCode.toLowerCase();
 ---
 <form class="booking" data-booking data-fab-tuck data-phone={settings.waPhone} data-ref={refCode} data-msg={JSON.stringify(t.bkMsg)} action={fallback} method="get">
+  <div class="f w2">
+    <label for={`${uid}-name`}>{t.bkName}</label>
+    <input id={`${uid}-name`} name="name" type="text" placeholder={t.bkNamePh} autocomplete="name" required />
+  </div>
   <div class="f">
     <label for={`${uid}-date`}>{t.bkDate}</label>
     <input id={`${uid}-date`} name="date" type="date" required />
   </div>
   <div class="f">
-    <label for={`${uid}-pickup`}>{t.bkPickup}</label>
-    <input id={`${uid}-pickup`} name="pickup" type="text" placeholder={t.bkPickupPh} value={defaultPickup} autocomplete="street-address" />
+    <label for={`${uid}-time`}>{t.bkTime}</label>
+    <input id={`${uid}-time`} name="time" type="time" value="08:00" step="900" />
   </div>
-  <div class="f">
-    <label for={`${uid}-dest`}>{destLabel}</label>
-    <input id={`${uid}-dest`} name="dest" type="text" placeholder={t.bkDestPh} value={defaultDest} />
-  </div>
-  <div class="f">
+  <div class="f w2">
     <label for={`${uid}-car`}>{t.bkUnit}</label>
     <select id={`${uid}-car`} name="car">
       <option value="">{t.bkHelp}</option>
       {cars.map((c) => <option value={c.name} selected={c.name === defaultCar}>{c.name}</option>)}
     </select>
   </div>
-  <button class="btn btn-wa" type="submit" data-cta="booking"><Icon name="wa" />{t.bkSend}</button>
+  <div class="f w2">
+    <label for={`${uid}-pickup`}>{t.bkPickup}</label>
+    <input id={`${uid}-pickup`} name="pickup" type="text" placeholder={t.bkPickupPh} value={defaultPickup} autocomplete="street-address" required />
+  </div>
+  <div class="f w2">
+    <label for={`${uid}-dest`}>{destLabel}</label>
+    <input id={`${uid}-dest`} name="dest" type="text" placeholder={t.bkDestPh} value={defaultDest} />
+  </div>
+  <button class="btn btn-wa w2" type="submit" data-cta="booking"><Icon name="wa" />{t.bkSend}</button>
+  <details class="more">
+    <summary>{t.bkMore}</summary>
+    <div class="more-grid">
+      <div class="f">
+        <label for={`${uid}-pax`}>{t.bkPax}</label>
+        <input id={`${uid}-pax`} name="pax" type="number" min="1" max="60" inputmode="numeric" placeholder="4" />
+      </div>
+      <div class="f">
+        <label for={`${uid}-dur`}>{t.bkDuration}</label>
+        <select id={`${uid}-dur`} name="duration">
+          {t.bkDurations.map((d, i) => <option value={i === 0 ? '' : d}>{d}</option>)}
+        </select>
+      </div>
+      <div class="f notes">
+        <label for={`${uid}-notes`}>{t.bkNotes}</label>
+        <input id={`${uid}-notes`} name="notes" type="text" placeholder={t.bkNotesPh} />
+      </div>
+    </div>
+  </details>
+  <p class="hint">{t.bkHint}</p>
 </form>
 
 <script>
@@ -56,12 +85,18 @@ const uid = 'bk-' + refCode.toLowerCase();
         : '…';
       const lines = [
         m.hello,
+        '',
+        `${m.name}: ${get('name') || '…'}`,
         `${m.date}: ${tanggal}`,
+        `${m.time}: ${get('time') || '…'}`,
         `${m.pickup}: ${get('pickup') || '…'}`,
         `${m.dest}: ${get('dest') || '…'}`,
         `${m.unit}: ${get('car') || m.help}`,
       ];
-      const text = lines.join('\n') + ` [Ref: ${form.dataset.ref}]`;
+      if (get('pax')) lines.push(`${m.pax}: ${get('pax')}`);
+      if (get('duration')) lines.push(`${m.duration}: ${get('duration')}`);
+      if (get('notes')) lines.push(`${m.notes}: ${get('notes')}`);
+      const text = lines.join('\n') + `\n[Ref: ${form.dataset.ref}]`;
       let src = '';
       try { src = sessionStorage.getItem('arasya-campaign') || ''; } catch {}
       const url = `https://wa.me/${form.dataset.phone}?text=${encodeURIComponent(text + (src ? ` [Src: ${src}]` : ''))}`;
@@ -72,12 +107,26 @@ const uid = 'bk-' + refCode.toLowerCase();
 </script>
 
 <style>
-  .booking { background: #fff; border-radius: var(--radius); box-shadow: 0 8px 24px rgba(2, 38, 75, 0.1); border: 1px solid #e3ebf4; padding: 14px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto; gap: 10px; align-items: end; }
+  .booking { background: #fff; border-radius: var(--radius); box-shadow: 0 8px 24px rgba(2, 38, 75, 0.1); border: 1px solid #e3ebf4; padding: 16px; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px 10px; align-items: end; }
   .f { display: grid; gap: 5px; min-width: 0; }
+  .w2 { grid-column: span 2; }
   label { font: 700 0.7rem/1 var(--text); color: var(--soft); letter-spacing: 0.05em; text-transform: uppercase; }
-  input, select { width: 100%; min-width: 0; font: 500 0.95rem/1.2 var(--text); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 11px 12px; background: #fff; }
-  input:focus, select:focus { outline: 2px solid var(--blue); outline-offset: 0; border-color: var(--blue); }
+  input, select { width: 100%; min-width: 0; font: 500 0.95rem/1.2 var(--text); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 11px 12px; background: #fff; transition: border-color 0.15s, box-shadow 0.15s; }
+  input:focus, select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(4, 107, 210, 0.15); }
+  input:user-invalid { border-color: #c2410c; }
   .btn { height: 44px; }
-  @media (max-width: 920px) { .booking { grid-template-columns: 1fr 1fr; } .btn { grid-column: 1 / -1; } }
-  @media (max-width: 480px) { .booking { gap: 8px; padding: 12px; } label { font-size: 0.66rem; } input, select { padding: 10px; font-size: 0.9rem; } }
+  .more { grid-column: 1 / -1; }
+  .more summary { cursor: pointer; font: 700 0.85rem/1.2 var(--display); color: var(--blue); list-style: none; display: inline-flex; align-items: center; gap: 6px; }
+  .more summary::-webkit-details-marker { display: none; }
+  .more summary::before { content: '+'; font-size: 1rem; }
+  .more[open] summary::before { content: '–'; }
+  .more-grid { display: grid; grid-template-columns: 1fr 1.4fr 3fr; gap: 10px; margin-top: 10px; }
+  .hint { grid-column: 1 / -1; font-size: 0.8rem; color: var(--soft); margin-top: -4px; }
+  @media (max-width: 920px) {
+    .booking { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .w2, .btn { grid-column: 1 / -1; }
+    .more-grid { grid-template-columns: 1fr 1fr; }
+    .more-grid .notes { grid-column: 1 / -1; }
+  }
+  @media (max-width: 480px) { .booking { gap: 10px 8px; padding: 12px; } label { font-size: 0.66rem; } input, select { padding: 10px; font-size: 0.9rem; } }
 </style>

@@ -1,11 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
+import { withPolicy } from '../lib/faq';
 import HeroShowroom from '../components/HeroShowroom.astro';
 import CarCard from '../components/CarCard.astro';
 import TrustRow from '../components/TrustRow.astro';
 import Testimonials from '../components/Testimonials.astro';
 import Faq from '../components/Faq.astro';
 import FraudNotice from '../components/FraudNotice.astro';
+import PolicyNotice from '../components/PolicyNotice.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Icon from '../components/Icon.astro';
 import UnitRequest from '../components/UnitRequest.astro';
@@ -64,8 +66,9 @@ const homeFaq = en ? [
   { question: 'Bagaimana cara memesan?', answer: `Kirim tanggal, titik jemput, dan tujuan lewat WhatsApp ${settings.phones[0]}. Admin mengonfirmasi unit, tarif, dan titik jemput sebelum pemesanan dipastikan. Admin siaga 24 jam.` },
   ...(settings.paymentTerms ? [{ question: 'Bagaimana ketentuan pembayarannya?', answer: `${settings.paymentTerms}${bank ? ` Rekening resmi: ${bank.bank} ${bank.number} ${bank.owner}.` : ''}` }] : []),
 ];
+const homeFaqAll = withPolicy(homeFaq, settings, lang);
 ---
-<Base title={home.seo?.title || settings.brandName} description={home.seo?.description || ''} path={paths.home(lang)} alternates={hasEn.home(idHome) ? { id: '/', en: '/en' } : {}} waRef={en ? 'EN-HOME-fab' : 'HOME-fab'} jsonld={[faqPage(homeFaq)]}>
+<Base title={home.seo?.title || settings.brandName} description={home.seo?.description || ''} path={paths.home(lang)} alternates={hasEn.home(idHome) ? { id: '/', en: '/en' } : {}} waRef={en ? 'EN-HOME-fab' : 'HOME-fab'} jsonld={[faqPage(homeFaqAll)]}>
    <HeroShowroom hero={home.hero} settings={settings} cars={cars} refCode={en ? 'EN-HOME-booking' : 'HOME-booking'} fromPrice={cheapest?.priceCity || undefined} />
 
   <section class="section">
@@ -155,9 +158,9 @@ const homeFaq = en ? [
     </section>
   )}
 
-  <section class="section" style="padding-bottom:0"><div class="wrap"><FraudNotice settings={settings} /></div></section>
+  <section class="section" style="padding-bottom:0"><div class="wrap"><div class="notices"><PolicyNotice settings={settings} /><FraudNotice settings={settings} /></div></div></section>
 
-  <Faq items={homeFaq} />
+  <Faq items={homeFaqAll} />
 
   {en ? (
     <CtaBand settings={settings} title="Not sure which car fits?" text="Tell us how many people are travelling and where to, and we'll suggest a car and quote the rate." message="Hi Arasya, could you help me choose a car? Passengers: …, destination: …" waRef="EN-HOME-band" />

@@ -12,13 +12,14 @@ import Steps from '../components/Steps.astro';
 import Testimonials from '../components/Testimonials.astro';
 import Faq from '../components/Faq.astro';
 import FraudNotice from '../components/FraudNotice.astro';
+import PolicyNotice from '../components/PolicyNotice.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Icon from '../components/Icon.astro';
 import { getContent, type ServicePage } from '../lib/content';
 import { ui, type Lang } from '../lib/i18n';
 import { paths, type Alternates } from '../lib/paths';
 import { breadcrumbs, faqPage } from '../lib/schema';
-import { withAnswer } from '../lib/faq';
+import { withAnswer, withPolicy } from '../lib/faq';
 import { refSlug, waHref } from '../lib/wa';
 
 interface Props { page: ServicePage; lang: Lang; alternates: Alternates }
@@ -73,8 +74,9 @@ const L = en
 const quote = waHref(settings.waPhone, L.quote, `${R}-hero`);
 const service = { '@type': 'Service', name: page.seo?.title, serviceType: 'Corporate car rental with driver', provider: { '@id': `${site}/#business` }, areaServed: cities.map((c) => c.name), url: site + path };
 const icons = ['shield', 'clock', 'users', 'check'] as const;
+const faqAll = withPolicy(faq, settings, lang);
 ---
-<Base title={page.seo?.title || 'Korporat'} description={page.seo?.description || ''} path={path} alternates={alternates} noindex={page.seo?.noindex} jsonld={[service, faqPage(faq), breadcrumbs(site, crumbs)]} waRef={`${R}-fab`} waMessage={L.fab}>
+<Base title={page.seo?.title || 'Korporat'} description={page.seo?.description || ''} path={path} alternates={alternates} noindex={page.seo?.noindex} jsonld={[service, faqPage(faqAll), breadcrumbs(site, crumbs)]} waRef={`${R}-fab`} waMessage={L.fab}>
   <section class="k-hero">
     <div class="wrap">
       <Breadcrumbs items={crumbs} />
@@ -144,8 +146,8 @@ const icons = ['shield', 'clock', 'users', 'check'] as const;
 
   <Steps items={page.steps || []} title={L.steps} />
   <Testimonials items={settings.testimonials} />
-  <section class="section" style="padding-bottom:0"><div class="wrap"><FraudNotice settings={settings} /></div></section>
-  <Faq items={faq} title={L.faq} />
+  <section class="section" style="padding-bottom:0"><div class="wrap"><div class="notices"><PolicyNotice settings={settings} /><FraudNotice settings={settings} /></div></div></section>
+  <Faq items={faqAll} title={L.faq} />
   <CtaBand settings={settings} title={L.bandTitle} text={L.bandText} message={L.bandMsg} waRef={`${R}-band`} />
 </Base>
 

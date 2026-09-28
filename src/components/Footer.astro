@@ -33,6 +33,7 @@ const liveCities = byPopularity(cities.filter(cityIsIndexable)).slice(0, 5);
         {settings.bankAccounts.map((b) => <li><b>{b.bank}</b> <span class="num">{b.number}</span><br />{b.owner}</li>)}
       </ul>
       <p class="warn">{t.footerWarn} <a href={paths.verify(lang)}>{t.footerVerify}</a></p>
+      <p class="warn"><a href={paths.terms(lang)}>{lang === 'en' ? 'Booking & cancellation terms' : 'Ketentuan pemesanan & pembatalan'}</a></p>
     </div>
     <div class="stack">
       <h2 class="h">{t.services}</h2>

@@ -22,6 +22,7 @@ export const GET: APIRoute = async ({ site }) => {
     { id: paths.fleet('id'), en: paths.fleet('en'), lastmod: today },
     { id: paths.cities('id'), en: paths.cities('en'), lastmod: today },
     { id: paths.verify('id'), en: paths.verify('en'), lastmod: today },
+    { id: paths.terms('id'), en: paths.terms('en'), lastmod: today },
     ...id.cars.filter(carIsIndexable).map((c) => ({
       id: paths.car(c.slug.current, 'id'),
       en: hasEn.car(c) ? paths.car(c.slug.current, 'en') : undefined,

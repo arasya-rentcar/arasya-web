@@ -6,6 +6,7 @@
  * Pages without their own copy (see carIsIndexable) ship as noindex.
  */
 import Base from '../layouts/Base.astro';
+import { withPolicy } from '../lib/faq';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import CarImage from '../components/CarImage.astro';
 import CarCard from '../components/CarCard.astro';
@@ -63,9 +64,10 @@ const priceAnswer = car.priceCity
     : `Tarif ${car.name} dihitung per perjalanan, menyesuaikan tanggal, durasi, dan rute. Kirim detailnya lewat WhatsApp untuk penawaran tertulis.`;
 const priceQ = en ? `How much does it cost to rent a ${car.name} with a driver?` : `Berapa tarif sewa ${car.name} dengan driver?`;
 const faq = [{ question: priceQ, answer: priceAnswer }, ...(car.faq || []).filter((f) => f.question !== priceQ)];
+const faqAll = withPolicy(faq, settings, lang);
 ---
 <Base title={title} description={description} path={path} alternates={alternates} noindex={!carIsIndexable(car)} ogImage={img?.src.startsWith('/') ? img.src : undefined} waRef={`${ref}-fab`} waMessage={t.waRent(car.name)}
-  jsonld={[carProduct(car, site, lang, img ? (img.src.startsWith('/') ? site + img.src : img.src) : undefined), faqPage(faq), breadcrumbs(site, crumbs)]}>
+  jsonld={[carProduct(car, site, lang, img ? (img.src.startsWith('/') ? site + img.src : img.src) : undefined), faqPage(faqAll), breadcrumbs(site, crumbs)]}>
   <section class="c-hero">
     <div class="wrap">
       <Breadcrumbs items={crumbs} />
@@ -158,7 +160,7 @@ const faq = [{ question: priceQ, answer: priceAnswer }, ...(car.faq || []).filte
     </section>
   )}
 
-  <Faq items={faq} title={en ? `${car.name} questions` : `Tanya jawab sewa ${car.name}`} />
+  <Faq items={faqAll} title={en ? `${car.name} questions` : `Tanya jawab sewa ${car.name}`} />
 
   {others.length > 0 && (
     <section class="section tint">

@@ -68,6 +68,7 @@ export interface Settings {
   instagram?: string;
   paymentTerms?: string;
   fraudWarning?: { title?: string; text?: string; points?: string[] };
+  cancellationPolicy?: { title?: string; intro?: string; items?: { when: string; fee: string; text?: string }[]; closing?: string };
   analytics?: { ga4Id?: string; gtmId?: string };
   rateNotes?: { city?: string; allIn?: string };
   trust: TitledText[];

@@ -1,0 +1,67 @@
+---
+/**
+ * Payment and cancellation terms side by side, so the rules are clear before
+ * anyone pays a deposit. Copy comes from Pengaturan situs → Tarif.
+ */
+import type { Settings } from '../lib/content';
+import { langOf } from '../lib/i18n';
+import { paths } from '../lib/paths';
+import Icon from './Icon.astro';
+
+interface Props { settings: Settings; heading?: 'h1' | 'h2'; withLink?: boolean }
+const { settings, heading = 'h2', withLink = true } = Astro.props;
+const lang = langOf(Astro.url.pathname);
+const en = lang === 'en';
+const cp = settings.cancellationPolicy;
+const Heading = heading;
+---
+{cp?.items?.length && (
+  <section class="policy" aria-labelledby="policy-title">
+    <div class="head">
+      <span class="ic" aria-hidden="true"><Icon name="calendar" size={22} /></span>
+      <div class="stack">
+        <Heading id="policy-title" class="title">{cp.title}</Heading>
+        {cp.intro && <p>{cp.intro}</p>}
+      </div>
+    </div>
+    <ol class="tiers">
+      {cp.items.map((it, i) => (
+        <li class={`tier t${i + 1}`}>
+          <span class="n num">{i + 1}</span>
+          <div>
+            <h3>{it.when}</h3>
+            <p class="fee">{it.fee}</p>
+            {it.text && <p class="txt">{it.text}</p>}
+          </div>
+        </li>
+      ))}
+    </ol>
+    {settings.paymentTerms && (
+      <p class="pay"><Icon name="bank" size={18} /><span><b>{en ? 'Payment: ' : 'Pembayaran: '}</b>{settings.paymentTerms}</span></p>
+    )}
+    <div class="foot">
+      {cp.closing && <p class="muted">{cp.closing}</p>}
+      {withLink && <a href={paths.terms(lang)}>{en ? 'Booking terms in full →' : 'Ketentuan pemesanan lengkap →'}</a>}
+    </div>
+  </section>
+)}
+<style>
+  .policy { border: 1px solid var(--line); background: #fff; border-radius: var(--radius); padding: clamp(18px, 3vw, 28px); display: grid; gap: 20px; }
+  .head { display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start; }
+  .ic { width: 44px; height: 44px; border-radius: 12px; background: var(--sky); color: var(--blue); display: grid; place-items: center; }
+  .title { font: 750 clamp(1.25rem, 2.4vw, 1.6rem)/1.2 var(--display); color: var(--deep); margin: 0; }
+  .head p { color: var(--body); max-width: 70ch; }
+  .tiers { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .tier { display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 16px; border-radius: 12px; background: var(--paper); border-top: 3px solid var(--c); align-content: start; }
+  .t1 { --c: #7aa7d9; } .t2 { --c: #d08a1c; } .t3 { --c: #c2410c; }
+  .n { width: 32px; height: 32px; border-radius: 50%; background: #fff; border: 1.5px solid var(--c); color: var(--deep); display: grid; place-items: center; font: 800 0.9rem/1 var(--display); }
+  h3 { font-size: 0.98rem; line-height: 1.3; }
+  .fee { font: 800 1.02rem/1.3 var(--display); color: var(--deep); margin-top: 6px; }
+  .txt { font-size: 0.85rem; color: var(--soft); margin-top: 4px; }
+  .pay { display: flex; gap: 10px; align-items: flex-start; font-size: 0.92rem; color: var(--body); border-top: 1px solid var(--line); padding-top: 14px; }
+  .pay :global(svg) { color: var(--blue); flex: none; margin-top: 2px; }
+  .foot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center; font-size: 0.92rem; }
+  .foot a { font: 700 0.95rem/1.3 var(--display); text-decoration: none; }
+  @media (max-width: 760px) { .tiers { grid-template-columns: 1fr; } }
+  @media (max-width: 600px) { .head { grid-template-columns: 1fr; } .ic { display: none; } }
+</style>

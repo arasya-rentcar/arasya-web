@@ -18,6 +18,7 @@ sys.path.insert(0, str(HERE.parent))
 
 from content.cars import CARS  # noqa: E402
 from content.cities import ALL as NEW_CITIES, EN_FIXES, FIXES  # noqa: E402
+from content.policy import POLICY, POLICY_EN  # noqa: E402
 from content.english import CITIES, HOME, SERVICES, SETTINGS  # noqa: E402
 from content.posts import POSTS, blocks  # noqa: E402
 from content.routes import ROUTES  # noqa: E402
@@ -72,6 +73,8 @@ data = {
 
 cities_data = {
     "cities": [keyed(c, c["_id"]) for c in NEW_CITIES],
+    "policy": keyed(POLICY, "policy"),
+    "policyEn": keyed(POLICY_EN, "policy.en"),
     "fixes": [{"id": i, "path": path, "old": old, "new": keyed(new, f"fix.{i}") if isinstance(new, (dict, list)) else new} for i, path, old, new in FIXES + EN_FIXES],
 }
 
@@ -102,6 +105,8 @@ for p in data["posts"]:
         by_id[p["_id"]].update(p)
     else:
         seed.append(p)
+by_id["siteSettings"]["cancellationPolicy"] = cities_data["policy"]
+by_id["siteSettings"].setdefault("en", {})["cancellationPolicy"] = cities_data["policyEn"]
 for c in cities_data["cities"]:
     if c["_id"] in by_id:
         by_id[c["_id"]].clear()

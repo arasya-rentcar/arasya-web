@@ -61,6 +61,7 @@ p { margin: 0; }
 .eyebrow { font: 700 0.8rem/1.2 var(--text); letter-spacing: 0.06em; text-transform: uppercase; color: var(--blue); }
 .lead { font-size: 1.1rem; color: var(--body); max-width: 60ch; }
 .intro { color: var(--body); max-width: 72ch; }
+.notices { display: grid; gap: 20px; }
 .muted { color: var(--soft); }
 .num { font-variant-numeric: tabular-nums; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -113,4 +114,36 @@ p { margin: 0; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+
+/* ------------------------------------------------------------ motion */
+.site-header { transition: box-shadow 0.25s ease, background-color 0.25s ease; }
+.site-header.scrolled { box-shadow: 0 6px 20px rgba(2, 38, 75, 0.08); }
+.btn { transition: background-color 0.15s, color 0.15s, box-shadow 0.15s, transform 0.15s; }
+.btn:active { transform: translateY(1px); }
+.link-more, .go { transition: gap 0.15s, letter-spacing 0.15s; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); transition-delay: var(--d, 0ms); }
+  .js [data-reveal].in { opacity: 1; transform: none; }
+
+  /* Hero: the car drives in; text and form rise. Transform only, so the
+     largest image still paints immediately. */
+  .hero .car img, .c-hero .stage img, .w-hero .stage img, .k-hero .panel-car { animation: drive-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .hero .copy > *, .c-hero .copy > * { animation: nudge 0.6s ease both; }
+  .hero .copy > :nth-child(2), .c-hero .copy > :nth-child(2) { animation-delay: 60ms; }
+  .hero .copy > :nth-child(3), .c-hero .copy > :nth-child(3) { animation-delay: 120ms; }
+  .hero .copy > :nth-child(n+4), .c-hero .copy > :nth-child(n+4) { animation-delay: 180ms; }
+  .booking-wrap, .price-bar, .checker-wrap, .price-wrap { animation: rise 0.7s 0.15s ease both; }
+
+  /* Cards lift on hover. */
+  .car-card, .city, .post, .svc, .dest, .route, .uclass, .item, .rel, .card, .feat, .inc { transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
+  .car-card:hover, .city:hover, .post:hover, .svc:hover, .dest:hover, .uclass:hover, .item:hover, .rel:hover, .card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(2, 38, 75, 0.1); }
+  .car-card:hover img, .item:hover .ph img { transform: translateX(4px); }
+  .car-card img, .item .ph img { transition: transform 0.35s ease; }
+  .link-more:hover, a:hover > .go { letter-spacing: 0.01em; }
+
+  @keyframes drive-in { from { transform: translateX(48px) scale(0.98); } to { transform: none; } }
+  @keyframes nudge { from { transform: translateY(10px); } to { transform: none; } }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 }

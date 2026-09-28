@@ -7,6 +7,7 @@
  */
 import '@fontsource-variable/red-hat-mono';
 import Base from '../layouts/Base.astro';
+import { withPolicy } from '../lib/faq';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Faq from '../components/Faq.astro';
 import CtaBand from '../components/CtaBand.astro';
@@ -71,8 +72,9 @@ const service = {
   url: site + path,
   offers: units.map((u) => ({ '@type': 'Offer', name: `${label}, ${u.name}`, price: u.price, priceCurrency: 'IDR' })),
 };
+const faqAll = withPolicy(faq, settings, lang);
 ---
-<Base title={title} description={description} path={path} alternates={alternates} noindex={!routeIsIndexable(r)} jsonld={[service, faqPage(faq), breadcrumbs(site, crumbs)]} waRef={`${code}-fab`} waMessage={msg()}>
+<Base title={title} description={description} path={path} alternates={alternates} noindex={!routeIsIndexable(r)} jsonld={[service, faqPage(faqAll), breadcrumbs(site, crumbs)]} waRef={`${code}-fab`} waMessage={msg()}>
   <section class="r-hero">
     <div class="wrap copy">
       <Breadcrumbs items={crumbs} />
@@ -138,7 +140,7 @@ const service = {
     </div>
   </section>
 
-  <Faq items={faq} title={en ? `${from} to ${r.destName}: questions` : `Tanya jawab travel ${from} – ${r.destName}`} />
+  <Faq items={faqAll} title={en ? `${from} to ${r.destName}: questions` : `Tanya jawab travel ${from} – ${r.destName}`} />
 
   {(reverse || siblings.length > 0) && (
     <section class="section" style="padding-top:0">

@@ -14,6 +14,7 @@ export const paths = {
   car: (slug: string, lang: Lang) => `${paths.fleet(lang)}/${slug}`,
   cities: (lang: Lang) => (en(lang) ? '/en/cities' : '/sewa-mobil'),
   verify: (lang: Lang) => (en(lang) ? '/en/official-contacts' : '/rekening-resmi'),
+  terms: (lang: Lang) => (en(lang) ? '/en/booking-terms' : '/ketentuan-pemesanan'),
   blog: () => '/blog',
   /** `city` must already be localized when lang is 'en' (its slug is then the English one). */
   city: (c: City, lang: Lang) => (en(lang) ? `/en/${c.slug.current}` : `/${c.slug.current}`),

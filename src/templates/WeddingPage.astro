@@ -14,10 +14,11 @@ import Steps from '../components/Steps.astro';
 import Testimonials from '../components/Testimonials.astro';
 import Faq from '../components/Faq.astro';
 import FraudNotice from '../components/FraudNotice.astro';
+import PolicyNotice from '../components/PolicyNotice.astro';
 import CtaBand from '../components/CtaBand.astro';
 import { getContent, type ServicePage } from '../lib/content';
 import { breadcrumbs, faqPage } from '../lib/schema';
-import { withAnswer } from '../lib/faq';
+import { withAnswer, withPolicy } from '../lib/faq';
 
 interface Props { page: ServicePage }
 const { page } = Astro.props;
@@ -28,8 +29,9 @@ const crumbs = [{ name: 'Beranda', path: '/' }, { name: page.navLabel || 'Weddin
 const faq = withAnswer(page.faq, page.answerQuestion || 'Mobil pengantin apa saja yang tersedia di Arasya?', page.answer);
 const units = page.cars?.length ? page.cars : cars.filter((c) => c.category === 'premium');
 const service = { '@type': 'Service', name: page.seo?.title, serviceType: 'Wedding car rental with driver', provider: { '@id': `${site}/#business` }, areaServed: cities.map((c) => c.name), url: site + path };
+const faqAll = withPolicy(faq, settings, 'id');
 ---
-<Base title={page.seo?.title || 'Wedding car'} description={page.seo?.description || ''} path={path} noindex={page.seo?.noindex} jsonld={[service, faqPage(faq), breadcrumbs(site, crumbs)]} waRef="WED-fab" waMessage="Halo Arasya, saya mau cek ketersediaan mobil pengantin.">
+<Base title={page.seo?.title || 'Wedding car'} description={page.seo?.description || ''} path={path} noindex={page.seo?.noindex} jsonld={[service, faqPage(faqAll), breadcrumbs(site, crumbs)]} waRef="WED-fab" waMessage="Halo Arasya, saya mau cek ketersediaan mobil pengantin.">
   <section class="w-hero">
     <div class="wrap">
       <Breadcrumbs items={crumbs} />
@@ -72,8 +74,8 @@ const service = { '@type': 'Service', name: page.seo?.title, serviceType: 'Weddi
 
   <Steps items={page.steps || []} title="Cara memesan mobil pengantin" />
   <Testimonials items={settings.testimonials} />
-  <section class="section" style="padding-bottom:0"><div class="wrap"><FraudNotice settings={settings} /></div></section>
-  <Faq items={faq} title="Tanya jawab mobil pengantin" />
+  <section class="section" style="padding-bottom:0"><div class="wrap"><div class="notices"><PolicyNotice settings={settings} /><FraudNotice settings={settings} /></div></div></section>
+  <Faq items={faqAll} title="Tanya jawab mobil pengantin" />
   <CtaBand settings={settings} title="Cek ketersediaan untuk tanggal Anda" text="Tanggal pernikahan biasanya ramai dipesan. Kirim tanggal dan lokasi acara, admin kami cek unitnya." message="Halo Arasya, saya mau cek mobil pengantin. Tanggal acara: …, lokasi: …" waRef="WED-band" />
 </Base>
 

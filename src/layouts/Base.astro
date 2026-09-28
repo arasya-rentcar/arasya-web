@@ -43,6 +43,7 @@ const banner = ui(other);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -130,6 +131,29 @@ const banner = ui(other);
           arasyaTrack('generate_lead', { method: 'whatsapp', cta: el.dataset.cta || 'wa' });
           window.dataLayer.push({ event: 'cta_click', cta: el.dataset.cta || 'wa', page: location.pathname });
         }, true);
+      })();
+    </script>
+    <script is:inline>
+      /* Motion: sections fade up as they scroll into view (staggered inside
+         grids), and the header gains a shadow once the page scrolls. Content
+         is visible without JS, and nothing moves for reduced-motion users. */
+      (function () {
+        var header = document.querySelector('.site-header');
+        var onScroll = function () { if (header) header.classList.toggle('scrolled', scrollY > 8); };
+        addEventListener('scroll', onScroll, { passive: true }); onScroll();
+        if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        var sel = 'main .section-head, main .grid > *, main .editorial, main .faq-grid, main .table-wrap, main .notices > *, main .req, main .steps > li, main .tiers > li, main .list > .item, main .prices, main .cities, main .about > *';
+        var els = document.querySelectorAll(sel);
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+        }, { rootMargin: '0px 0px -8% 0px' });
+        els.forEach(function (el) {
+          if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE' || el.closest('.hero, .c-hero, .r-hero, .k-hero, .w-hero, .t-hero')) return;
+          var i = Array.prototype.indexOf.call(el.parentElement.children, el);
+          el.style.setProperty('--d', Math.min(i, 5) * 70 + 'ms');
+          el.setAttribute('data-reveal', '');
+          io.observe(el);
+        });
       })();
     </script>
     {bilingual && (

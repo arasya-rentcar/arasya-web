@@ -1,0 +1,113 @@
+---
+/**
+ * /ketentuan-pemesanan: how booking, rates, payment and cancellation work,
+ * in one place. Everything is drawn from site settings, so it never drifts
+ * from what the other pages say.
+ */
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import PolicyNotice from '../components/PolicyNotice.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import { getContent } from '../lib/content';
+import { withPolicy } from '../lib/faq';
+import { ui, type Lang } from '../lib/i18n';
+import { paths } from '../lib/paths';
+import { breadcrumbs, faqPage } from '../lib/schema';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const en = lang === 'en';
+const t = ui(lang);
+const { settings } = await getContent(lang);
+const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
+const path = paths.terms(lang);
+const title = en ? 'Booking terms' : 'Ketentuan pemesanan';
+const crumbs = [{ name: t.home, path: paths.home(lang) }, { name: title, path }];
+const bank = settings.bankAccounts[0];
+const steps = en
+  ? [
+      ['Send your trip details', 'Name, date, pick-up time and place, destination and car type, using the booking form or WhatsApp.'],
+      ['Receive a written quote', 'We confirm the car, the driver and the price, including anything extra, before you pay.'],
+      ['Pay the deposit', `Once you have the invoice, pay a 20% deposit${bank ? ` into ${bank.bank} ${bank.number} (${bank.owner.replace(/^a\.n\.\s*/i, '')})` : ''}.`],
+      ['Meet your driver', 'The balance is paid to the driver when you meet, in cash or by transfer.'],
+    ]
+  : [
+      ['Kirim detail perjalanan', 'Nama, tanggal, jam dan lokasi jemput, tujuan, dan tipe mobil, lewat form pemesanan atau WhatsApp.'],
+      ['Terima penawaran tertulis', 'Admin mengonfirmasi unit, driver, dan tarif, termasuk biaya tambahan bila ada, sebelum Anda membayar.'],
+      ['Bayar DP', `Setelah invoice terbit, transfer DP 20%${bank ? ` ke ${bank.bank} ${bank.number} ${bank.owner}` : ''}.`],
+      ['Bertemu driver', 'Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, tunai atau transfer.'],
+    ];
+const rates = [
+  settings.rateNotes?.city && [en ? '12 hours in town' : 'Tarif Dalam Kota 12 jam', settings.rateNotes.city],
+  settings.rateNotes?.allIn && ['All-in', settings.rateNotes.allIn],
+  [en ? 'Extra hours' : 'Kelebihan jam', en ? 'Hours beyond the package are charged at an hourly rate that we confirm in writing before the trip.' : 'Pemakaian melebihi durasi paket dikenakan biaya per jam yang dikonfirmasi tertulis sebelum perjalanan.'],
+].filter(Boolean) as string[][];
+const faq = withPolicy(
+  en
+    ? [
+        { question: 'Do I have to pay the full amount up front?', answer: 'No. You pay a 20% deposit after receiving the invoice, and the rest when you meet the driver.' },
+        { question: 'Can I change the date instead of cancelling?', answer: 'Tell us as early as you can. If a car and driver are free on the new date, we move your booking and confirm any price difference in writing.' },
+      ]
+    : [
+        { question: 'Apakah harus membayar penuh di awal?', answer: 'Tidak. Anda membayar DP 20% setelah invoice terbit, dan pelunasan saat bertemu driver.' },
+        { question: 'Bisakah mengganti tanggal alih-alih membatalkan?', answer: 'Sampaikan secepatnya ke admin. Bila unit dan driver tersedia di tanggal baru, pemesanan dipindahkan dan selisih tarif (bila ada) dikonfirmasi tertulis.' },
+      ],
+  settings,
+  lang,
+);
+---
+<Base title={en ? 'Booking, Payment & Cancellation Terms | Arasya Rent Car' : 'Ketentuan Pemesanan, Pembayaran & Pembatalan — Arasya Rent Car'} description={en ? 'How booking works at Arasya Rent Car: written quote, 20% deposit, balance on the day, and our cancellation policy.' : 'Cara pemesanan di Arasya Rent Car: penawaran tertulis, DP 20%, pelunasan saat bertemu driver, dan kebijakan pembatalan.'} path={path} alternates={{ id: '/ketentuan-pemesanan', en: '/en/booking-terms' }} jsonld={[faqPage(faq), breadcrumbs(site, crumbs)]} waRef={en ? 'EN-TERMS-fab' : 'TERMS-fab'}>
+  <section class="head">
+    <div class="wrap stack">
+      <Breadcrumbs items={crumbs} />
+      <h1>{title}</h1>
+      <p class="lead">{en ? 'How booking, payment and cancellation work, so everything is clear before you pay.' : 'Cara pemesanan, pembayaran, dan pembatalan, supaya semuanya jelas sebelum Anda membayar.'}</p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:32px">
+    <div class="wrap stack gap">
+      <div class="block">
+        <h2>{en ? 'How to book' : 'Alur pemesanan'}</h2>
+        <ol class="steps">
+          {steps.map(([h, p], i) => <li><span class="n num">{i + 1}</span><div><h3>{h}</h3><p>{p}</p></div></li>)}
+        </ol>
+      </div>
+      <div class="block">
+        <h2>{en ? 'Rates' : 'Tarif'}</h2>
+        <dl class="rates">{rates.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+      </div>
+      <PolicyNotice settings={settings} withLink={false} />
+      <p class="verify"><Icon name="shield" size={18} />{en ? 'Only pay into our official company account.' : 'Pastikan pembayaran hanya ke rekening resmi perusahaan.'} <a href={paths.verify(lang)}>{en ? 'Check our official numbers & account →' : 'Cek nomor & rekening resmi →'}</a></p>
+    </div>
+  </section>
+  <Faq items={faq} />
+  {en ? (
+    <CtaBand settings={settings} title="Questions about a booking?" text="Our team answers on WhatsApp 24 hours a day." message="Hi Arasya, I have a question about booking terms." waRef="EN-TERMS-band" />
+  ) : (
+    <CtaBand settings={settings} title="Ada pertanyaan soal pemesanan?" text="Admin kami siaga lewat WhatsApp 24 jam." message="Halo Arasya, saya mau tanya soal ketentuan pemesanan." waRef="TERMS-band" />
+  )}
+</Base>
+<style>
+  .head { background: var(--paper); padding-block: 24px 28px; border-bottom: 1px solid var(--line); }
+  .gap { gap: 28px; }
+  .block { display: grid; gap: 14px; }
+  .block h2 { font-size: 1.4rem; }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  .steps li { display: grid; grid-template-columns: 34px 1fr; gap: 12px; padding: 16px; border-radius: var(--radius); background: var(--paper); align-content: start; }
+  .n { width: 34px; height: 34px; border-radius: 50%; background: var(--blue); color: #fff; display: grid; place-items: center; font: 800 0.95rem/1 var(--display); }
+  .steps h3 { font-size: 1rem; }
+  .steps p { font-size: 0.9rem; color: var(--soft); margin-top: 4px; }
+  .rates { margin: 0; display: grid; border: 1px solid var(--line); border-radius: var(--radius); }
+  .rates div { display: grid; grid-template-columns: 220px 1fr; gap: 16px; padding: 14px 18px; }
+  .rates div + div { border-top: 1px solid var(--line); }
+  dt { font-weight: 700; color: var(--deep); }
+  dd { margin: 0; color: var(--body); }
+  .verify { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; color: var(--body); }
+  .verify :global(svg) { color: var(--blue); }
+  .verify a { font-weight: 700; }
+  @media (max-width: 900px) { .steps { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .steps { grid-template-columns: 1fr; } .rates div { grid-template-columns: 1fr; gap: 4px; } }
+</style>
