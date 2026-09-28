@@ -1,0 +1,32 @@
+name: Check setup
+
+# Diagnostics, run by hand from the Actions tab:
+# - connects this repo to the Vercel project (needs the Vercel GitHub App on
+#   the org) and prints the project's Git link
+# - lists the CORS origins configured in Sanity (needed for /studio logins)
+# Prints no secrets.
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN_NEW }}
+      SANITY_API_TOKEN: ${{ secrets.SANITY_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Vercel Git connection
+        run: |
+          npm install --global vercel@latest > /dev/null 2>&1
+          vercel link --yes --project arasya-web --scope sutanariefs-projects-a26c91df --token="$VERCEL_TOKEN"
+          vercel git connect https://github.com/arasya-rentcar/arasya-web --yes --token="$VERCEL_TOKEN" || true
+          PROJECT_ID=$(jq -r .projectId .vercel/project.json)
+          ORG_ID=$(jq -r .orgId .vercel/project.json)
+          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" "https://api.vercel.com/v9/projects/$PROJECT_ID?teamId=$ORG_ID" \
+            | jq '{name, link: (.link | if . then {type, org, repo, productionBranch} else "NOT CONNECTED" end)}'
+      - name: Sanity CORS origins
+        run: |
+          curl -s -H "Authorization: Bearer $SANITY_API_TOKEN" https://api.sanity.io/v2021-06-07/projects/w5eya3q9/cors \
+            | jq 'if type == "array" then map({origin, allowCredentials}) else . end'

@@ -5,9 +5,12 @@ import { waHref, refSlug } from '../lib/wa';
 import CarImage from './CarImage.astro';
 import Icon from './Icon.astro';
 
-interface Props { car: Car; settings: Settings; refPrefix: string; context?: string; tone?: 'sky' | 'white' | 'ivory' }
-const { car, settings, refPrefix, context = '', tone = 'sky' } = Astro.props;
-const message = `Halo Arasya, saya mau sewa ${car.name}${context ? ' ' + context : ''}. Tanggal: …, tujuan: …`;
+/** `consult` hides prices and turns the button into a price consultation (wedding, corporate). */
+interface Props { car: Car; settings: Settings; refPrefix: string; context?: string; tone?: 'sky' | 'white' | 'ivory'; consult?: boolean }
+const { car, settings, refPrefix, context = '', tone = 'sky', consult = false } = Astro.props;
+const message = consult
+  ? `Halo Arasya, saya mau konsultasi harga ${car.name}${context ? ' ' + context : ''}. Tanggal: …, lokasi: …`
+  : `Halo Arasya, saya mau sewa ${car.name}${context ? ' ' + context : ''}. Tanggal: …, tujuan: …`;
 const href = waHref(settings.waPhone, message, `${refPrefix}-${refSlug(car.name)}`);
 ---
 <article class={`car-card tone-${tone}`} id={car.slug.current}>
@@ -19,6 +22,9 @@ const href = waHref(settings.waPhone, message, `${refPrefix}-${refSlug(car.name)
     <h3>{car.name}</h3>
     <p class="meta"><Icon name="users" size={16} />{passengers(car.capacity)} · {CATEGORY_LABEL[car.category]}</p>
   </div>
+  {consult ? (
+    <p class="consult">Harga menyesuaikan jadwal dan kebutuhan acara. Konsultasikan lewat WhatsApp.</p>
+  ) : (
   <div class="price">
     {car.priceCity ? (
       <div><span class="lbl">12 jam dalam kota</span><strong class="num">{rupiahShort(car.priceCity)}</strong></div>
@@ -27,7 +33,8 @@ const href = waHref(settings.waPhone, message, `${refPrefix}-${refSlug(car.name)
     )}
     {car.priceAllIn && <div class="allin"><span class="lbl">All-in</span><span class="num">{rupiah(car.priceAllIn)}</span></div>}
   </div>
-  <a class="btn btn-wa" href={href} data-cta={`car-${refSlug(car.name)}`} rel="nofollow"><Icon name="wa" />Pesan unit ini</a>
+  )}
+  <a class="btn btn-wa" href={href} data-cta={`car-${refSlug(car.name)}`} rel="nofollow"><Icon name="wa" />{consult ? 'Konsultasi harga' : 'Pesan unit ini'}</a>
 </article>
 
 <style>
@@ -46,4 +53,5 @@ const href = waHref(settings.waPhone, message, `${refPrefix}-${refSlug(car.name)
   .price strong { font: 800 1.25rem/1 var(--display); color: var(--blue); }
   .allin { text-align: right; font-size: 0.85rem; color: var(--deep); font-weight: 600; }
   .btn { width: 100%; }
+  .consult { border-top: 1px solid var(--line); padding: 10px 4px 0; font-size: 0.88rem; color: var(--soft); }
 </style>

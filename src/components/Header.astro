@@ -1,20 +1,22 @@
 ---
 import type { Content } from '../lib/content';
+import { cityIsIndexable } from '../lib/quality';
 import { waHref } from '../lib/wa';
 import Icon from './Icon.astro';
 
 interface Props { content: Content; path: string }
 const { content, path } = Astro.props;
 const { settings, services, cities } = content;
-const nav = [
-  ...(cities.length ? [{ href: '/sewa-mobil', label: 'Kota' }] : []),
+
+// Only cities that are live in search appear in the menu; thin drafts stay reachable by URL.
+const menuCities = cities.filter(cityIsIndexable).map((c) => ({ href: `/${c.slug.current}`, label: c.name }));
+const inCities = path === '/sewa-mobil' || menuCities.some((c) => c.href === path);
+const links = [
   { href: '/armada', label: 'Armada' },
   ...services.map((s) => ({ href: `/${s.slug.current}`, label: s.navLabel || s.slug.current })),
   { href: '/blog', label: 'Blog' },
 ];
-const cityPaths = cities.map((c) => `/${c.slug.current}`);
-const isActive = (href: string) =>
-  path === href || (href !== '/' && path.startsWith(href + '/')) || (href === '/sewa-mobil' && cityPaths.includes(path));
+const isActive = (href: string) => path === href || path.startsWith(href + '/');
 const wa = waHref(settings.waPhone, 'Halo Arasya, saya mau tanya sewa mobil.', 'NAV');
 ---
 <header class="site-header">
@@ -24,40 +26,106 @@ const wa = waHref(settings.waPhone, 'Halo Arasya, saya mau tanya sewa mobil.', '
     </a>
     <nav class="nav" aria-label="Menu utama">
       <ul>
-        {nav.map((n) => <li><a href={n.href} aria-current={isActive(n.href) ? 'page' : undefined}>{n.label}</a></li>)}
+        {menuCities.length > 0 && (
+          <li>
+            <details class="dd" data-dd>
+              <summary class:list={['dd-toggle', { active: inCities }]}>
+                Kota <svg class="chev" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="m2.5 4.5 3.5 3.5 3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </summary>
+              <div class="dd-menu">
+                <ul class:list={['dd-list', { cols: menuCities.length > 8 }]}>
+                  {menuCities.map((c) => (
+                    <li><a href={c.href} aria-current={path === c.href ? 'page' : undefined}><Icon name="pin" size={16} />{c.label}</a></li>
+                  ))}
+                </ul>
+                <a class="dd-all" href="/sewa-mobil" aria-current={path === '/sewa-mobil' ? 'page' : undefined}>Semua kota layanan →</a>
+              </div>
+            </details>
+          </li>
+        )}
+        {links.map((n) => <li><a href={n.href} aria-current={isActive(n.href) ? 'page' : undefined}>{n.label}</a></li>)}
       </ul>
     </nav>
     <div class="actions">
       <a class="phone num" href={`tel:+${settings.waPhone}`}><Icon name="phone" size={16} />{settings.phones[0]}</a>
       <a class="btn btn-wa" href={wa} data-cta="nav-wa" rel="nofollow"><Icon name="wa" />Pesan</a>
-      <details class="mnav">
+      <details class="mnav" data-dd>
         <summary aria-label="Buka menu"><Icon name="menu" size={24} /></summary>
-        <ul>
-          {nav.map((n) => <li><a href={n.href} aria-current={isActive(n.href) ? 'page' : undefined}>{n.label}</a></li>)}
-          <li><a href={`tel:+${settings.waPhone}`} class="num">Telepon {settings.phones[0]}</a></li>
-        </ul>
+        <div class="mnav-panel">
+          {menuCities.length > 0 && (
+            <div class="mgroup">
+              <span class:list={['mlabel', { active: inCities }]}>Kota</span>
+              <ul class="mcities">
+                {menuCities.map((c) => <li><a href={c.href} aria-current={path === c.href ? 'page' : undefined}>{c.label}</a></li>)}
+                <li><a href="/sewa-mobil" aria-current={path === '/sewa-mobil' ? 'page' : undefined}>Semua kota</a></li>
+              </ul>
+            </div>
+          )}
+          <ul>
+            {links.map((n) => <li><a href={n.href} aria-current={isActive(n.href) ? 'page' : undefined}>{n.label}</a></li>)}
+            <li><a href={`tel:+${settings.waPhone}`} class="num">Telepon {settings.phones[0]}</a></li>
+          </ul>
+        </div>
       </details>
     </div>
   </div>
 </header>
+
+<script>
+  // Close open menus on outside click or Escape; keep only one open at a time.
+  const menus = [...document.querySelectorAll<HTMLDetailsElement>('details[data-dd]')];
+  document.addEventListener('click', (ev) => {
+    menus.forEach((d) => { if (d.open && !d.contains(ev.target as Node)) d.open = false; });
+  });
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key !== 'Escape') return;
+    menus.forEach((d) => { if (d.open) { d.open = false; d.querySelector('summary')?.focus(); } });
+  });
+  menus.forEach((d) => d.addEventListener('toggle', () => {
+    if (d.open) menus.forEach((o) => { if (o !== d) o.open = false; });
+  }));
+</script>
 
 <style>
   .site-header { position: sticky; top: 0; z-index: 50; background: rgba(255, 255, 255, 0.94); backdrop-filter: saturate(1.4) blur(8px); border-bottom: 1px solid var(--line); }
   .bar { display: flex; align-items: center; gap: 24px; min-height: 68px; }
   .brand img { height: 38px; width: auto; }
   .nav { flex: 1; }
-  .nav ul { display: flex; gap: 22px; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; }
-  .nav a { color: var(--ink); text-decoration: none; font-weight: 500; font-size: 0.95rem; padding-block: 6px; border-bottom: 2px solid transparent; }
-  .nav a:hover, .nav a[aria-current='page'] { color: var(--blue); border-bottom-color: var(--blue); }
+  .nav > ul { display: flex; align-items: center; gap: 22px; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; }
+  .nav > ul > li > a, .dd-toggle { color: var(--ink); text-decoration: none; font-weight: 500; font-size: 0.95rem; padding-block: 6px; border-bottom: 2px solid transparent; }
+  .nav > ul > li > a:hover, .nav > ul > li > a[aria-current='page'] { color: var(--blue); border-bottom-color: var(--blue); }
+
+  .dd { position: relative; }
+  .dd-toggle { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+  .dd-toggle::-webkit-details-marker { display: none; }
+  .dd-toggle:hover, .dd-toggle.active { color: var(--blue); }
+  .dd-toggle.active { border-bottom-color: var(--blue); }
+  .chev { transition: transform 0.15s; }
+  .dd[open] .chev { transform: rotate(180deg); }
+  .dd-menu { position: absolute; left: -12px; top: calc(100% + 12px); min-width: 240px; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 8px; display: grid; gap: 4px; }
+  .dd-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; max-height: min(60vh, 420px); overflow-y: auto; }
+  .dd-list.cols { grid-template-columns: repeat(2, minmax(160px, 1fr)); }
+  .dd-list a { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 8px; color: var(--ink); text-decoration: none; font-weight: 500; }
+  .dd-list a :global(svg) { color: var(--soft); flex: none; }
+  .dd-list a:hover { background: var(--paper); color: var(--blue); }
+  .dd-list a[aria-current='page'] { background: var(--sky); color: var(--blue); font-weight: 700; }
+  .dd-list a[aria-current='page'] :global(svg) { color: var(--blue); }
+  .dd-all { display: block; border-top: 1px solid var(--line); margin-top: 4px; padding: 10px 12px 6px; font: 700 0.9rem/1.2 var(--display); text-decoration: none; }
+
   .actions { display: flex; align-items: center; gap: 14px; margin-left: auto; }
   .phone { display: inline-flex; align-items: center; gap: 6px; color: var(--deep); text-decoration: none; font: 700 0.95rem/1 var(--display); }
   .actions .btn { padding: 11px 16px; }
   .mnav { display: none; position: relative; }
   .mnav summary { list-style: none; cursor: pointer; padding: 8px; color: var(--deep); }
   .mnav summary::-webkit-details-marker { display: none; }
-  .mnav ul { position: absolute; right: 0; top: calc(100% + 10px); width: min(280px, 86vw); background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); list-style: none; margin: 0; padding: 8px; }
-  .mnav a { display: block; padding: 12px; color: var(--ink); text-decoration: none; border-radius: 8px; font-weight: 600; }
-  .mnav a:hover, .mnav a[aria-current='page'] { background: var(--sky); color: var(--blue); }
+  .mnav-panel { position: absolute; right: 0; top: calc(100% + 10px); width: min(300px, 88vw); max-height: 75vh; overflow-y: auto; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 8px; display: grid; gap: 6px; }
+  .mnav-panel ul { list-style: none; margin: 0; padding: 0; }
+  .mnav-panel a { display: block; padding: 12px; color: var(--ink); text-decoration: none; border-radius: 8px; font-weight: 600; }
+  .mnav-panel a:hover, .mnav-panel a[aria-current='page'] { background: var(--sky); color: var(--blue); }
+  .mgroup { border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+  .mlabel { display: block; padding: 8px 12px 4px; font: 700 0.72rem/1 var(--text); letter-spacing: 0.08em; text-transform: uppercase; color: var(--soft); }
+  .mlabel.active { color: var(--blue); }
+  .mcities a { font-weight: 500; padding-block: 10px; }
   @media (max-width: 1080px) { .phone { display: none; } }
   @media (max-width: 920px) { .nav { display: none; } .mnav { display: block; } }
 </style>

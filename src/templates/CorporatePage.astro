@@ -1,7 +1,8 @@
 ---
 /**
  * /korporat: the Showroom layout, tuned for a GA or purchasing reader. Cooler
- * greys, a rate table they can paste into a request, and the company facts
+ * greys, the unit line-up without prices (pricing is quoted per request over
+ * WhatsApp), and the company facts
  * (legal entity, payment account) up front.
  */
 import Base from '../layouts/Base.astro';
@@ -14,8 +15,8 @@ import Faq from '../components/Faq.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Icon from '../components/Icon.astro';
 import { getContent, type ServicePage } from '../lib/content';
-import { passengers, rupiah } from '../lib/format';
-import { breadcrumbs, faqPage, offerCatalog } from '../lib/schema';
+import { passengers } from '../lib/format';
+import { breadcrumbs, faqPage } from '../lib/schema';
 import { refSlug, waHref } from '../lib/wa';
 
 interface Props { page: ServicePage }
@@ -27,7 +28,7 @@ const crumbs = [{ name: 'Beranda', path: '/' }, { name: page.navLabel || 'Korpor
 const units = page.cars?.length ? page.cars : cars;
 const bank = settings.bankAccounts[0];
 const quote = waHref(settings.waPhone, 'Halo Arasya, kami dari perusahaan … ingin minta penawaran sewa mobil. Tanggal: …, jumlah penumpang: …, rute: …', 'KOR-hero');
-const service = { '@type': 'Service', name: page.seo?.title, serviceType: 'Corporate car rental with driver', provider: { '@id': `${site}/#business` }, areaServed: cities.map((c) => c.name), url: site + path, hasOfferCatalog: offerCatalog(units, site, 'Tarif korporat') };
+const service = { '@type': 'Service', name: page.seo?.title, serviceType: 'Corporate car rental with driver', provider: { '@id': `${site}/#business` }, areaServed: cities.map((c) => c.name), url: site + path };
 const icons = ['shield', 'clock', 'users', 'check'] as const;
 ---
 <Base title={page.seo?.title || 'Korporat'} description={page.seo?.description || ''} path={path} noindex={page.seo?.noindex} jsonld={[service, faqPage(page.faq), breadcrumbs(site, crumbs)]} waRef="KOR-fab" waMessage="Halo Arasya, kami ingin minta penawaran sewa mobil untuk perusahaan.">
@@ -46,23 +47,24 @@ const icons = ['shield', 'clock', 'users', 'check'] as const;
           </ul>
           <div class="acts">
             <a class="btn btn-blue" href={quote} data-cta="kor-quote" rel="nofollow">Minta penawaran</a>
-            <a class="btn btn-ghost" href="#tarif">Lihat tarif</a>
+            <a class="btn btn-ghost" href="#unit">Lihat unit</a>
           </div>
         </div>
-        <div class="panel" id="tarif">
+        <div class="panel" id="unit">
           <CarImage car={page.hero.car} eager class="panel-car" sizes="(max-width: 860px) 92vw, 520px" />
           <table>
-            <caption>Tarif per unit · 12 jam dalam kota, dengan driver</caption>
+            <caption>Unit tersedia · semua dengan driver</caption>
             <tbody>
               {units.map((c) => (
                 <tr>
                   <th scope="row">{c.name}<small>{passengers(c.capacity)}</small></th>
-                  <td class="num">{c.priceCity ? rupiah(c.priceCity) : 'Sesuai penawaran'}</td>
+                  <td><a href={waHref(settings.waPhone, `Halo Arasya, kami ingin konsultasi harga ${c.name} untuk perusahaan.`, `KOR-panel-${refSlug(c.name)}`)} data-cta={`kor-panel-${refSlug(c.name)}`} rel="nofollow">Tanya harga</a></td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {settings.rateNotes?.city && <p class="small">{settings.rateNotes.city}</p>}
+          <p class="small">Harga menyesuaikan jadwal, durasi, rute, dan jumlah unit. Admin kami mengirim penawaran tertulis lewat WhatsApp.</p>
+          <a class="btn btn-wa" href={quote} data-cta="kor-panel" rel="nofollow"><Icon name="wa" />Konsultasi harga via WhatsApp</a>
         </div>
       </div>
     </div>
@@ -102,7 +104,7 @@ const icons = ['shield', 'clock', 'users', 'check'] as const;
   <Steps items={page.steps || []} title="Alur pemesanan perusahaan" />
   <Testimonials items={settings.testimonials} />
   <Faq items={page.faq || []} title="Tanya jawab layanan korporat" />
-  <CtaBand settings={settings} title="Butuh penawaran tertulis?" text="Kirim tanggal, jumlah penumpang, dan rute. Admin kami mengirim unit dan rincian tarif." message="Halo Arasya, kami ingin minta penawaran tertulis. Perusahaan: …, tanggal: …, rute: …" waRef="KOR-band" />
+  <CtaBand settings={settings} title="Butuh penawaran tertulis?" text="Kirim tanggal, jumlah penumpang, dan rute. Admin kami mengirim pilihan unit dan penawaran harga." message="Halo Arasya, kami ingin minta penawaran tertulis. Perusahaan: …, tanggal: …, rute: …" waRef="KOR-band" />
 </Base>
 
 <style>
@@ -121,7 +123,9 @@ const icons = ['shield', 'clock', 'users', 'check'] as const;
   th, td { padding: 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
   th { font-weight: 700; color: var(--deep); }
   th small { display: block; font-weight: 400; color: var(--soft); font-size: 0.8rem; }
-  td { text-align: right; font-weight: 700; color: var(--blue); white-space: nowrap; }
+  td { text-align: right; white-space: nowrap; }
+  td a { font: 700 0.9rem/1.2 var(--display); text-decoration: none; }
+  .panel .btn { margin-top: 4px; }
   .small { font-size: 0.8rem; color: var(--soft); }
   .hl { background: #fff; border-radius: var(--radius); padding: 20px; display: grid; gap: 8px; align-content: start; }
   .hl p { color: var(--soft); font-size: 0.95rem; }
