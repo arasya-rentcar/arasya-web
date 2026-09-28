@@ -13,15 +13,18 @@ const browser = await chromium.launch();
 const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, locale: 'id-ID' });
 const page = await context.newPage();
 const hits = [];
-// Context-level, so beacons sent while a page unloads are caught too.
-context.on('request', (r) => {
-  const u = r.url();
-  if (!/google-analytics\.com\/g\/collect/.test(u)) return;
-  const body = r.postData() || '';
-  for (const line of [new URL(u).search.slice(1), ...body.split('\n')]) {
+// GA4 batches events into one POST a few seconds later (or flushes them as
+// the page unloads), with the event names in the request body. Routing lets
+// us read that body, including for beacons sent while a page is unloading.
+await context.route(/google-analytics\.com\/g\/collect/, (route) => {
+  const r = route.request();
+  const u = new URL(r.url());
+  const lines = [u.search.slice(1), ...(r.postData() || '').split('\n')];
+  for (const line of lines) {
     const q = new URLSearchParams(line);
-    if (q.get('en')) hits.push({ tid: new URL(u).searchParams.get('tid'), en: q.get('en'), lead_id: q.get('ep.lead_id') || '', cta: q.get('ep.cta') || '' });
+    if (q.get('en')) hits.push({ tid: u.searchParams.get('tid'), en: q.get('en'), lead_id: q.get('ep.lead_id') || '', cta: q.get('ep.cta') || '' });
   }
+  route.continue();
 });
 // Stand in for WhatsApp so the site page really unloads, as it does for a visitor.
 await context.route('https://wa.me/**', (r) => { hits.push({ en: '→ navigated to wa.me' }); r.fulfill({ contentType: 'text/html', body: '<p>WhatsApp</p>' }); });
@@ -30,13 +33,13 @@ await page.goto(base + '/sewa-mobil-bogor', { waitUntil: 'networkidle' });
 await page.mouse.wheel(0, 200);
 await page.waitForTimeout(2500);
 await page.click('a[data-cta=nav-wa]');
-await page.waitForTimeout(4000);
+await page.waitForTimeout(7000);
 
 await page.goto(base + '/sewa-mobil-bogor', { waitUntil: 'networkidle' });
 await page.fill('input[name=name]', 'Tes Analytics');
 await page.fill('input[name=pickup]', 'Tes (abaikan)');
 await page.click('button[data-cta=booking]');
-await page.waitForTimeout(4000);
+await page.waitForTimeout(7000);
 await browser.close();
 
 console.table(hits);

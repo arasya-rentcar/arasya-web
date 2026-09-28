@@ -20,9 +20,6 @@ jobs:
         with:
           node-version: 22
       - run: npm install --no-save playwright@1 && npx playwright install --with-deps chromium
-      - run: node scripts/debug-analytics.mjs "$URL"
-        env:
-          URL: ${{ inputs.url }}
       - run: node scripts/verify-analytics.mjs "$URL"
         env:
           URL: ${{ inputs.url }}
