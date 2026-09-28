@@ -104,8 +104,10 @@ const uid = 'bk-' + refCode.toLowerCase();
       let src = '';
       try { src = sessionStorage.getItem('arasya-campaign') || ''; } catch {}
       const url = `https://wa.me/${form.dataset.phone}?text=${encodeURIComponent(text + (src ? ` [Src: ${src}]` : ''))}`;
-      (window as any).arasyaTrack?.('generate_lead', { method: 'booking_form', lead_id: code, unit: get('car') || 'any' });
-      window.location.href = url;
+      const go = () => { window.location.href = url; };
+      const track = (window as any).arasyaTrack;
+      if (track) track('generate_lead', { method: 'booking_form', lead_id: code, unit: get('car') || 'any' }, go);
+      else go();
     });
   });
 </script>

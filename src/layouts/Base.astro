@@ -72,19 +72,24 @@ const banner = ui(other);
     <script type="application/ld+json" set:html={JSON.stringify(ld)} />
     {(ga4 || gtm) && (
       <script is:inline define:vars={{ ga4, gtm }}>
-        /* Google Analytics 4 (and/or Tag Manager). The tag loads after the page
-           has rendered so it never delays the first paint; the page view is
-           queued before that, so nothing is lost. */
+        /* Google Analytics 4 (and/or Tag Manager). The tag loads on the
+           visitor's first interaction, or shortly after the page has loaded,
+           so it never delays the first paint; the page view is queued before
+           that, so nothing is lost. */
         window.dataLayer = window.dataLayer || [];
         window.gtag = function () { dataLayer.push(arguments); };
         var add = function (src) { var s = document.createElement('script'); s.async = true; s.src = src; document.head.appendChild(s); };
         if (ga4) { gtag('js', new Date()); gtag('config', ga4); }
         if (gtm) dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
-        var go = function () {
+        var loaded = false;
+        var go = window.arasyaLoadTags = function () {
+          if (loaded) return; loaded = true;
           if (ga4) add('https://www.googletagmanager.com/gtag/js?id=' + ga4);
           if (gtm) add('https://www.googletagmanager.com/gtm.js?id=' + gtm);
         };
-        if (document.readyState === 'complete') setTimeout(go, 0); else addEventListener('load', function () { setTimeout(go, 0); });
+        ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(function (t) { addEventListener(t, go, { once: true, passive: true }); });
+        if (document.readyState === 'complete') setTimeout(go, 1500); else addEventListener('load', function () { setTimeout(go, 1500); });
+        window.arasyaGa4 = !!ga4;
       </script>
     )}
   </head>
@@ -117,11 +122,18 @@ const banner = ui(other);
           if (parts.length) sessionStorage.setItem(KEY, parts.join(' · '));
           tag = sessionStorage.getItem(KEY) || '';
         } catch (e) {}
-        window.arasyaTrack = function (name, params) {
+        /* done() runs once the hit has been sent (or after 1s at most), so
+           a page that navigates away to WhatsApp doesn't lose the event. */
+        window.arasyaTrack = function (name, params, done) {
+          var called = false, finish = function () { if (!called) { called = true; if (done) done(); } };
           params = Object.assign({ page_path: location.pathname, language: document.documentElement.lang }, params || {});
           window.dataLayer = window.dataLayer || [];
           window.dataLayer.push(Object.assign({ event: name }, params));
-          if (window.gtag && name !== 'cta_click') window.gtag('event', name, params);
+          if (window.gtag && window.arasyaGa4) {
+            if (window.arasyaLoadTags) window.arasyaLoadTags();
+            window.gtag('event', name, Object.assign({}, params, { transport_type: 'beacon', event_callback: finish }));
+            if (done) setTimeout(finish, 1000);
+          } else finish();
         };
         document.addEventListener('click', function (ev) {
           var el = ev.target.closest && ev.target.closest('a[href^="https://wa.me/"], a[href^="tel:"], button[data-copy]');
@@ -133,8 +145,13 @@ const banner = ui(other);
             u.searchParams.set('text', (u.searchParams.get('text') || '') + ' [Src: ' + tag + ']');
             el.href = u.toString();
           }
-          arasyaTrack('whatsapp_click', { cta: el.dataset.cta || 'wa' });
           window.dataLayer.push({ event: 'cta_click', cta: el.dataset.cta || 'wa', page: location.pathname });
+          // Same-tab links: hold the navigation until the hit is sent.
+          var newTab = el.target === '_blank' || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button === 1;
+          if (newTab || !window.arasyaGa4) return arasyaTrack('whatsapp_click', { cta: el.dataset.cta || 'wa' });
+          ev.preventDefault();
+          var href = el.href;
+          arasyaTrack('whatsapp_click', { cta: el.dataset.cta || 'wa' }, function () { location.href = href; });
         }, true);
       })();
     </script>

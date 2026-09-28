@@ -1,0 +1,25 @@
+name: Verify analytics
+
+# Real-browser check against the live site: page_view, whatsapp_click and
+# generate_lead must reach Google Analytics. Sends one test visit to GA4.
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: Site to test
+        default: https://arasya-web.vercel.app
+        type: string
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save playwright@1 && npx playwright install --with-deps chromium
+      - run: node scripts/verify-analytics.mjs "$URL"
+        env:
+          URL: ${{ inputs.url }}
