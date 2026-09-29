@@ -15,7 +15,7 @@ import CtaBand from '../components/CtaBand.astro';
 import Icon from '../components/Icon.astro';
 import { getContent, type Car } from '../lib/content';
 import { rupiah } from '../lib/format';
-import { carImage } from '../lib/images';
+import { brochure, carImage } from '../lib/images';
 import { ui, type Lang } from '../lib/i18n';
 import { paths, type Alternates } from '../lib/paths';
 import { carIsIndexable, cityIsIndexable } from '../lib/quality';
@@ -49,6 +49,7 @@ const routes = unit && travel
 const similar = cars.filter((c) => c._id !== car._id && c.category === car.category).slice(0, 3);
 const others = similar.length >= 2 ? similar : cars.filter((c) => c._id !== car._id && Math.abs((c.capacity || 0) - (car.capacity || 0)) <= 1).slice(0, 3);
 const img = carImage(car);
+const card = brochure(car.slug.current);
 
 const title = car.seo?.title || (en ? `${car.name} with Driver: Rates & Seats | Arasya Rent Car` : `Sewa ${car.name} dengan Driver — Tarif & Kapasitas | Arasya`);
 const description = car.seo?.description || (en
@@ -66,7 +67,7 @@ const priceQ = en ? `How much does it cost to rent a ${car.name} with a driver?`
 const faq = [{ question: priceQ, answer: priceAnswer }, ...(car.faq || []).filter((f) => f.question !== priceQ)];
 const faqAll = withPolicy(faq, settings, lang);
 ---
-<Base title={title} description={description} path={path} alternates={alternates} noindex={!carIsIndexable(car)} ogImage={img?.src.startsWith('/') ? img.src : undefined} waRef={`${ref}-fab`} waMessage={t.waRent(car.name)}
+<Base title={title} description={description} path={path} alternates={alternates} noindex={!carIsIndexable(car)} ogImage={card?.jpg || (img?.src.startsWith('/') ? img.src : undefined)} waRef={`${ref}-fab`} waMessage={t.waRent(car.name)}
   jsonld={[carProduct(car, site, lang, img ? (img.src.startsWith('/') ? site + img.src : img.src) : undefined), faqPage(faqAll), breadcrumbs(site, crumbs)]}>
   <section class="c-hero">
     <div class="wrap">
@@ -120,7 +121,8 @@ const faqAll = withPolicy(faq, settings, lang);
   )}
 
   <section class="section tint">
-    <div class="wrap">
+    <div class:list={['wrap', { 'with-card': !!card }]}>
+      <div>
       <div class="section-head"><div class="stack"><span class="eyebrow">{en ? 'Rates' : 'Tarif'}</span><h2>{en ? `${car.name} rates` : `Tarif sewa ${car.name}`}</h2><p class="intro">{priceAnswer}</p></div></div>
       <div class="notes muted">
         {settings.rateNotes?.city && <p>{settings.rateNotes.city}</p>}
@@ -132,6 +134,13 @@ const faqAll = withPolicy(faq, settings, lang);
           <ul>{liveCities.map((c) => <li><a href={paths.city(c, lang)}><Icon name="pin" size={16} />{c.name}</a></li>)}</ul>
           <p class="muted">{en ? 'And for trips from these cities to anywhere you need to go.' : 'Juga untuk perjalanan dari kota-kota tersebut ke mana pun tujuan Anda.'}</p>
         </div>
+      )}
+    </div>
+      {card && (
+        <figure class="card">
+          <a href={card.jpg} target="_blank" rel="noopener"><img src={card.webp} alt={en ? `${car.name} with driver, Arasya Rent Car` : `Brosur sewa ${car.name} dengan driver, Arasya Rent Car`} width="1280" height="860" loading="lazy" decoding="async" /></a>
+          <figcaption>{en ? 'Unit brochure: tap to open, save or forward it.' : 'Brosur unit: ketuk untuk membuka, menyimpan, atau meneruskannya.'} <a href={card.jpg} download={`arasya-${car.slug.current}.jpg`}>{en ? 'Download' : 'Unduh'}</a></figcaption>
+        </figure>
       )}
     </div>
   </section>
@@ -206,6 +215,12 @@ const faqAll = withPolicy(faq, settings, lang);
   .feat { border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; display: grid; gap: 6px; align-content: start; }
   .feat p { color: var(--soft); font-size: 0.95rem; }
   .notes { display: grid; gap: 4px; font-size: 0.9rem; }
+  .with-card { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+  .card { margin: 0; display: grid; gap: 8px; }
+  .card img { width: 100%; height: auto; border-radius: var(--radius); box-shadow: 0 10px 28px rgba(2, 38, 75, 0.12); }
+  .card figcaption { font-size: 0.85rem; color: var(--soft); }
+  .card figcaption a { font-weight: 700; }
+  @media (max-width: 860px) { .with-card { grid-template-columns: 1fr; gap: 24px; } }
   .cities { margin-top: 24px; display: grid; gap: 10px; }
   .cities h3 { font-size: 1rem; }
   .cities ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }

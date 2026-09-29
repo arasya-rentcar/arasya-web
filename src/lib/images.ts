@@ -29,3 +29,15 @@ export function photo(image: any, path: string | undefined, width = 1200): Img |
   }
   return path ? { src: path } : null;
 }
+
+/**
+ * Branded unit cards (car + Arasya logo + contact), one per car slug, in
+ * public/cars/brochure. Used as the share image for unit pages and shown on
+ * the page as a brochure the visitor can save or forward.
+ */
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+export function brochure(slug: string): { webp: string; jpg: string } | null {
+  const base = `/cars/brochure/${slug}`;
+  return existsSync(join(process.cwd(), 'public', `${base}.jpg`)) ? { webp: `${base}.webp`, jpg: `${base}.jpg` } : null;
+}
