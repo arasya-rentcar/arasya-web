@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
+import BrochureCatalog from '../components/BrochureCatalog.astro';
 import CarImage from '../components/CarImage.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Icon from '../components/Icon.astro';
@@ -41,6 +42,7 @@ const description = en
       <nav class="tabs" aria-label={en ? 'Categories' : 'Kategori'}>
         <a href="#semua" class="on">{en ? 'All' : 'Semua'}</a>
         {cats.map((c) => <a href={`#${c}`}>{t.category[c]}</a>)}
+        <a href={en ? '#catalogue' : '#katalog'}>{en ? 'Catalogue' : 'Katalog'}</a>
       </nav>
     </div>
   </section>
@@ -70,6 +72,7 @@ const description = en
           </div>
         </div>
       ))}
+      <BrochureCatalog cars={cars} lang={lang} />
       <UnitRequest settings={settings} waRef={en ? 'EN-ARM-request' : 'ARM-request'} />
       <div class="notes muted">
         {settings.rateNotes?.city && <p>{settings.rateNotes.city}</p>}

@@ -140,8 +140,9 @@ const banner = ui(other);
           if (w) { try { w.opener = null; } catch (e) {} } else location.href = url;
         };
         document.addEventListener('click', function (ev) {
-          var el = ev.target.closest && ev.target.closest('a[href^="https://wa.me/"], a[href^="tel:"], button[data-copy]');
+          var el = ev.target.closest && ev.target.closest('a[href^="https://wa.me/"], a[href^="tel:"], a[data-dl], button[data-copy]');
           if (!el) return;
+          if (el.dataset.dl) return arasyaTrack('brochure_download', { item: el.dataset.dl });
           if (el.tagName === 'BUTTON') return arasyaTrack('copy_official', { item: el.dataset.copyKind || 'number' });
           if (el.href.indexOf('tel:') === 0) return arasyaTrack('phone_click', { cta: el.dataset.cta || 'tel' });
           if (tag && el.href.indexOf('%5BSrc%3A') < 0) {

@@ -139,7 +139,7 @@ const faqAll = withPolicy(faq, settings, lang);
       {card && (
         <figure class="card">
           <a href={card.jpg} target="_blank" rel="noopener"><img src={card.webp} alt={en ? `${car.name} with driver, Arasya Rent Car` : `Brosur sewa ${car.name} dengan driver, Arasya Rent Car`} width="1280" height="860" loading="lazy" decoding="async" /></a>
-          <figcaption>{en ? 'Unit brochure: tap to open, save or forward it.' : 'Brosur unit: ketuk untuk membuka, menyimpan, atau meneruskannya.'} <a href={card.jpg} download={`arasya-${car.slug.current}.jpg`}>{en ? 'Download' : 'Unduh'}</a></figcaption>
+          <figcaption>{en ? 'Unit brochure: tap to open, save or forward it.' : 'Brosur unit: ketuk untuk membuka, menyimpan, atau meneruskannya.'} <a href={card.jpg} download={`Arasya-${car.slug.current}.jpg`} data-dl={car.slug.current}>{en ? 'Download' : 'Unduh'}</a></figcaption>
         </figure>
       )}
     </div>
