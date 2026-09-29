@@ -10,7 +10,9 @@ import { chromium } from 'playwright';
 
 const base = process.argv[2] || 'https://arasya-web.vercel.app';
 const browser = await chromium.launch();
-const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, locale: 'id-ID' });
+// A regular desktop Chrome user agent: GA4 drops hits from "HeadlessChrome"
+// as bot traffic, so without it the test would never show in Realtime.
+const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, locale: 'id-ID', timezoneId: 'Asia/Jakarta', userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36' });
 const page = await context.newPage();
 const hits = [];
 // GA4 batches events into one POST a few seconds later (or flushes them as
@@ -26,6 +28,8 @@ await context.route(/google-analytics\.com\/g\/collect/, (route) => {
   }
   route.continue();
 });
+const statuses = [];
+context.on('response', (r) => { if (/google-analytics\.com\/g\/collect/.test(r.url())) statuses.push(r.status()); });
 // Stand in for WhatsApp (it opens in a new tab).
 await context.route('https://wa.me/**', (r) => { hits.push({ en: '→ navigated to wa.me' }); r.fulfill({ contentType: 'text/html', body: '<p>WhatsApp</p>' }); });
 
@@ -43,6 +47,7 @@ await page.waitForTimeout(7000);
 await browser.close();
 
 console.table(hits);
+console.log('Google responses:', statuses.join(', ') || 'none');
 const got = (en) => hits.some((h) => h.en === en);
 const ok = got('page_view') && got('whatsapp_click') && got('generate_lead');
 console.log(ok ? 'OK: page_view, whatsapp_click and generate_lead all reached GA4.' : 'MISSING: not every event reached GA4.');
