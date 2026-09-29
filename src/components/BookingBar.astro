@@ -98,13 +98,20 @@ const uid = 'bk-' + refCode.toLowerCase();
       if (get('notes')) lines.push(`${m.notes}: ${get('notes')}`);
       // Short code the admin copies into the bookings sheet; the same code goes to GA4.
       const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-      const code = 'ARS-' + Array.from(crypto.getRandomValues(new Uint8Array(5)), (b) => alphabet[b % alphabet.length]).join('');
+      // Sending the identical request again in the same visit (WhatsApp didn't
+      // open, double tap) reuses its code and is not counted as a second lead.
+      const key = 'arasya-lead:' + lines.join('|');
+      let code = '';
+      try { code = sessionStorage.getItem(key) || ''; } catch {}
+      const repeat = !!code;
+      if (!code) code = 'ARS-' + Array.from(crypto.getRandomValues(new Uint8Array(5)), (b) => alphabet[b % alphabet.length]).join('');
+      try { sessionStorage.setItem(key, code); } catch {}
       lines.splice(1, 0, `${m.code}: ${code}`);
       const text = lines.join('\n') + `\n[Ref: ${form.dataset.ref}]`;
       let src = '';
       try { src = sessionStorage.getItem('arasya-campaign') || ''; } catch {}
       const url = `https://wa.me/${form.dataset.phone}?text=${encodeURIComponent(text + (src ? ` [Src: ${src}]` : ''))}`;
-      (window as any).arasyaTrack?.('generate_lead', { method: 'booking_form', lead_id: code, unit: get('car') || 'any' });
+      if (!repeat) (window as any).arasyaTrack?.('generate_lead', { method: 'booking_form', lead_id: code, unit: get('car') || 'any' });
       const open = (window as any).arasyaOpenWa;
       if (open) open(url); else window.location.href = url;
     });
