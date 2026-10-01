@@ -90,6 +90,7 @@ const banner = ui(other);
         ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(function (t) { addEventListener(t, go, { once: true, passive: true }); });
         if (document.readyState === 'complete') setTimeout(go, 1500); else addEventListener('load', function () { setTimeout(go, 1500); });
         window.arasyaGa4 = !!ga4;
+        window.arasyaGa4Id = ga4 || '';
       </script>
     )}
   </head>

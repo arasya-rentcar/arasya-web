@@ -2,8 +2,9 @@
 /**
  * Booking form. Collects what the admin would otherwise ask one by one
  * (name, date, time, pick-up, destination, car) and sends it as a single
- * structured WhatsApp message. Nothing is stored on a server. Without JS the
- * form falls back to a plain wa.me link.
+ * structured WhatsApp message. When PUBLIC_LEADS_API is set, the request is
+ * also recorded in the admin dashboard (fire-and-forget; WhatsApp never waits
+ * on it). Without JS the form falls back to a plain wa.me link.
  */
 import type { Car, Settings } from '../lib/content';
 import { langOf, ui } from '../lib/i18n';
@@ -15,8 +16,10 @@ const t = ui(langOf(Astro.url.pathname));
 const { settings, cars, refCode, defaultPickup = '', defaultDest = '', defaultCar = '', destLabel = t.bkDest } = Astro.props;
 const fallback = waHref(settings.waPhone, t.bkMsg.hello, refCode);
 const uid = 'bk-' + refCode.toLowerCase();
+// Optional dashboard endpoint base (no trailing slash); empty turns lead capture off.
+const leadsApi = (import.meta.env.PUBLIC_LEADS_API || '').trim().replace(/\/+$/, '');
 ---
-<form class="booking" data-booking data-fab-tuck data-phone={settings.waPhone} data-ref={refCode} data-msg={JSON.stringify(t.bkMsg)} action={fallback} method="get">
+<form class="booking" data-booking data-fab-tuck data-phone={settings.waPhone} data-ref={refCode} data-msg={JSON.stringify(t.bkMsg)} data-leads-api={leadsApi || undefined} action={fallback} method="get">
   <div class="f w2">
     <label for={`${uid}-name`}>{t.bkName}</label>
     <input id={`${uid}-name`} name="name" type="text" placeholder={t.bkNamePh} autocomplete="name" required />
@@ -44,6 +47,10 @@ const uid = 'bk-' + refCode.toLowerCase();
     <label for={`${uid}-dest`}>{destLabel}</label>
     <input id={`${uid}-dest`} name="dest" type="text" placeholder={t.bkDestPh} value={defaultDest} />
   </div>
+  <div class="hp" aria-hidden="true">
+    <label for={`${uid}-website`}>Website</label>
+    <input id={`${uid}-website`} name="website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
   <button class="btn btn-wa w2" type="submit" data-cta="booking"><Icon name="wa" />{t.bkSend}</button>
   <details class="more">
     <summary>{t.bkMore}</summary>
@@ -68,6 +75,34 @@ const uid = 'bk-' + refCode.toLowerCase();
 </form>
 
 <script>
+  const cookie = (name: string) => {
+    const c = document.cookie.split('; ').find((x) => x.startsWith(name + '='));
+    return c ? decodeURIComponent(c.slice(name.length + 1)) : '';
+  };
+  // GA4 ids from its cookies; anything unexpected yields '' (field omitted).
+  const gaIds = () => {
+    let clientId = '', sessionId = '';
+    try {
+      const p = cookie('_ga').split('.');
+      if (p.length >= 4 && /^\d+$/.test(p[p.length - 2]) && /^\d+$/.test(p[p.length - 1])) clientId = p.slice(-2).join('.');
+      const id = String((window as any).arasyaGa4Id || '').replace(/^G-/, '');
+      // Without a known ID (e.g. GA4 via GTM only) take the first _ga_<ID> cookie.
+      const raw = id ? cookie('_ga_' + id) : (document.cookie.split('; ').find((x) => /^_ga_[A-Z0-9]+=/.test(x)) || '').replace(/^[^=]*=/, '');
+      const third = raw.split('.')[2] || '';
+      const m = raw.startsWith('GS2.') ? /^s(\d+)/.exec(third) : /^(\d+)$/.exec(third);
+      if (m) sessionId = m[1];
+    } catch {}
+    return { clientId, sessionId };
+  };
+  // Text/plain body: a "simple" request, so no CORS preflight. Never throws.
+  const sendLead = (url: string, body: Record<string, unknown>) => {
+    try {
+      const data = JSON.stringify(body);
+      if (navigator.sendBeacon?.(url, new Blob([data], { type: 'text/plain;charset=UTF-8' }))) return;
+      fetch(url, { method: 'POST', body: data, keepalive: true, mode: 'no-cors', headers: { 'Content-Type': 'text/plain' } }).catch(() => {});
+    } catch {}
+  };
+
   document.querySelectorAll<HTMLFormElement>('form[data-booking]').forEach((form) => {
     const date = form.querySelector<HTMLInputElement>('input[name=date]');
     if (date && !date.value) {
@@ -112,6 +147,24 @@ const uid = 'bk-' + refCode.toLowerCase();
       try { src = sessionStorage.getItem('arasya-campaign') || ''; } catch {}
       const url = `https://wa.me/${form.dataset.phone}?text=${encodeURIComponent(text + (src ? ` [Src: ${src}]` : ''))}`;
       if (!repeat) (window as any).arasyaTrack?.('generate_lead', { method: 'booking_form', lead_id: code, unit: get('car') || 'any' });
+      // Record the lead in the admin dashboard (same once-per-request rule as GA4).
+      if (!repeat && form.dataset.leadsApi) {
+        try {
+          const ga = gaIds();
+          const gclid = /(?:^|[\s·])gclid=([^\s·]+)/.exec(src)?.[1] || new URLSearchParams(location.search).get('gclid') || '';
+          const pax = parseInt(get('pax'), 10);
+          const body: Record<string, unknown> = {
+            lead_code: code, name: get('name'), trip_date: get('date'), pickup_time: get('time'),
+            pickup_location: get('pickup'), destination: get('dest'), unit: get('car'),
+            passenger_count: pax > 0 ? pax : '', duration: get('duration'), notes: get('notes'),
+            page_path: location.pathname, language: (document.documentElement.lang || '').slice(0, 2),
+            campaign: src, gclid, ga_client_id: ga.clientId, ga_session_id: ga.sessionId,
+            website: String(f.get('website') || ''),
+          };
+          for (const k in body) if (body[k] === '') delete body[k];
+          sendLead(form.dataset.leadsApi + '/api/v1/public/leads', body);
+        } catch {}
+      }
       const open = (window as any).arasyaOpenWa;
       if (open) open(url); else window.location.href = url;
     });
@@ -133,6 +186,7 @@ const uid = 'bk-' + refCode.toLowerCase();
   .more summary::before { content: '+'; font-size: 1rem; }
   .more[open] summary::before { content: '–'; }
   .more-grid { display: grid; grid-template-columns: 1fr 1.4fr 3fr; gap: 10px; margin-top: 10px; }
+  .hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
   .hint { grid-column: 1 / -1; font-size: 0.8rem; color: var(--soft); margin-top: -4px; }
   @media (max-width: 920px) {
     .booking { grid-template-columns: repeat(2, minmax(0, 1fr)); }
