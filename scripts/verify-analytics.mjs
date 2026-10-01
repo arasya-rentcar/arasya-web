@@ -29,6 +29,10 @@ await context.route(/google-analytics\.com\/g\/collect/, (route) => {
   route.continue();
 });
 const statuses = [];
+// Booking-form lead sent to the admin dashboard API (sendBeacon).
+const leads = [];
+context.on('request', (r) => { if (r.url().includes('/api/v1/public/leads')) leads.push({ url: r.url(), body: r.postData() || '' }); });
+context.on('response', (r) => { if (r.url().includes('/api/v1/public/leads')) leads.push({ status: r.status() }); });
 context.on('response', (r) => { if (/google-analytics\.com\/g\/collect/.test(r.url())) statuses.push(r.status()); });
 // Stand in for WhatsApp (it opens in a new tab).
 await context.route('https://wa.me/**', (r) => { hits.push({ en: '→ navigated to wa.me' }); r.fulfill({ contentType: 'text/html', body: '<p>WhatsApp</p>' }); });
@@ -48,6 +52,8 @@ await browser.close();
 
 console.table(hits);
 console.log('Google responses:', statuses.join(', ') || 'none');
+for (const l of leads) console.log('Lead to dashboard API:', l.status ? `response ${l.status}` : `${l.url} ${JSON.parse(l.body || '{}').lead_code || ''}`);
+if (!leads.length) console.log('Lead to dashboard API: none sent');
 const got = (en) => hits.some((h) => h.en === en);
 const ok = got('page_view') && got('whatsapp_click') && got('generate_lead');
 console.log(ok ? 'OK: page_view, whatsapp_click and generate_lead all reached GA4.' : 'MISSING: not every event reached GA4.');
