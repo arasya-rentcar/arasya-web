@@ -133,4 +133,17 @@ for f in cities_data["fixes"]:
         parent[k] = {**parent[k], **f["new"]} if isinstance(f["new"], dict) else f["new"]
 
 seed_path.write_text(json.dumps(seed, ensure_ascii=False, indent=1))
+
+# Data for migrations/2026-10-01-sync.mjs: the settings fields it sets outright
+# (taken from the final seed so Studio and seed say the same thing).
+ss = by_id["siteSettings"]
+sync = {
+    "legalName": ss["legalName"],
+    "bank": ss["bankAccounts"][0],
+    "rateNotesAllIn": ss["rateNotes"]["allIn"],
+    "rateNotesAllInEn": ss["en"]["rateNotes"]["allIn"],
+    "policy": ss["cancellationPolicy"],
+    "policyEn": ss["en"]["cancellationPolicy"],
+}
+(out.parent / "2026-10-01-sync.json").write_text(json.dumps(sync, ensure_ascii=False, indent=1))
 print(f"wrote {out.relative_to(ROOT)} and updated {seed_path.relative_to(ROOT)} ({len(seed)} documents)")

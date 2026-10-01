@@ -1237,7 +1237,7 @@
   "_id": "siteSettings",
   "_type": "siteSettings",
   "brandName": "Arasya Rent Car",
-  "legalName": "PT. Ayomi Raya",
+  "legalName": "PT Ayomi Raya Karsa",
   "siteUrl": "https://arasyarentcar.com",
   "waPhone": "6282124024281",
   "phones": [
@@ -1257,13 +1257,13 @@
     "_key": "k00001",
     "bank": "BCA",
     "number": "095 484 0782",
-    "owner": "a.n. PT. Ayomi Raya"
+    "owner": "a.n. PT Ayomi Raya Karsa"
    }
   ],
   "instagram": "https://www.instagram.com/arasyarentcar/",
   "rateNotes": {
    "city": "Tarif Dalam Kota berlaku untuk durasi 12 jam, sudah termasuk jasa driver; belum termasuk BBM, tol, parkir, dan makan driver.",
-   "allIn": "Tarif All-in sudah termasuk BBM, tol, dan makan driver. Kapasitas penumpang sudah termasuk jasa driver."
+   "allIn": "Tarif All-in sudah termasuk BBM, tol, dan makan driver. Parkir, kelebihan jam, dan biaya luar kota (bila ada) dikonfirmasi terpisah. Kapasitas penumpang sudah termasuk jasa driver."
   },
   "trust": [
    {
@@ -1319,11 +1319,11 @@
   ],
   "fraudWarning": {
    "title": "Waspada penipuan yang mengatasnamakan Arasya",
-   "text": "Kami hanya berkomunikasi lewat nomor resmi di bawah ini dan hanya menerima pembayaran ke rekening atas nama PT. Ayomi Raya. Cocokkan dulu nomor dan rekening sebelum Anda mentransfer.",
+   "text": "Kami hanya berkomunikasi lewat nomor resmi di bawah ini dan hanya menerima pembayaran ke rekening atas nama PT Ayomi Raya Karsa. Cocokkan dulu nomor dan rekening sebelum Anda mentransfer.",
    "points": [
     "Kami tidak pernah meminta transfer ke rekening pribadi atau atas nama perorangan.",
     "Kami tidak pernah meminta kode OTP, PIN, atau password Anda.",
-    "Tagihan resmi berupa invoice atas nama PT. Ayomi Raya.",
+    "Tagihan resmi berupa invoice atas nama PT Ayomi Raya Karsa.",
     "Ragu dengan nomor atau rekening yang menghubungi Anda? Konfirmasi dulu ke nomor resmi kami."
    ]
   },
@@ -1332,7 +1332,7 @@
    "paymentTerms": "Once we send your invoice, you pay a 20% deposit into our official company account. The balance is paid to the driver when you meet, in cash or by bank transfer.",
    "rateNotes": {
     "city": "The in-town rate covers 12 hours with the car and driver. Fuel, tolls, parking and the driver's meals are paid separately as you go.",
-    "allIn": "The all-in rate includes fuel, tolls and the driver's meals, so there is nothing to pay on the day. Seat numbers include the driver."
+    "allIn": "The all-in rate includes fuel, tolls and the driver's meals. Parking, overtime and out-of-town charges, if any, are confirmed separately. Seat numbers include the driver."
    },
    "trust": [
     {
@@ -1358,11 +1358,11 @@
    ],
    "fraudWarning": {
     "title": "Beware of scams using the Arasya name",
-    "text": "We only talk to customers from the official numbers below, and only accept payment into the account of PT. Ayomi Raya. Please check both before you transfer any money.",
+    "text": "We only talk to customers from the official numbers below, and only accept payment into the account of PT Ayomi Raya Karsa. Please check both before you transfer any money.",
     "points": [
      "We never ask you to pay into a personal account.",
      "We never ask for OTP codes, PINs or passwords.",
-     "Every booking comes with an official invoice from PT. Ayomi Raya.",
+     "Every booking comes with an official invoice from PT Ayomi Raya Karsa.",
      "Not sure a message is from us? Check with one of our official numbers first."
     ]
    },
@@ -1372,24 +1372,24 @@
     "items": [
      {
       "_key": "g4f28245646",
-      "when": "Up to the day before",
-      "fee": "20% deposit is non-refundable",
-      "text": "Cancelling any time up to one day before your trip."
+      "when": "Before the day of travel",
+      "fee": "20% of the total booking (the 20% deposit is non-refundable)",
+      "text": "Cancelling up to 11:59 p.m. WIB the day before you travel."
      },
      {
       "_key": "g2063df7b32",
-      "when": "On the day, before the driver arrives or before 10 a.m.",
-      "fee": "50% of the invoice",
-      "text": "Cancelling on the day of travel, before the driver reaches your pick-up point or before 10 a.m."
+      "when": "On the day, up to 10 a.m. WIB, trip not yet started",
+      "fee": "50% of the total booking",
+      "text": "Cancelling on the day of travel up to 10:00 a.m. WIB, as long as the driver has not yet set off to pick you up."
      },
      {
       "_key": "g4874f99f48",
-      "when": "On the day, after the driver arrives or after 10 a.m.",
-      "fee": "100% of the invoice",
-      "text": "Cancelling on the day of travel, once the driver has arrived or after 10 a.m."
+      "when": "On the day after 10 a.m. WIB, once the trip has started, or after the day",
+      "fee": "100% of the total booking",
+      "text": "Cancelling after 10:00 a.m. WIB on the day of travel, once the trip has started (the driver has set off to pick you up), or after the travel day has passed."
      }
     ],
-    "closing": "Thank you for your understanding."
+    "closing": "Cancellation fees are calculated on the total booking. Thank you for your understanding."
    }
   },
   "cancellationPolicy": {
@@ -1398,24 +1398,24 @@
    "items": [
     {
      "_key": "g01270a4777",
-     "when": "Pembatalan hingga H-1",
-     "fee": "DP 20% tidak dapat dikembalikan",
-     "text": "Pembatalan sampai satu hari sebelum keberangkatan."
+     "when": "Sebelum hari keberangkatan",
+     "fee": "Biaya 20% dari total pesanan (DP 20% tidak dapat dikembalikan)",
+     "text": "Pembatalan hingga pukul 23.59 WIB sehari sebelum keberangkatan."
     },
     {
      "_key": "g5dcd317b73",
-     "when": "Hari H, sebelum driver tiba atau sebelum pukul 10.00",
-     "fee": "Biaya 50% dari total invoice",
-     "text": "Pembatalan pada hari keberangkatan, sebelum driver tiba di titik jemput atau sebelum pukul 10.00 pagi."
+     "when": "Hari H hingga pukul 10.00 WIB, perjalanan belum dimulai",
+     "fee": "Biaya 50% dari total pesanan",
+     "text": "Pembatalan pada hari keberangkatan sampai pukul 10.00 WIB, selama driver belum berangkat menjemput."
     },
     {
      "_key": "gc6a3513ad0",
-     "when": "Hari H, setelah driver tiba atau setelah pukul 10.00",
-     "fee": "Biaya 100% dari total invoice",
-     "text": "Pembatalan pada hari keberangkatan, setelah driver tiba di titik jemput atau setelah pukul 10.00 pagi."
+     "when": "Hari H setelah pukul 10.00 WIB, perjalanan sudah dimulai, atau setelah hari H",
+     "fee": "Biaya 100% dari total pesanan",
+     "text": "Pembatalan setelah pukul 10.00 WIB pada hari keberangkatan, setelah perjalanan dimulai (driver sudah berangkat menjemput), atau setelah hari keberangkatan lewat."
     }
    ],
-   "closing": "Terima kasih atas pengertian dan kerja sama Anda."
+   "closing": "Biaya pembatalan dihitung dari total pesanan. Terima kasih atas pengertian dan kerja sama Anda."
   }
  },
  {
@@ -1640,7 +1640,7 @@
    {
     "_key": "k00020",
     "question": "Bagaimana ketentuan pembayarannya?",
-    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT Ayomi Raya Karsa. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
    }
   ],
   "sections": [
@@ -1804,7 +1804,7 @@
     {
      "_key": "g2f633355d3",
      "question": "How do I pay?",
-     "answer": "Once we send your invoice, you pay a 20% deposit into our official BCA account in the name of PT. Ayomi Raya. The balance is paid to the driver when you meet, in cash or by transfer."
+     "answer": "Once we send your invoice, you pay a 20% deposit into our official BCA account in the name of PT Ayomi Raya Karsa. The balance is paid to the driver when you meet, in cash or by transfer."
     }
    ]
   }
@@ -1956,7 +1956,7 @@
    {
     "_key": "k00054",
     "question": "Bagaimana ketentuan pembayarannya?",
-    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT Ayomi Raya Karsa. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
    },
    {
     "_key": "k00055",
@@ -2106,7 +2106,7 @@
     {
      "_key": "g7f9cf898b1",
      "question": "How do I pay?",
-     "answer": "Once we send your invoice, you pay a 20% deposit into our official BCA account in the name of PT. Ayomi Raya. The balance is paid to the driver when you meet, in cash or by transfer."
+     "answer": "Once we send your invoice, you pay a 20% deposit into our official BCA account in the name of PT Ayomi Raya Karsa. The balance is paid to the driver when you meet, in cash or by transfer."
     }
    ]
   }
@@ -2259,7 +2259,7 @@
    {
     "_key": "k00074",
     "question": "Bagaimana ketentuan pembayarannya?",
-    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT Ayomi Raya Karsa. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
    },
    {
     "_key": "k00075",
@@ -2410,7 +2410,7 @@
     {
      "_key": "ge4525aa8e1",
      "question": "How do I pay?",
-     "answer": "Once we send your invoice, you pay a 20% deposit into our official BCA account in the name of PT. Ayomi Raya. The balance is paid to the driver when you meet, in cash or by transfer."
+     "answer": "Once we send your invoice, you pay a 20% deposit into our official BCA account in the name of PT Ayomi Raya Karsa. The balance is paid to the driver when you meet, in cash or by transfer."
     }
    ]
   }
@@ -2460,7 +2460,7 @@
    {
     "_key": "k00080",
     "title": "Pembayaran resmi",
-    "text": "DP 20% ke rekening BCA a.n. PT. Ayomi Raya, pelunasan saat bertemu driver."
+    "text": "DP 20% ke rekening BCA a.n. PT Ayomi Raya Karsa, pelunasan saat bertemu driver."
    }
   ],
   "cars": [
@@ -2511,7 +2511,7 @@
    {
     "_key": "k00089",
     "question": "Bagaimana ketentuan pembayarannya?",
-    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan."
+    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT Ayomi Raya Karsa. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan."
    }
   ]
  },
@@ -2526,7 +2526,7 @@
   "navLabel": "Korporat",
   "seo": {
    "title": "Sewa Mobil Perusahaan dengan Driver — Arasya Rent Car",
-   "description": "Transportasi karyawan dan tamu bisnis di berbagai kota di Indonesia. Innova, Fortuner, Hiace dengan driver, pembayaran ke rekening PT. Ayomi Raya, admin 24 jam. Minta penawaran lewat WhatsApp."
+   "description": "Transportasi karyawan dan tamu bisnis di berbagai kota di Indonesia. Innova, Fortuner, Hiace dengan driver, pembayaran ke rekening PT Ayomi Raya Karsa, admin 24 jam. Minta penawaran lewat WhatsApp."
   },
   "hero": {
    "eyebrow": "Transportasi perusahaan",
@@ -2540,12 +2540,12 @@
    }
   },
   "answerQuestion": "Apakah Arasya melayani sewa mobil untuk perusahaan?",
-  "answer": "Arasya Rent Car melayani sewa mobil dengan driver untuk perusahaan di berbagai kota di Indonesia, dikelola oleh PT. Ayomi Raya. Tersedia unit MPV, SUV, hingga van rombongan, untuk perjalanan dalam kota maupun ke kota mana pun, dengan pembayaran ke rekening resmi perusahaan dan admin yang siaga 24 jam.",
+  "answer": "Arasya Rent Car melayani sewa mobil dengan driver untuk perusahaan di berbagai kota di Indonesia, dikelola oleh PT Ayomi Raya Karsa. Tersedia unit MPV, SUV, hingga van rombongan, untuk perjalanan dalam kota maupun ke kota mana pun, dengan pembayaran ke rekening resmi perusahaan dan admin yang siaga 24 jam.",
   "highlights": [
    {
     "_key": "k00091",
     "title": "Badan usaha resmi",
-    "text": "Dikelola PT. Ayomi Raya. Pembayaran hanya ke rekening atas nama perusahaan."
+    "text": "Dikelola PT Ayomi Raya Karsa. Pembayaran hanya ke rekening atas nama perusahaan."
    },
    {
     "_key": "k00092",
@@ -2604,7 +2604,7 @@
    {
     "_key": "k00102",
     "title": "Invoice dan jadwal",
-    "text": "Invoice atas nama PT. Ayomi Raya, jadwal driver dikonfirmasi."
+    "text": "Invoice atas nama PT Ayomi Raya Karsa, jadwal driver dikonfirmasi."
    }
   ],
   "faq": [
@@ -2616,7 +2616,7 @@
    {
     "_key": "k00104",
     "question": "Ke rekening mana pembayaran dilakukan?",
-    "answer": "Hanya ke rekening resmi BCA 095 484 0782 a.n. PT. Ayomi Raya."
+    "answer": "Hanya ke rekening resmi BCA 095 484 0782 a.n. PT Ayomi Raya Karsa."
    },
    {
     "_key": "k00105",
@@ -2637,12 +2637,12 @@
     "lead": "Airport pick-ups for visitors, out-of-town meetings and day-to-day office travel."
    },
    "answerQuestion": "Does Arasya work with companies?",
-   "answer": "Yes. Arasya Rent Car provides cars with drivers for companies in cities across Indonesia, and is operated by PT. Ayomi Raya. We have MPVs, SUVs and group vans for local and intercity trips, invoice in the company's name, and answer on WhatsApp 24 hours a day.",
+   "answer": "Yes. Arasya Rent Car provides cars with drivers for companies in cities across Indonesia, and is operated by PT Ayomi Raya Karsa. We have MPVs, SUVs and group vans for local and intercity trips, invoice in the company's name, and answer on WhatsApp 24 hours a day.",
    "highlights": [
     {
      "_key": "gd0952efadc",
      "title": "A registered company",
-     "text": "Operated by PT. Ayomi Raya. Payment only into the company account."
+     "text": "Operated by PT Ayomi Raya Karsa. Payment only into the company account."
     },
     {
      "_key": "g980f97cdae",
@@ -2674,7 +2674,7 @@
     {
      "_key": "g3361221cd5",
      "title": "Invoice and schedule",
-     "text": "Invoice from PT. Ayomi Raya; driver and times confirmed."
+     "text": "Invoice from PT Ayomi Raya Karsa; driver and times confirmed."
     }
    ],
    "faq": [
@@ -2686,7 +2686,7 @@
     {
      "_key": "gd42f1ad320",
      "question": "Which account do we pay into?",
-     "answer": "Only our official account: BCA 095 484 0782 in the name of PT. Ayomi Raya."
+     "answer": "Only our official account: BCA 095 484 0782 in the name of PT Ayomi Raya Karsa."
     },
     {
      "_key": "g1ac3f70a77",
@@ -2696,7 +2696,7 @@
    ],
    "seo": {
     "title": "Corporate Car Rental with Driver in Indonesia | Arasya",
-    "description": "Cars and drivers for companies across Indonesia: airport pick-ups, meetings, staff transport and intercity trips. Invoiced by PT. Ayomi Raya."
+    "description": "Cars and drivers for companies across Indonesia: airport pick-ups, meetings, staff transport and intercity trips. Invoiced by PT Ayomi Raya Karsa."
    }
   }
  },
@@ -4733,7 +4733,7 @@
      {
       "_type": "span",
       "_key": "p5764c5b11s0",
-      "text": "Arasya Rent Car dikelola PT. Ayomi Raya. Pembayaran hanya ke rekening atas nama perusahaan, dan kami tidak pernah meminta kode OTP atau PIN. Daftar nomor dan rekening resmi, lengkap dengan tombol salin, ada di halaman ",
+      "text": "Arasya Rent Car dikelola PT Ayomi Raya Karsa. Pembayaran hanya ke rekening atas nama perusahaan, dan kami tidak pernah meminta kode OTP atau PIN. Daftar nomor dan rekening resmi, lengkap dengan tombol salin, ada di halaman ",
       "marks": []
      },
      {
@@ -6127,7 +6127,7 @@
    {
     "_key": "gbdc46f291e",
     "question": "Bagaimana ketentuan pembayarannya?",
-    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT Ayomi Raya Karsa. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
    }
   ],
   "seo": {
@@ -6272,7 +6272,7 @@
    {
     "_key": "ge391947eea",
     "question": "Bagaimana ketentuan pembayarannya?",
-    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT Ayomi Raya Karsa. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
    }
   ],
   "seo": {
@@ -6430,7 +6430,7 @@
    {
     "_key": "gfb94395c1f",
     "question": "Bagaimana ketentuan pembayarannya?",
-    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT Ayomi Raya Karsa. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
    }
   ],
   "seo": {
@@ -6588,7 +6588,7 @@
    {
     "_key": "gb3c81a9d87",
     "question": "Bagaimana ketentuan pembayarannya?",
-    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT Ayomi Raya Karsa. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
    }
   ],
   "seo": {
@@ -6733,7 +6733,7 @@
    {
     "_key": "g9e819406bf",
     "question": "Bagaimana ketentuan pembayarannya?",
-    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT Ayomi Raya Karsa. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
    }
   ],
   "seo": {
@@ -6890,7 +6890,7 @@
    {
     "_key": "g5f0e4bd5a8",
     "question": "Bagaimana ketentuan pembayarannya?",
-    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT Ayomi Raya Karsa. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
    }
   ],
   "seo": {
@@ -7048,7 +7048,7 @@
    {
     "_key": "g171c44df1d",
     "question": "Bagaimana ketentuan pembayarannya?",
-    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT Ayomi Raya Karsa. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
    }
   ],
   "seo": {
@@ -7219,7 +7219,7 @@
    {
     "_key": "g1d6d6d15bd",
     "question": "Bagaimana ketentuan pembayarannya?",
-    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT Ayomi Raya Karsa. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
    }
   ],
   "seo": {
@@ -7373,7 +7373,7 @@
     {
      "_key": "g78509d9e10",
      "question": "How do I pay?",
-     "answer": "Once we send your invoice, you pay a 20% deposit into our official BCA account in the name of PT. Ayomi Raya. The balance is paid to the driver when you meet, in cash or by transfer."
+     "answer": "Once we send your invoice, you pay a 20% deposit into our official BCA account in the name of PT Ayomi Raya Karsa. The balance is paid to the driver when you meet, in cash or by transfer."
     }
    ]
   }
@@ -7515,7 +7515,7 @@
    {
     "_key": "g2b623ecf2f",
     "question": "Bagaimana ketentuan pembayarannya?",
-    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT Ayomi Raya Karsa. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
    }
   ],
   "seo": {
@@ -7672,7 +7672,7 @@
    {
     "_key": "g3a656927bb",
     "question": "Bagaimana ketentuan pembayarannya?",
-    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT Ayomi Raya Karsa. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
    }
   ],
   "seo": {
@@ -7822,7 +7822,7 @@
    {
     "_key": "g53e41ba6a8",
     "question": "Bagaimana ketentuan pembayarannya?",
-    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+    "answer": "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT Ayomi Raya Karsa. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
    }
   ],
   "seo": {
@@ -7959,7 +7959,7 @@
    {
     "_key": "g2161f027fb",
     "question": "Apakah pembayaran dalam Rupiah?",
-    "answer": "Ya. Penawaran dan pembayaran dilakukan dalam Rupiah ke rekening resmi BCA a.n. PT. Ayomi Raya, sehingga Anda tidak perlu menghitung kurs sendiri."
+    "answer": "Ya. Penawaran dan pembayaran dilakukan dalam Rupiah ke rekening resmi BCA a.n. PT Ayomi Raya Karsa, sehingga Anda tidak perlu menghitung kurs sendiri."
    },
    {
     "_key": "g3a4a29233e",
@@ -8156,7 +8156,7 @@
    {
     "_key": "gd2fe42cf16",
     "question": "Apakah pembayaran dalam Rupiah?",
-    "answer": "Ya. Penawaran dan pembayaran dilakukan dalam Rupiah ke rekening resmi BCA a.n. PT. Ayomi Raya, sehingga Anda tidak perlu menghitung kurs sendiri."
+    "answer": "Ya. Penawaran dan pembayaran dilakukan dalam Rupiah ke rekening resmi BCA a.n. PT Ayomi Raya Karsa, sehingga Anda tidak perlu menghitung kurs sendiri."
    },
    {
     "_key": "ga4f7aeecca",
@@ -8347,7 +8347,7 @@
    {
     "_key": "g685d3df9a5",
     "question": "Apakah pembayaran dalam Rupiah?",
-    "answer": "Ya. Penawaran dan pembayaran dilakukan dalam Rupiah ke rekening resmi BCA a.n. PT. Ayomi Raya, sehingga Anda tidak perlu menghitung kurs sendiri."
+    "answer": "Ya. Penawaran dan pembayaran dilakukan dalam Rupiah ke rekening resmi BCA a.n. PT Ayomi Raya Karsa, sehingga Anda tidak perlu menghitung kurs sendiri."
    },
    {
     "_key": "g85896cd6b8",

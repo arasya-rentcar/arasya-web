@@ -1,6 +1,6 @@
 # Arasya Rent Car — website
 
-Marketing site for Arasya Rent Car (PT. Ayomi Raya, Bogor): car rental with driver.
+Marketing site for Arasya Rent Car (PT Ayomi Raya Karsa, Bogor): car rental with driver.
 
 **Stack:** Astro (static HTML) · Sanity (CMS, Studio at `/studio`) · Vercel.
 

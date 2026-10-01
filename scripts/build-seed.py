@@ -102,7 +102,7 @@ docs.append(
         "_id": "siteSettings",
         "_type": "siteSettings",
         "brandName": "Arasya Rent Car",
-        "legalName": "PT. Ayomi Raya",
+        "legalName": "PT Ayomi Raya Karsa",
         "siteUrl": settings["siteUrl"],
         "waPhone": settings["waPhone"],
         "phones": [p["display"] for p in settings["officialPhones"]],
@@ -120,7 +120,7 @@ docs.append(
         "instagram": settings["instagram"],
         "rateNotes": {
             "city": site["fleetNotes"]["dalamKota"],
-            "allIn": site["fleetNotes"]["allin"],
+            "allIn": "Tarif All-in sudah termasuk BBM, tol, dan makan driver. Parkir, kelebihan jam, dan biaya luar kota (bila ada) dikonfirmasi terpisah. Kapasitas penumpang sudah termasuk jasa driver.",
         },
         "trust": [
             {"_key": key(), "title": t["title"], "text": t["description"]}
@@ -132,11 +132,11 @@ docs.append(
         ],
         "fraudWarning": {
             "title": "Waspada penipuan yang mengatasnamakan Arasya",
-            "text": "Kami hanya berkomunikasi lewat nomor resmi di bawah ini dan hanya menerima pembayaran ke rekening atas nama PT. Ayomi Raya. Cocokkan dulu nomor dan rekening sebelum Anda mentransfer.",
+            "text": "Kami hanya berkomunikasi lewat nomor resmi di bawah ini dan hanya menerima pembayaran ke rekening atas nama PT Ayomi Raya Karsa. Cocokkan dulu nomor dan rekening sebelum Anda mentransfer.",
             "points": [
                 "Kami tidak pernah meminta transfer ke rekening pribadi atau atas nama perorangan.",
                 "Kami tidak pernah meminta kode OTP, PIN, atau password Anda.",
-                "Tagihan resmi berupa invoice atas nama PT. Ayomi Raya.",
+                "Tagihan resmi berupa invoice atas nama PT Ayomi Raya Karsa.",
                 "Ragu dengan nomor atau rekening yang menghubungi Anda? Konfirmasi dulu ke nomor resmi kami.",
             ],
         },
@@ -197,7 +197,7 @@ for loc in snap["locations"]:
         ),
         faq(
             "Bagaimana ketentuan pembayarannya?",
-            "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer.",
+            "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT Ayomi Raya Karsa. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer.",
         ),
     ] + [faq(f["question"], f["answer"]) for f in loc.get("faqExtra", [])]
 
@@ -282,7 +282,7 @@ def base_city_faq(name, out_of_town, pickup):
         ),
         faq(
             "Bagaimana ketentuan pembayarannya?",
-            "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer.",
+            "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT Ayomi Raya Karsa. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer.",
         ),
     ]
 
@@ -428,7 +428,7 @@ docs.append(
             {"_key": key(), "title": "Unit premium pilihan", "text": "Alphard, Zenix Q Hybrid Modellista, dan Fortuner untuk mobil pengantin maupun keluarga inti."},
             {"_key": key(), "title": "Dikonfirmasi sebelum hari H", "text": "Unit, jam penjemputan, dan titik jemput disepakati bersama admin sebelum acara."},
             {"_key": key(), "title": "Driver rapi", "text": "Driver berpengalaman yang memahami rute di kota Anda."},
-            {"_key": key(), "title": "Pembayaran resmi", "text": "DP 20% ke rekening BCA a.n. PT. Ayomi Raya, pelunasan saat bertemu driver."},
+            {"_key": key(), "title": "Pembayaran resmi", "text": "DP 20% ke rekening BCA a.n. PT Ayomi Raya Karsa, pelunasan saat bertemu driver."},
         ],
         "cars": [car_ref("Toyota Alphard"), car_ref("Toyota Zenix Q Hybrid Modellista"), car_ref("Toyota Fortuner")],
         "steps": [
@@ -439,7 +439,7 @@ docs.append(
         "faq": [
             faq("Unit apa saja yang tersedia untuk mobil pengantin?", "Toyota Alphard, Toyota Zenix Q Hybrid Modellista, dan Toyota Fortuner. Unit lain dari armada kami juga bisa dipesan untuk rombongan keluarga."),
             faq("Apakah tarif sudah termasuk driver?", "Ya, seluruh tarif sudah termasuk jasa driver."),
-            faq("Bagaimana ketentuan pembayarannya?", "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan."),
+            faq("Bagaimana ketentuan pembayarannya?", "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT Ayomi Raya Karsa. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan."),
         ],
     }
 )
@@ -453,7 +453,7 @@ docs.append(
         "navLabel": "Korporat",
         "seo": {
             "title": "Sewa Mobil Perusahaan dengan Driver — Arasya Rent Car",
-            "description": "Transportasi karyawan dan tamu bisnis di Bogor, Jakarta, dan Bandung. Innova, Fortuner, Hiace dengan driver, pembayaran ke rekening PT. Ayomi Raya, admin 24 jam. Minta penawaran lewat WhatsApp.",
+            "description": "Transportasi karyawan dan tamu bisnis di Bogor, Jakarta, dan Bandung. Innova, Fortuner, Hiace dengan driver, pembayaran ke rekening PT Ayomi Raya Karsa, admin 24 jam. Minta penawaran lewat WhatsApp.",
         },
         "hero": {
             "eyebrow": "Transportasi perusahaan",
@@ -463,9 +463,9 @@ docs.append(
             "car": car_ref("Toyota Innova Venturer"),
         },
         "answerQuestion": "Apakah Arasya melayani sewa mobil untuk perusahaan?",
-        "answer": "Arasya Rent Car melayani sewa mobil dengan driver untuk perusahaan di Bogor, Jakarta, dan Bandung, dikelola oleh PT. Ayomi Raya. Tersedia unit MPV, SUV, hingga van rombongan, dengan pembayaran ke rekening resmi perusahaan dan admin yang siaga 24 jam.",
+        "answer": "Arasya Rent Car melayani sewa mobil dengan driver untuk perusahaan di Bogor, Jakarta, dan Bandung, dikelola oleh PT Ayomi Raya Karsa. Tersedia unit MPV, SUV, hingga van rombongan, dengan pembayaran ke rekening resmi perusahaan dan admin yang siaga 24 jam.",
         "highlights": [
-            {"_key": key(), "title": "Badan usaha resmi", "text": "Dikelola PT. Ayomi Raya. Pembayaran hanya ke rekening atas nama perusahaan."},
+            {"_key": key(), "title": "Badan usaha resmi", "text": "Dikelola PT Ayomi Raya Karsa. Pembayaran hanya ke rekening atas nama perusahaan."},
             {"_key": key(), "title": "Admin 24 jam", "text": "Perubahan jadwal dan permintaan mendadak ditangani lewat WhatsApp."},
             {"_key": key(), "title": "Satu unit sampai rombongan", "text": "Dari MPV untuk tamu, sampai Hiace untuk rombongan kantor."},
             {"_key": key(), "title": "Tarif tertulis", "text": "Tarif dan biaya tambahan dikonfirmasi tertulis di awal."},
@@ -480,11 +480,11 @@ docs.append(
         "steps": [
             {"_key": key(), "title": "Kirim kebutuhan", "text": "Tanggal, jumlah penumpang, rute, dan durasi."},
             {"_key": key(), "title": "Terima penawaran", "text": "Admin mengirim unit dan rincian tarif tertulis."},
-            {"_key": key(), "title": "Invoice dan jadwal", "text": "Invoice atas nama PT. Ayomi Raya, jadwal driver dikonfirmasi."},
+            {"_key": key(), "title": "Invoice dan jadwal", "text": "Invoice atas nama PT Ayomi Raya Karsa, jadwal driver dikonfirmasi."},
         ],
         "faq": [
             faq("Apakah bisa untuk kebutuhan rutin perusahaan?", "Bisa. Sampaikan jadwal dan kebutuhan unit Anda, admin kami akan mengirim penawaran tertulis."),
-            faq("Ke rekening mana pembayaran dilakukan?", "Hanya ke rekening resmi BCA 095 484 0782 a.n. PT. Ayomi Raya."),
+            faq("Ke rekening mana pembayaran dilakukan?", "Hanya ke rekening resmi BCA 095 484 0782 a.n. PT Ayomi Raya Karsa."),
             faq("Bagaimana jika pemakaian melebihi 12 jam?", "Kelebihan durasi dikenakan biaya tambahan per jam yang diinformasikan secara tertulis di awal."),
         ],
     }

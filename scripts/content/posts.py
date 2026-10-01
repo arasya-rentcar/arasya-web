@@ -124,7 +124,7 @@ Penipuan yang mengatasnamakan rental mobil umumnya tidak rumit. Pelaku memakai n
 - Rekening: nama penerima di aplikasi bank harus nama perusahaan, bukan nama orang.
 - Invoice: minta invoice resmi sebelum membayar DP.
 ## Nomor dan rekening resmi Arasya
-Arasya Rent Car dikelola PT. Ayomi Raya. Pembayaran hanya ke rekening atas nama perusahaan, dan kami tidak pernah meminta kode OTP atau PIN. Daftar nomor dan rekening resmi, lengkap dengan tombol salin, ada di halaman [nomor & rekening resmi](/rekening-resmi).
+Arasya Rent Car dikelola PT Ayomi Raya Karsa. Pembayaran hanya ke rekening atas nama perusahaan, dan kami tidak pernah meminta kode OTP atau PIN. Daftar nomor dan rekening resmi, lengkap dengan tombol salin, ada di halaman [nomor & rekening resmi](/rekening-resmi).
 ## Kalau sudah terlanjur transfer
 Segera hubungi bank Anda untuk meminta pemblokiran, simpan semua bukti percakapan dan transfer, lalu laporkan ke kepolisian. Bila penipu memakai nama Arasya, kabari kami lewat nomor resmi supaya bisa ikut kami laporkan.
 """,

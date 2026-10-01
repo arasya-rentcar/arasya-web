@@ -24,7 +24,7 @@ SETTINGS = {
     "paymentTerms": "Once we send your invoice, you pay a 20% deposit into our official company account. The balance is paid to the driver when you meet, in cash or by bank transfer.",
     "rateNotes": {
         "city": "The in-town rate covers 12 hours with the car and driver. Fuel, tolls, parking and the driver's meals are paid separately as you go.",
-        "allIn": "The all-in rate includes fuel, tolls and the driver's meals, so there is nothing to pay on the day. Seat numbers include the driver.",
+        "allIn": "The all-in rate includes fuel, tolls and the driver's meals. Parking, overtime and out-of-town charges, if any, are confirmed separately. Seat numbers include the driver.",
     },
     "trust": [
         tt("Experienced drivers", "Punctual, careful, and they know the roads they drive every day."),
@@ -34,11 +34,11 @@ SETTINGS = {
     ],
     "fraudWarning": {
         "title": "Beware of scams using the Arasya name",
-        "text": "We only talk to customers from the official numbers below, and only accept payment into the account of PT. Ayomi Raya. Please check both before you transfer any money.",
+        "text": "We only talk to customers from the official numbers below, and only accept payment into the account of PT Ayomi Raya Karsa. Please check both before you transfer any money.",
         "points": [
             "We never ask you to pay into a personal account.",
             "We never ask for OTP codes, PINs or passwords.",
-            "Every booking comes with an official invoice from PT. Ayomi Raya.",
+            "Every booking comes with an official invoice from PT Ayomi Raya Karsa.",
             "Not sure a message is from us? Check with one of our official numbers first.",
         ],
     },
@@ -101,7 +101,7 @@ CITIES = {
             q("How do I book?", "Message us on WhatsApp with your dates, pick-up point and plans. We confirm the car, the price and the pick-up before anything is booked."),
             q("Can you pick me up from my hotel or villa in Puncak?", "Yes. Your driver can collect you anywhere in Bogor and the surrounding area, including hotels and villas in Puncak and Bogor station."),
             q("What happens if we need the car for more than 12 hours?", "Extra hours are charged at an hourly rate that we confirm in writing before your trip, so there are no surprises."),
-            q("How do I pay?", "Once we send your invoice, you pay a 20% deposit into our official BCA account in the name of PT. Ayomi Raya. The balance is paid to the driver when you meet, in cash or by transfer."),
+            q("How do I pay?", "Once we send your invoice, you pay a 20% deposit into our official BCA account in the name of PT Ayomi Raya Karsa. The balance is paid to the driver when you meet, in cash or by transfer."),
         ],
     },
     "city-jakarta": {
@@ -144,7 +144,7 @@ CITIES = {
             q("Can you meet me at Soekarno-Hatta Airport?", "Yes. Send your flight number when you book; the driver tracks your landing and waits in the arrivals area."),
             q("Do I need to worry about the odd-even plate rule?", "No. Tell us your plans when you book and your driver will choose the route and timing to fit the rule on the day."),
             q("How do I book?", "Message us on WhatsApp with your dates, pick-up point and plans. We confirm the car, the price and the pick-up before anything is booked."),
-            q("How do I pay?", "Once we send your invoice, you pay a 20% deposit into our official BCA account in the name of PT. Ayomi Raya. The balance is paid to the driver when you meet, in cash or by transfer."),
+            q("How do I pay?", "Once we send your invoice, you pay a 20% deposit into our official BCA account in the name of PT Ayomi Raya Karsa. The balance is paid to the driver when you meet, in cash or by transfer."),
         ],
     },
     "city-bandung": {
@@ -187,7 +187,7 @@ CITIES = {
             q("Can we do Lembang or Ciwidey in a day?", "Yes. The 12-hour hire is usually enough for either. Tell us which places you'd like to see and we'll confirm the price and suggest a start time."),
             q("How do I book?", "Message us on WhatsApp with your dates, pick-up point and plans. We confirm the car, the price and the pick-up before anything is booked."),
             q("Can you take us from Bandung to Jakarta airport?", "Yes. It takes about 3–4 hours; we'll suggest a pick-up time based on your flight."),
-            q("How do I pay?", "Once we send your invoice, you pay a 20% deposit into our official BCA account in the name of PT. Ayomi Raya. The balance is paid to the driver when you meet, in cash or by transfer."),
+            q("How do I pay?", "Once we send your invoice, you pay a 20% deposit into our official BCA account in the name of PT Ayomi Raya Karsa. The balance is paid to the driver when you meet, in cash or by transfer."),
         ],
     },
 }
@@ -237,9 +237,9 @@ SERVICES = {
             "lead": "Airport pick-ups for visitors, out-of-town meetings and day-to-day office travel.",
         },
         "answerQuestion": "Does Arasya work with companies?",
-        "answer": "Yes. Arasya Rent Car provides cars with drivers for companies in Bogor, Jakarta and Bandung, and is operated by PT. Ayomi Raya. We have MPVs, SUVs and group vans, invoice in the company's name, and answer on WhatsApp 24 hours a day.",
+        "answer": "Yes. Arasya Rent Car provides cars with drivers for companies in Bogor, Jakarta and Bandung, and is operated by PT Ayomi Raya Karsa. We have MPVs, SUVs and group vans, invoice in the company's name, and answer on WhatsApp 24 hours a day.",
         "highlights": [
-            tt("A registered company", "Operated by PT. Ayomi Raya. Payment only into the company account."),
+            tt("A registered company", "Operated by PT Ayomi Raya Karsa. Payment only into the company account."),
             tt("24-hour support", "Last-minute changes and requests handled on WhatsApp."),
             tt("One car to a whole team", "From an MPV for a visitor to a Hiace for the department."),
             tt("Written quotes", "Rates and any extras confirmed in writing up front."),
@@ -247,16 +247,16 @@ SERVICES = {
         "steps": [
             tt("Send your requirements", "Dates, number of passengers, route and hours."),
             tt("Receive a quote", "We send car options and a written price."),
-            tt("Invoice and schedule", "Invoice from PT. Ayomi Raya; driver and times confirmed."),
+            tt("Invoice and schedule", "Invoice from PT Ayomi Raya Karsa; driver and times confirmed."),
         ],
         "faq": [
             q("Can you handle regular company transport?", "Yes. Send us your schedule and requirements and we'll prepare a written quote."),
-            q("Which account do we pay into?", "Only our official account: BCA 095 484 0782 in the name of PT. Ayomi Raya."),
+            q("Which account do we pay into?", "Only our official account: BCA 095 484 0782 in the name of PT Ayomi Raya Karsa."),
             q("What if we need the car for more than 12 hours?", "Extra hours are charged at an hourly rate confirmed in writing before the trip."),
         ],
         "seo": {
             "title": "Corporate Car Rental with Driver in Indonesia | Arasya",
-            "description": "Cars and drivers for companies in Bogor, Jakarta and Bandung: airport pick-ups, meetings and staff transport. Invoiced by PT. Ayomi Raya.",
+            "description": "Cars and drivers for companies in Bogor, Jakarta and Bandung: airport pick-ups, meetings and staff transport. Invoiced by PT Ayomi Raya Karsa.",
         },
     },
 }

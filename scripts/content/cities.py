@@ -29,7 +29,7 @@ def car(ref):
     return {"_type": "reference", "_ref": ref}
 
 
-PAYMENT = "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT. Ayomi Raya. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
+PAYMENT = "Setelah invoice diterbitkan, Anda mentransfer DP 20% ke rekening resmi BCA a.n. PT Ayomi Raya Karsa. Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, secara tunai atau transfer."
 
 
 def domestic_faq(city, pickup, extra):
@@ -312,7 +312,7 @@ CITIES = [
                 q("Can we do Borobudur and Prambanan in one day?", "Yes. With a 12-hour hire most visitors see Borobudur in the morning and Prambanan in the afternoon. Tell us your plans and we'll suggest a start time."),
                 q("Can you pick me up at YIA airport?", "Yes. YIA is in Kulon Progo, about 1–1.5 hours from the city centre. Send your flight number and the driver will wait in arrivals."),
                 q("Can we travel on to other cities?", "Yes, anywhere you like: Solo, Semarang, Dieng, or further. We quote the price before you go."),
-                q("How do I pay?", "Once we send your invoice, you pay a 20% deposit into our official BCA account in the name of PT. Ayomi Raya. The balance is paid to the driver when you meet, in cash or by transfer."),
+                q("How do I pay?", "Once we send your invoice, you pay a 20% deposit into our official BCA account in the name of PT Ayomi Raya Karsa. The balance is paid to the driver when you meet, in cash or by transfer."),
             ],
         },
     ),
@@ -407,7 +407,7 @@ INTL_UNITS = [
 def intl_faq(country, extra):
     return [
         q(f"Bagaimana cara memesan mobil dengan supir di {country}?", "Kirim tanggal, jumlah penumpang, penerbangan, dan rencana perjalanan lewat WhatsApp. Admin kami mengirim penawaran tertulis dalam Rupiah sebelum Anda membayar."),
-        q("Apakah pembayaran dalam Rupiah?", "Ya. Penawaran dan pembayaran dilakukan dalam Rupiah ke rekening resmi BCA a.n. PT. Ayomi Raya, sehingga Anda tidak perlu menghitung kurs sendiri."),
+        q("Apakah pembayaran dalam Rupiah?", "Ya. Penawaran dan pembayaran dilakukan dalam Rupiah ke rekening resmi BCA a.n. PT Ayomi Raya Karsa, sehingga Anda tidak perlu menghitung kurs sendiri."),
         *extra,
         q("Apakah bisa sewa beberapa hari lintas kota?", f"Bisa. Satu mobil dan supir bisa mendampingi Anda selama beberapa hari, termasuk perjalanan ke kota lain di {country}. Sampaikan itinerari Anda agar admin menghitungkan penawarannya."),
     ]
@@ -532,10 +532,10 @@ FIXES = [
      {"question": "Rute apa saja yang tersedia?", "answer": "Kami melayani carter ke kota mana pun, antar kota maupun antarprovinsi. Tabel di halaman ini berisi tarif rute yang paling sering dipesan; untuk rute lain, kirim kota asal dan tujuan lewat WhatsApp dan admin kami hitungkan tarifnya."}),
     ("service-travel", ["seo", "description"], "Carter mobil door to door dari Bogor, Jakarta, dan Bandung ke bandara dan antar kota. Satu mobil untuk rombongan Anda sendiri. Cek tarif per unit, pesan lewat WhatsApp.",
      "Carter mobil door to door ke bandara dan antar kota, ke mana pun tujuan Anda. Satu mobil untuk rombongan Anda sendiri. Cek tarif rute populer, pesan lewat WhatsApp."),
-    ("service-korporat", ["answer"], "Arasya Rent Car melayani sewa mobil dengan driver untuk perusahaan di Bogor, Jakarta, dan Bandung, dikelola oleh PT. Ayomi Raya. Tersedia unit MPV, SUV, hingga van rombongan, dengan pembayaran ke rekening resmi perusahaan dan admin yang siaga 24 jam.",
-     "Arasya Rent Car melayani sewa mobil dengan driver untuk perusahaan di berbagai kota di Indonesia, dikelola oleh PT. Ayomi Raya. Tersedia unit MPV, SUV, hingga van rombongan, untuk perjalanan dalam kota maupun ke kota mana pun, dengan pembayaran ke rekening resmi perusahaan dan admin yang siaga 24 jam."),
-    ("service-korporat", ["seo", "description"], "Transportasi karyawan dan tamu bisnis di Bogor, Jakarta, dan Bandung. Innova, Fortuner, Hiace dengan driver, pembayaran ke rekening PT. Ayomi Raya, admin 24 jam. Minta penawaran lewat WhatsApp.",
-     "Transportasi karyawan dan tamu bisnis di berbagai kota di Indonesia. Innova, Fortuner, Hiace dengan driver, pembayaran ke rekening PT. Ayomi Raya, admin 24 jam. Minta penawaran lewat WhatsApp."),
+    ("service-korporat", ["answer"], "Arasya Rent Car melayani sewa mobil dengan driver untuk perusahaan di Bogor, Jakarta, dan Bandung, dikelola oleh PT Ayomi Raya Karsa. Tersedia unit MPV, SUV, hingga van rombongan, dengan pembayaran ke rekening resmi perusahaan dan admin yang siaga 24 jam.",
+     "Arasya Rent Car melayani sewa mobil dengan driver untuk perusahaan di berbagai kota di Indonesia, dikelola oleh PT Ayomi Raya Karsa. Tersedia unit MPV, SUV, hingga van rombongan, untuk perjalanan dalam kota maupun ke kota mana pun, dengan pembayaran ke rekening resmi perusahaan dan admin yang siaga 24 jam."),
+    ("service-korporat", ["seo", "description"], "Transportasi karyawan dan tamu bisnis di Bogor, Jakarta, dan Bandung. Innova, Fortuner, Hiace dengan driver, pembayaran ke rekening PT Ayomi Raya Karsa, admin 24 jam. Minta penawaran lewat WhatsApp.",
+     "Transportasi karyawan dan tamu bisnis di berbagai kota di Indonesia. Innova, Fortuner, Hiace dengan driver, pembayaran ke rekening PT Ayomi Raya Karsa, admin 24 jam. Minta penawaran lewat WhatsApp."),
     ("service-wedding", ["answer"], "Arasya Rent Car menyediakan mobil pengantin dengan driver di Bogor, Jakarta, dan Bandung, dengan pilihan unit Toyota Alphard, Toyota Zenix Q Hybrid Modellista, dan Toyota Fortuner. Pemesanan melalui WhatsApp; unit, jam, dan titik jemput dikonfirmasi sebelum hari acara.",
      "Arasya Rent Car menyediakan mobil pengantin dengan driver di berbagai kota, dengan pilihan unit seperti Toyota Alphard, Toyota Zenix Q Hybrid Modellista, dan Toyota Fortuner. Pemesanan melalui WhatsApp; unit, jam, dan titik jemput dikonfirmasi sebelum hari acara."),
 ]
@@ -556,10 +556,10 @@ EN_FIXES = [
      {"question": "Which routes do you cover?", "answer": "Anywhere you need to go, between cities or across provinces. The table shows our most-booked routes; for any other trip, send us your start and end point on WhatsApp and we'll quote a price."}),
     ("service-travel", ["en", "seo", "description"], "Door-to-door private car transfers from Bogor, Jakarta and Bandung to Soekarno-Hatta Airport and other cities. Priced per car, driver included.",
      "Door-to-door private car transfers to the airport and between cities, wherever you are going. Priced per car, driver included."),
-    ("service-korporat", ["en", "answer"], "Yes. Arasya Rent Car provides cars with drivers for companies in Bogor, Jakarta and Bandung, and is operated by PT. Ayomi Raya. We have MPVs, SUVs and group vans, invoice in the company's name, and answer on WhatsApp 24 hours a day.",
-     "Yes. Arasya Rent Car provides cars with drivers for companies in cities across Indonesia, and is operated by PT. Ayomi Raya. We have MPVs, SUVs and group vans for local and intercity trips, invoice in the company's name, and answer on WhatsApp 24 hours a day."),
-    ("service-korporat", ["en", "seo", "description"], "Cars and drivers for companies in Bogor, Jakarta and Bandung: airport pick-ups, meetings and staff transport. Invoiced by PT. Ayomi Raya.",
-     "Cars and drivers for companies across Indonesia: airport pick-ups, meetings, staff transport and intercity trips. Invoiced by PT. Ayomi Raya."),
+    ("service-korporat", ["en", "answer"], "Yes. Arasya Rent Car provides cars with drivers for companies in Bogor, Jakarta and Bandung, and is operated by PT Ayomi Raya Karsa. We have MPVs, SUVs and group vans, invoice in the company's name, and answer on WhatsApp 24 hours a day.",
+     "Yes. Arasya Rent Car provides cars with drivers for companies in cities across Indonesia, and is operated by PT Ayomi Raya Karsa. We have MPVs, SUVs and group vans for local and intercity trips, invoice in the company's name, and answer on WhatsApp 24 hours a day."),
+    ("service-korporat", ["en", "seo", "description"], "Cars and drivers for companies in Bogor, Jakarta and Bandung: airport pick-ups, meetings and staff transport. Invoiced by PT Ayomi Raya Karsa.",
+     "Cars and drivers for companies across Indonesia: airport pick-ups, meetings, staff transport and intercity trips. Invoiced by PT Ayomi Raya Karsa."),
     ("homePage", ["en", "hero", "lead"], "From a seven-seater to a 14-seat van. Day hire, airport transfers, and trips to Puncak, Bandung and beyond.",
      "From family seven-seaters to group vans. Day hire, airport transfers, and trips to anywhere you need to go."),
     ("homePage", ["en", "seo", "description"], "Rent a car with a professional driver: Avanza, Innova, Fortuner, Alphard or Hiace. 12-hour rates from Rp500,000 or all-in packages. Book on WhatsApp.",
