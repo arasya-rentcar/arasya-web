@@ -18,6 +18,20 @@ const fallback = waHref(settings.waPhone, t.bkMsg.hello, refCode);
 // Stable, language-independent keys for the t.bkDurations options (same order
 // in id and en; the first option is "not sure yet" and has none).
 const durationKeys: (string | undefined)[] = [undefined, '12h', 'allin', 'oneway', 'return', 'multi'];
+// Car dropdown: model names without the brand, and the three 7-seat low MPVs
+// as one option. Single cars keep their full name as the value (message/lead).
+const brand = /^(Toyota|Daihatsu|Suzuki|Mitsubishi|Honda|Isuzu|Nissan|Hyundai|Wuling)\s+/i;
+const lowMpv = ['Avanza', 'Xenia', 'Ertiga'];
+const lowMpvName = 'Avanza · Xenia · Ertiga';
+const carOptions: { value: string; label: string; names: string[] }[] = [];
+for (const c of cars) {
+  const label = c.name.replace(brand, '');
+  if (lowMpv.includes(label)) {
+    const group = carOptions.find((o) => o.value === lowMpvName);
+    if (group) group.names.push(c.name);
+    else carOptions.push({ value: lowMpvName, label: lowMpvName, names: [c.name] });
+  } else carOptions.push({ value: c.name, label, names: [c.name] });
+}
 const uid = 'bk-' + refCode.toLowerCase();
 // Optional dashboard endpoint base (no trailing slash); empty turns lead capture off.
 const leadsApi = (import.meta.env.PUBLIC_LEADS_API || '').trim().replace(/\/+$/, '');
@@ -38,8 +52,8 @@ const leadsApi = (import.meta.env.PUBLIC_LEADS_API || '').trim().replace(/\/+$/,
   <div class="f w2">
     <label for={`${uid}-car`}>{t.bkUnit}</label>
     <select id={`${uid}-car`} name="car">
-      <option value="">{t.bkHelp}</option>
-      {cars.map((c) => <option value={c.name} selected={c.name === defaultCar}>{c.name}</option>)}
+      {!carOptions.length && <option value="">{t.bkHelp}</option>}
+      {carOptions.map((o) => <option value={o.value} selected={!!defaultCar && (o.value === defaultCar || o.names.includes(defaultCar))}>{o.label}</option>)}
     </select>
   </div>
   <div class="f w2">
