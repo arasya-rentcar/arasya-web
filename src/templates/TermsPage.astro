@@ -42,7 +42,7 @@ const steps = en
 const rates = [
   settings.rateNotes?.city && [en ? '12 hours in town' : 'Tarif Dalam Kota 12 jam', settings.rateNotes.city],
   settings.rateNotes?.allIn && ['All-in', settings.rateNotes.allIn],
-  [en ? 'Extra hours' : 'Kelebihan jam', en ? 'Hours beyond the package are charged at an hourly rate that we confirm in writing before the trip.' : 'Pemakaian melebihi durasi paket dikenakan biaya per jam yang dikonfirmasi tertulis sebelum perjalanan.'],
+  [en ? 'Extra hours' : 'Kelebihan jam', en ? 'Hours beyond the package, or past 23:00, cost 10% of the full-day rate per hour.' : 'Pemakaian melebihi durasi paket atau lewat pukul 23.00 dikenakan 10% dari tarif Fullday per jam.'],
 ].filter(Boolean) as string[][];
 const faq = withPolicy(
   en

@@ -23,8 +23,8 @@ def slug(s):
 SETTINGS = {
     "paymentTerms": "Once we send your invoice, you pay a 20% deposit into our official company account. The balance is paid to the driver when you meet, in cash or by bank transfer.",
     "rateNotes": {
-        "city": "The in-town rate covers 12 hours with the car and driver. Fuel, tolls, parking and the driver's meals are paid separately as you go.",
-        "allIn": "The all-in rate includes fuel, tolls and the driver's meals. Parking, overtime and out-of-town charges, if any, are confirmed separately. Seat numbers include the driver.",
+        "city": "The in-town rate covers 12 hours with the car and driver in Greater Jakarta. Fuel, tolls, parking and the driver's meals (Rp100,000 a day) are paid separately. Rates for other cities are confirmed by our team.",
+        "allIn": "The all-in rate is for 12 hours within Jakarta and includes fuel, tolls and the driver's meals; parking and entrance tickets are extra. Full-day hire (06:00 to 23:00), other cities and out-of-town trips are confirmed by our team. Extra hours cost 10% of the full-day rate per hour. Seat numbers include the driver.",
     },
     "trust": [
         tt("Experienced drivers", "Punctual, careful, and they know the roads they drive every day."),

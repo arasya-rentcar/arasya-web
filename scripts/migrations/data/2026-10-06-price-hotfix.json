@@ -1,0 +1,55 @@
+{
+ "cars": {
+  "car-toyota-avanza": {
+   "priceCity": 500000,
+   "priceAllIn": 750000
+  },
+  "car-suzuki-ertiga": {
+   "priceCity": 500000,
+   "priceAllIn": 750000
+  },
+  "car-mitsubishi-xpander": {
+   "priceCity": 600000,
+   "priceAllIn": 850000
+  },
+  "car-daihatsu-terios": {
+   "priceCity": 600000,
+   "priceAllIn": 850000
+  },
+  "car-toyota-rush": {
+   "priceCity": 600000,
+   "priceAllIn": 850000
+  },
+  "car-toyota-innova-reborn": {
+   "priceCity": 700000,
+   "priceAllIn": 1000000
+  },
+  "car-toyota-zenix": {
+   "priceCity": 1000000,
+   "priceAllIn": 1300000
+  },
+  "car-toyota-innova-venturer": {
+   "priceCity": 1000000,
+   "priceAllIn": 1300000
+  },
+  "car-toyota-zenix-q-hybrid-modellista": {
+   "priceCity": 1400000,
+   "priceAllIn": 1700000
+  },
+  "car-toyota-fortuner": {
+   "priceCity": 1600000,
+   "priceAllIn": null
+  }
+ },
+ "rateNotes": {
+  "city": "Tarif Dalam Kota 12 jam di atas berlaku untuk Jabodetabek, sudah termasuk jasa driver; belum termasuk BBM, tol, parkir, dan makan driver (Rp100.000/hari). Tarif untuk kota lain dikonfirmasi admin.",
+  "allIn": "Tarif All-in di atas untuk pemakaian dalam kota Jakarta selama 12 jam, sudah termasuk BBM, tol, dan makan driver; belum termasuk parkir dan tiket masuk wisata. Paket Fullday (06.00–23.00), kota lain, dan perjalanan luar kota dikonfirmasi admin. Kelebihan jam dikenakan 10% dari tarif Fullday per jam. Kapasitas penumpang sudah termasuk jasa driver."
+ },
+ "rateNotesEn": {
+  "city": "The in-town rate covers 12 hours with the car and driver in Greater Jakarta. Fuel, tolls, parking and the driver's meals (Rp100,000 a day) are paid separately. Rates for other cities are confirmed by our team.",
+  "allIn": "The all-in rate is for 12 hours within Jakarta and includes fuel, tolls and the driver's meals; parking and entrance tickets are extra. Full-day hire (06:00 to 23:00), other cities and out-of-town trips are confirmed by our team. Extra hours cost 10% of the full-day rate per hour. Seat numbers include the driver."
+ },
+ "cityPricing": {
+  "city-bandung": "reference"
+ }
+}

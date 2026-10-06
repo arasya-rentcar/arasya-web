@@ -10,7 +10,7 @@
   "category": "mpv",
   "capacity": 7,
   "priceCity": 500000,
-  "priceAllIn": 1250000,
+  "priceAllIn": 750000,
   "badge": null,
   "imagePath": "/cars/toyota-avanza",
   "order": 0,
@@ -105,7 +105,7 @@
   "category": "mpv",
   "capacity": 7,
   "priceCity": 500000,
-  "priceAllIn": 1250000,
+  "priceAllIn": 750000,
   "badge": null,
   "imagePath": "/cars/suzuki-ertiga",
   "order": 1,
@@ -188,7 +188,7 @@
   "category": "mpv",
   "capacity": 7,
   "priceCity": 600000,
-  "priceAllIn": 1350000,
+  "priceAllIn": 850000,
   "badge": null,
   "imagePath": "/cars/mitsubishi-xpander",
   "order": 2,
@@ -283,7 +283,7 @@
   "category": "suv",
   "capacity": 7,
   "priceCity": 600000,
-  "priceAllIn": 1350000,
+  "priceAllIn": 850000,
   "badge": null,
   "imagePath": "/cars/daihatsu-terios",
   "order": 3,
@@ -366,7 +366,7 @@
   "category": "suv",
   "capacity": 7,
   "priceCity": 600000,
-  "priceAllIn": 1350000,
+  "priceAllIn": 850000,
   "badge": null,
   "imagePath": "/cars/toyota-rush",
   "order": 4,
@@ -449,7 +449,7 @@
   "category": "mpv-premium",
   "capacity": 7,
   "priceCity": 700000,
-  "priceAllIn": 1500000,
+  "priceAllIn": 1000000,
   "badge": "Terpopuler",
   "imagePath": "/cars/toyota-innova-reborn",
   "order": 5,
@@ -544,7 +544,7 @@
   "category": "mpv-premium",
   "capacity": 7,
   "priceCity": 1000000,
-  "priceAllIn": 1800000,
+  "priceAllIn": 1300000,
   "badge": null,
   "imagePath": "/cars/toyota-innova-zenix",
   "order": 6,
@@ -637,7 +637,7 @@
   "category": "mpv-premium",
   "capacity": 6,
   "priceCity": 1000000,
-  "priceAllIn": 1800000,
+  "priceAllIn": 1300000,
   "badge": null,
   "imagePath": "/cars/toyota-innova-venturer",
   "order": 7,
@@ -718,8 +718,8 @@
   },
   "category": "premium",
   "capacity": 6,
-  "priceCity": 1300000,
-  "priceAllIn": 2200000,
+  "priceCity": 1400000,
+  "priceAllIn": 1700000,
   "badge": null,
   "imagePath": "/cars/toyota-zenix-q-hybrid-modellista",
   "order": 8,
@@ -811,7 +811,7 @@
   },
   "category": "suv",
   "capacity": 6,
-  "priceCity": 1500000,
+  "priceCity": 1600000,
   "priceAllIn": null,
   "badge": null,
   "imagePath": "/cars/toyota-fortuner",
@@ -1262,8 +1262,8 @@
   ],
   "instagram": "https://www.instagram.com/arasyarentcar/",
   "rateNotes": {
-   "city": "Tarif Dalam Kota berlaku untuk durasi 12 jam, sudah termasuk jasa driver; belum termasuk BBM, tol, parkir, dan makan driver.",
-   "allIn": "Tarif All-in sudah termasuk BBM, tol, dan makan driver. Parkir, kelebihan jam, dan biaya luar kota (bila ada) dikonfirmasi terpisah. Kapasitas penumpang sudah termasuk jasa driver."
+   "city": "Tarif Dalam Kota 12 jam di atas berlaku untuk Jabodetabek, sudah termasuk jasa driver; belum termasuk BBM, tol, parkir, dan makan driver (Rp100.000/hari). Tarif untuk kota lain dikonfirmasi admin.",
+   "allIn": "Tarif All-in di atas untuk pemakaian dalam kota Jakarta selama 12 jam, sudah termasuk BBM, tol, dan makan driver; belum termasuk parkir dan tiket masuk wisata. Paket Fullday (06.00–23.00), kota lain, dan perjalanan luar kota dikonfirmasi admin. Kelebihan jam dikenakan 10% dari tarif Fullday per jam. Kapasitas penumpang sudah termasuk jasa driver."
   },
   "trust": [
    {
@@ -1331,8 +1331,8 @@
   "en": {
    "paymentTerms": "Once we send your invoice, you pay a 20% deposit into our official company account. The balance is paid to the driver when you meet, in cash or by bank transfer.",
    "rateNotes": {
-    "city": "The in-town rate covers 12 hours with the car and driver. Fuel, tolls, parking and the driver's meals are paid separately as you go.",
-    "allIn": "The all-in rate includes fuel, tolls and the driver's meals. Parking, overtime and out-of-town charges, if any, are confirmed separately. Seat numbers include the driver."
+    "city": "The in-town rate covers 12 hours with the car and driver in Greater Jakarta. Fuel, tolls, parking and the driver's meals (Rp100,000 a day) are paid separately. Rates for other cities are confirmed by our team.",
+    "allIn": "The all-in rate is for 12 hours within Jakarta and includes fuel, tolls and the driver's meals; parking and entrance tickets are extra. Full-day hire (06:00 to 23:00), other cities and out-of-town trips are confirmed by our team. Extra hours cost 10% of the full-day rate per hour. Seat numbers include the driver."
    },
    "trust": [
     {
@@ -2413,7 +2413,8 @@
      "answer": "Once we send your invoice, you pay a 20% deposit into our official BCA account in the name of PT Ayomi Raya Karsa. The balance is paid to the driver when you meet, in cash or by transfer."
     }
    ]
-  }
+  },
+  "pricing": "reference"
  },
  {
   "_id": "service-wedding",

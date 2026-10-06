@@ -146,4 +146,20 @@ sync = {
     "policyEn": ss["en"]["cancellationPolicy"],
 }
 (out.parent / "2026-10-01-sync.json").write_text(json.dumps(sync, ensure_ascii=False, indent=1))
+
+# Data for migrations/2026-10-06-price-hotfix.mjs: the owner's price list of
+# 6 Oct 2026 (12-hour and all-in rates, rate notes, Bandung as reference rates),
+# taken from the final seed. Prices themselves are edited in seed.json.
+PRICE_HOTFIX_CARS = [
+    "car-toyota-avanza", "car-suzuki-ertiga", "car-mitsubishi-xpander", "car-daihatsu-terios",
+    "car-toyota-rush", "car-toyota-innova-reborn", "car-toyota-zenix", "car-toyota-innova-venturer",
+    "car-toyota-zenix-q-hybrid-modellista", "car-toyota-fortuner",
+]
+price_hotfix = {
+    "cars": {cid: {"priceCity": by_id[cid].get("priceCity"), "priceAllIn": by_id[cid].get("priceAllIn")} for cid in PRICE_HOTFIX_CARS},
+    "rateNotes": ss["rateNotes"],
+    "rateNotesEn": ss["en"]["rateNotes"],
+    "cityPricing": {"city-bandung": by_id["city-bandung"]["pricing"]},
+}
+(out.parent / "2026-10-06-price-hotfix.json").write_text(json.dumps(price_hotfix, ensure_ascii=False, indent=1))
 print(f"wrote {out.relative_to(ROOT)} and updated {seed_path.relative_to(ROOT)} ({len(seed)} documents)")
