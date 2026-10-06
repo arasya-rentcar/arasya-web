@@ -5,10 +5,11 @@ import PortableText from '../../components/PortableText.astro';
 import Faq from '../../components/Faq.astro';
 import CarCard from '../../components/CarCard.astro';
 import CtaBand from '../../components/CtaBand.astro';
-import { getContent, type Post } from '../../lib/content';
+import { getContent, type Car, type Post } from '../../lib/content';
 import { dateId } from '../../lib/format';
 import { photo } from '../../lib/images';
 import { article, breadcrumbs, faqPage } from '../../lib/schema';
+import { fromPrices } from '../../lib/prices';
 
 export async function getStaticPaths() {
   const { posts } = await getContent();
@@ -16,13 +17,14 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props as { post: Post };
-const { settings, cars, posts } = await getContent();
+const { settings, cars, posts, prices } = await getContent();
 const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
 const path = `/blog/${post.slug.current}`;
 const crumbs = [{ name: 'Beranda', path: '/' }, { name: 'Blog', path: '/blog' }, { name: post.title, path }];
 const cover = photo(post.cover, post.coverPath, 1400);
 const related = posts.filter((p) => p._id !== post._id && (!post.city || p.city?._id === post.city._id)).slice(0, 3);
-const suggest = cars.filter((c) => c.badge).concat(cars.filter((c) => c.priceCity)).slice(0, 2);
+const hasPrice = (c: Car) => { const from = fromPrices(prices, [c.slug.current]); return !!(from.driver || from.allIn); };
+const suggest = cars.filter((c) => c.badge).concat(cars.filter(hasPrice)).slice(0, 2);
 const code = post.city?.code || 'BLOG';
 ---
 <Base title={post.seo?.title || post.title} description={post.seo?.description || post.excerpt} path={path} noindex={post.seo?.noindex} ogImage={cover?.src.startsWith('/') ? cover.src : undefined} jsonld={[{ ...article(post, site, settings), image: cover ? (cover.src.startsWith('/') ? site + cover.src : cover.src) : undefined }, faqPage(post.faq), breadcrumbs(site, crumbs)]} waRef={`${code}-blog`}>

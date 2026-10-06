@@ -10,31 +10,34 @@ import { carImage, photo } from '../lib/images';
 import { paths } from '../lib/paths';
 import { cityIsIndexable } from '../lib/quality';
 import { breadcrumbs } from '../lib/schema';
+import { fromPrices, zoneArea } from '../lib/prices';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const en = lang === 'en';
 const t = ui(lang);
-const { settings, cities, cars } = await getContent(lang);
+const { settings, cities, cars, prices } = await getContent(lang);
 const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
 const path = paths.cities(lang);
 const crumbs = [{ name: t.home, path: paths.home(lang) }, { name: en ? 'Cities' : 'Kota layanan', path }];
 const live = cities.filter(cityIsIndexable);
-const min = Math.min(...cars.map((c) => c.priceCity || Infinity));
+// "Mobil + supir mulai Rp… / 12 jam (Jabodetabek)": the site-wide price with its area.
+const from = fromPrices(prices, cars.map((c) => c.slug.current)).driver;
+const fromText = from ? t.fromDriver(rupiah(from.amount), zoneArea(from.zone, lang)) : '';
 const list = listJoin(live.map((c) => c.name), lang);
 const groups = [
   { title: en ? 'Indonesia' : 'Domestik', items: live.filter((c) => c.country !== 'INTL') },
   { title: en ? 'Abroad' : 'Internasional', items: live.filter((c) => c.country === 'INTL') },
 ].filter((g) => g.items.length);
 ---
-<Base title={en ? 'Car Rental with Driver: Cities We Serve | Arasya Rent Car' : 'Kota Layanan Sewa Mobil dengan Driver — Arasya Rent Car'} description={en ? `Car rental with a driver in ${list}. Twelve hours from ${rupiah(min)}, book on WhatsApp.` : `Sewa mobil dengan driver di ${list}. Tarif 12 jam mulai ${rupiah(min)}, pesan lewat WhatsApp.`} path={path} alternates={{ id: '/sewa-mobil', en: '/en/cities' }} jsonld={[{ '@type': 'ItemList', name: en ? 'Arasya service cities' : 'Kota layanan Arasya', itemListElement: live.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: t.rentIn(c.name), url: site + paths.city(c, lang) })) }, breadcrumbs(site, crumbs)]} waRef={en ? 'EN-HUB-fab' : 'HUB-fab'}>
+<Base title={en ? 'Car Rental with Driver: Cities We Serve | Arasya Rent Car' : 'Kota Layanan Sewa Mobil dengan Driver — Arasya Rent Car'} description={en ? `Car rental with a driver in ${list}.${fromText ? ` ${fromText}.` : ''} Book on WhatsApp.` : `Sewa mobil dengan driver di ${list}.${fromText ? ` ${fromText}.` : ''} Pesan lewat WhatsApp.`} path={path} alternates={{ id: '/sewa-mobil', en: '/en/cities' }} jsonld={[{ '@type': 'ItemList', name: en ? 'Arasya service cities' : 'Kota layanan Arasya', itemListElement: live.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: t.rentIn(c.name), url: site + paths.city(c, lang) })) }, breadcrumbs(site, crumbs)]} waRef={en ? 'EN-HUB-fab' : 'HUB-fab'}>
   <section class="head">
     <div class="wrap stack">
       <Breadcrumbs items={crumbs} />
       <h1>{en ? 'Where we operate' : 'Kota layanan Arasya'}</h1>
       <p class="lead">{en
-        ? `Arasya Rent Car provides cars with drivers in the cities below, and drives between cities and across provinces to wherever you need to go. Twelve hours in town starts at ${rupiah(min)}.`
-        : `Arasya Rent Car melayani sewa mobil dengan driver di kota-kota berikut, dan perjalanan antar kota maupun antarprovinsi ke mana pun tujuan Anda. Tarif dalam kota 12 jam mulai ${rupiah(min)}.`}</p>
+        ? `Arasya Rent Car provides cars with drivers in the cities below, and drives between cities and across provinces to wherever you need to go.${fromText ? ` ${fromText}; each city page lists its own rates.` : ''}`
+        : `Arasya Rent Car melayani sewa mobil dengan driver di kota-kota berikut, dan perjalanan antar kota maupun antarprovinsi ke mana pun tujuan Anda.${fromText ? ` ${fromText}; tarif tiap kota ada di halaman kotanya.` : ''}`}</p>
     </div>
   </section>
   <section class="section" style="padding-top:28px">

@@ -39,13 +39,21 @@ export const car = defineType({
       type: 'number',
       validation: (r) => r.min(1).max(60),
     }),
+    // Kept read-only so the old values stay visible in the Studio; the website no longer reads them.
     defineField({
       name: 'priceCity',
       title: 'Tarif Dalam Kota 12 jam (Rp)',
       type: 'number',
-      description: 'Kosongkan bila harga sesuai permintaan.',
+      description: 'Tidak dipakai lagi: harga diambil dari Daftar Harga di dashboard.',
+      readOnly: true,
     }),
-    defineField({ name: 'priceAllIn', title: 'Tarif All-in (Rp)', type: 'number' }),
+    defineField({
+      name: 'priceAllIn',
+      title: 'Tarif All-in (Rp)',
+      type: 'number',
+      description: 'Tidak dipakai lagi: harga diambil dari Daftar Harga di dashboard.',
+      readOnly: true,
+    }),
     defineField({ name: 'badge', title: 'Label (mis. Terpopuler)', type: 'string' }),
     defineField({ name: 'description', title: 'Keterangan singkat', type: 'text', rows: 2 }),
     defineField({

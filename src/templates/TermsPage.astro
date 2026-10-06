@@ -1,8 +1,8 @@
 ---
 /**
  * /ketentuan-pemesanan: how booking, rates, payment and cancellation work,
- * in one place. Everything is drawn from site settings, so it never drifts
- * from what the other pages say.
+ * in one place. Rates come from the published price list and the rest from
+ * site settings, so it never drifts from what the other pages say.
  */
 import Base from '../layouts/Base.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
@@ -15,12 +15,13 @@ import { withPolicy } from '../lib/faq';
 import { ui, type Lang } from '../lib/i18n';
 import { paths } from '../lib/paths';
 import { breadcrumbs, faqPage } from '../lib/schema';
+import { isAllInZone, publishedDate, siteZones, zoneArea, type PriceZone } from '../lib/prices';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const en = lang === 'en';
 const t = ui(lang);
-const { settings } = await getContent(lang);
+const { settings, prices } = await getContent(lang);
 const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
 const path = paths.terms(lang);
 const title = en ? 'Booking terms' : 'Ketentuan pemesanan';
@@ -39,11 +40,34 @@ const steps = en
       ['Bayar DP', `Setelah invoice terbit, transfer DP 20%${bank ? ` ke ${bank.bank} ${bank.number} ${bank.owner}` : ''}.`],
       ['Bertemu driver', 'Pelunasan dilakukan saat driver bertemu Anda sebelum keberangkatan, tunai atau transfer.'],
     ];
-const rates = [
-  settings.rateNotes?.city && [en ? '12 hours in town' : 'Tarif Dalam Kota 12 jam', settings.rateNotes.city],
-  settings.rateNotes?.allIn && ['All-in', settings.rateNotes.allIn],
-  [en ? 'Extra hours' : 'Kelebihan jam', en ? 'Hours beyond the package, or past 23:00, cost 10% of the full-day rate per hour.' : 'Pemakaian melebihi durasi paket atau lewat pukul 23.00 dikenakan 10% dari tarif Fullday per jam.'],
-].filter(Boolean) as string[][];
+// Rates from the price list: one row per package (tables with the same texts
+// grouped, with their areas), then driver costs, overtime and durations.
+const packages = new Map<string, PriceZone[]>();
+for (const z of siteZones(prices)) {
+  const key = [z.service_package, z.included, z.excluded].join('|');
+  packages.set(key, [...(packages.get(key) || []), z]);
+}
+const area = (z: PriceZone) => {
+  const note = t.zoneNote(z).trim().replace(/\.$/, '');
+  // "Perjalanan …" reads as "(perjalanan …)"; an acronym ("BBM …") keeps its case.
+  return note ? `${zoneArea(z, lang)} (${/^[A-Z][a-z]/.test(note) ? note.charAt(0).toLowerCase() + note.slice(1) : note})` : zoneArea(z, lang);
+};
+const extra = (code: string): [string, string[]][] => {
+  const e = prices.extras[code];
+  const value = e ? t.extraValue(code, e) : '';
+  return value ? [[t.extraLabel(code, e), [value]]] : [];
+};
+const overtime = prices.extras.OVERTIME;
+const rates: [string, string[]][] = [
+  ...[...packages.values()].map((zs): [string, string[]] => [
+    isAllInZone(zs[0]) ? t.pkgAllInTitle : t.pkgDriverTitle,
+    [`${t.included}: ${t.zoneIncluded(zs[0])}`, `${t.excluded}: ${t.zoneExcluded(zs[0])}`, `${t.zonesLbl}: ${zs.map(area).join('; ')}.`],
+  ]),
+  ...extra('DRIVER_MEAL'),
+  ...extra('DRIVER_LODGING'),
+  ...(overtime?.percent ? [[t.extraLabel('OVERTIME', overtime), [t.overtime(overtime.percent)]] as [string, string[]]] : []),
+  [t.durationLbl, [t.durations]],
+];
 const faq = withPolicy(
   en
     ? [
@@ -77,7 +101,8 @@ const faq = withPolicy(
       </div>
       <div class="block">
         <h2>{en ? 'Rates' : 'Tarif'}</h2>
-        <dl class="rates">{rates.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+        <dl class="rates">{rates.map(([k, v]) => <div><dt>{k}</dt><dd>{v.map((x) => <p>{x}</p>)}</dd></div>)}</dl>
+        <p class="muted small">{t.ratesPerCity} {t.ratesUpdated(publishedDate(prices, lang))}</p>
       </div>
       <PolicyNotice settings={settings} withLink={false} />
       <p class="verify"><Icon name="shield" size={18} />{en ? 'Only pay into our official company account.' : 'Pastikan pembayaran hanya ke rekening resmi perusahaan.'} <a href={paths.verify(lang)}>{en ? 'Check our official numbers & account →' : 'Cek nomor & rekening resmi →'}</a></p>
@@ -104,7 +129,8 @@ const faq = withPolicy(
   .rates div { display: grid; grid-template-columns: 220px 1fr; gap: 16px; padding: 14px 18px; }
   .rates div + div { border-top: 1px solid var(--line); }
   dt { font-weight: 700; color: var(--deep); }
-  dd { margin: 0; color: var(--body); }
+  dd { margin: 0; color: var(--body); display: grid; gap: 4px; }
+  .small { font-size: 0.9rem; }
   .verify { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; color: var(--body); }
   .verify :global(svg) { color: var(--blue); }
   .verify a { font-weight: 700; }

@@ -1,0 +1,46 @@
+---
+/**
+ * Notes under a price table, all from the published price list: what a table
+ * includes and excludes, the driver's meal and lodging costs (car + driver
+ * tables), and area surcharges when the caller passes them. With `shared`:
+ * the rules that apply to every table (overtime, durations) and the date the
+ * list was published.
+ */
+import type { Lang } from '../lib/i18n';
+import { ui } from '../lib/i18n';
+import { isDriverZone, publishedDate, type PriceSnapshot, type PriceSurcharge, type PriceZone } from '../lib/prices';
+
+interface Props { prices: PriceSnapshot; lang: Lang; zone?: PriceZone | null; title?: string; surcharges?: PriceSurcharge[]; cityName?: string; shared?: boolean }
+const { prices, lang, zone, title, surcharges = [], cityName = '', shared = false } = Astro.props;
+const t = ui(lang);
+const driverExtras = zone && isDriverZone(zone)
+  ? ['DRIVER_MEAL', 'DRIVER_LODGING'].flatMap((code) => {
+      const e = prices.extras[code];
+      const value = e ? t.extraValue(code, e) : '';
+      return value ? [`${t.extraLabel(code, e)}: ${value}`] : [];
+    })
+  : [];
+const overtime = prices.extras.OVERTIME;
+---
+{zone && (
+  <div class="notes muted">
+    {title && <p class="ttl">{title}</p>}
+    <p><b>{t.included}:</b> {t.zoneIncluded(zone)}</p>
+    <p><b>{t.excluded}:</b> {t.zoneExcluded(zone)}</p>
+    {driverExtras.map((x) => <p>{x}</p>)}
+    {surcharges.length > 0 && <p>{t.surcharges(cityName, surcharges)}</p>}
+  </div>
+)}
+{shared && (
+  <div class="notes muted">
+    {overtime?.percent ? <p>{t.extraLabel('OVERTIME', overtime)}: {t.overtime(overtime.percent)}</p> : null}
+    <p>{t.durations}</p>
+    <p>{t.ratesUpdated(publishedDate(prices, lang))}</p>
+  </div>
+)}
+
+<style>
+  .notes { display: grid; gap: 4px; font-size: 0.9rem; }
+  .notes b { color: var(--deep); font-weight: 600; }
+  .ttl { font-weight: 700; color: var(--deep); }
+</style>

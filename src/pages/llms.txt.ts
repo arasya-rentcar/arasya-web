@@ -6,15 +6,48 @@
 import type { APIRoute } from 'astro';
 import { getContent } from '../lib/content';
 import { rupiah } from '../lib/format';
+import { ui } from '../lib/i18n';
 import { paths } from '../lib/paths';
+import { allInZones, cheapest, cityTables, driverZones, fromPrices, publishedDate, surchargesFor, zoneArea, type PriceZone } from '../lib/prices';
 import { cityIsIndexable } from '../lib/quality';
 
 export const GET: APIRoute = async ({ site }) => {
-  const { settings, cars, cities, services, posts } = await getContent('id');
+  const { settings, cars, cities, services, posts, prices } = await getContent('id');
   const en = await getContent('en');
   const travel = services.find((s) => s.template === 'travel');
   const originName = (k: string) => travel?.origins?.find((o) => o.key === k)?.name || k;
   const base = (site?.toString() || settings.siteUrl).replace(/\/$/, '');
+  const t = ui('id');
+  const slugs = cars.map((c) => c.slug.current);
+  const carName = (slug: string) => cars.find((c) => c.slug.current === slug)?.name || slug;
+  // Prices from the published price list: "mulai" per 12 hours, always with the area they apply to.
+  const fromLine = (carSlugs: string[]) => {
+    const from = fromPrices(prices, carSlugs);
+    return [
+      from.driver && t.fromDriver(rupiah(from.driver.amount), zoneArea(from.driver.zone, 'id')),
+      from.allIn && t.fromAllIn(rupiah(from.allIn.amount), zoneArea(from.allIn.zone, 'id')),
+    ].filter(Boolean).join('; ');
+  };
+  const pkgLine = (title: string, zone: PriceZone | undefined) =>
+    zone ? `- Paket ${title}. ${t.included}: ${t.zoneIncluded(zone)} ${t.excluded}: ${t.zoneExcluded(zone)}` : '';
+  const extraLine = (code: string) => {
+    const e = prices.extras[code];
+    const value = e ? t.extraValue(code, e) : '';
+    return value ? `- ${t.extraLabel(code, e)}: ${value}` : '';
+  };
+  const cityLine = (c: (typeof cities)[number]) => {
+    const tables = cityTables(prices, c);
+    const link = `[Sewa mobil ${c.name}](${base}/${c.slug.current})`;
+    if (tables.quote) return `- ${link}: penawaran per perjalanan dalam Rupiah, tanpa tabel harga.`;
+    const driver = tables.driver && cheapest(prices, [tables.driver], slugs);
+    const allIn = tables.allIn && cheapest(prices, [tables.allIn], slugs);
+    const surcharges = surchargesFor(tables.allIn, c.name);
+    return `- ${link}: ${[
+      driver ? `mobil + supir mulai ${rupiah(driver.amount)} / 12 jam (${carName(driver.slug)})` : '',
+      allIn ? `all-in mulai ${rupiah(allIn.amount)} / 12 jam (${carName(allIn.slug)})` : '',
+    ].filter(Boolean).join(', ') || 'tarif dikonfirmasi admin'}.${surcharges.length ? ` ${t.surcharges(c.name, surcharges)}` : ''}`;
+  };
+  const overtime = prices.extras.OVERTIME;
   const lines = [
     `# ${settings.brandName}`,
     '',
@@ -28,12 +61,20 @@ export const GET: APIRoute = async ({ site }) => {
     `- Waspada penipuan: pembayaran hanya ke rekening atas nama ${settings.legalName}; nomor resmi hanya yang tercantum di atas. Verifikasi: ${base}/rekening-resmi`,
     ...(settings.cancellationPolicy?.items || []).map((it) => `- Pembatalan (${it.when}): ${it.fee}`),
     `- Ketentuan pemesanan lengkap: ${base}/ketentuan-pemesanan`,
-    settings.rateNotes?.city ? `- Tarif Dalam Kota: ${settings.rateNotes.city}` : '',
-    settings.rateNotes?.allIn ? `- Tarif All-in: ${settings.rateNotes.allIn}` : '',
+    pkgLine(t.pkgDriverTitle, driverZones(prices)[0]),
+    pkgLine(t.pkgAllInTitle, allInZones(prices)[0]),
+    extraLine('DRIVER_MEAL'),
+    extraLine('DRIVER_LODGING'),
+    overtime?.percent ? `- ${t.extraLabel('OVERTIME', overtime)}: ${t.overtime(overtime.percent)}` : '',
+    `- ${t.durationLbl}: ${t.durations}`,
+    `- Daftar harga resmi diterbitkan ${publishedDate(prices, 'id')}. Harga berbeda per kota; tabel lengkap ada di halaman tiap kota.`,
     '',
     '## Armada dan tarif (dengan driver)',
-    '- Daftar berikut adalah tipe unit yang paling sering dipesan; unit lain bisa di-request ke admin.',
-    ...cars.map((c) => `- [${c.name}](${base}${paths.car(c.slug.current, 'id')}) (${c.capacity ?? '?'} kursi termasuk driver): ${c.priceCity ? `${rupiah(c.priceCity)} per 12 jam dalam kota` : 'tarif sesuai permintaan'}${c.priceAllIn ? `, all-in ${rupiah(c.priceAllIn)}` : ''}`),
+    '- Daftar berikut adalah tipe unit yang paling sering dipesan; unit lain bisa di-request ke admin. Harga "mulai" per 12 jam, dengan wilayah tabelnya.',
+    ...cars.map((c) => `- [${c.name}](${base}${paths.car(c.slug.current, 'id')}) (${c.capacity ?? '?'} kursi termasuk driver): ${fromLine([c.slug.current]) || 'tarif sesuai permintaan'}`),
+    '',
+    '## Tarif per kota (per 12 jam)',
+    ...cities.filter(cityIsIndexable).map(cityLine),
     ...(travel?.routes?.length
       ? [
           '',

@@ -30,7 +30,7 @@ const content = await getContent(lang);
 const site = (Astro.site?.toString() || content.settings.siteUrl).replace(/\/$/, '');
 const abs = (p: string) => site + (p === '/' ? '' : p);
 const canonical = abs(path);
-const org = { ...organization(content.settings, site, content.cities.map((c) => c.name)), priceRange: priceRange(content.cars) };
+const org = { ...organization(content.settings, site, content.cities.map((c) => c.name)), priceRange: priceRange(content.prices, content.cars) };
 const ld = graph({ '@type': 'WebSite', '@id': `${site}/#website`, url: site, name: content.settings.brandName, inLanguage: ['id-ID', 'en'] }, org, { '@type': 'WebPage', '@id': canonical, url: canonical, name: title, inLanguage: bcp47(lang), isPartOf: { '@id': `${site}/#website` } }, ...jsonld);
 // Analytics IDs are set in the Studio (Pengaturan situs → Analitik); env vars are a fallback.
 const ga4 = content.settings.analytics?.ga4Id?.trim() || import.meta.env.PUBLIC_GA4_ID;

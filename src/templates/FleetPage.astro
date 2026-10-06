@@ -11,29 +11,36 @@ import { rupiah } from '../lib/format';
 import { listJoin, ui, type Lang } from '../lib/i18n';
 import { paths } from '../lib/paths';
 import { breadcrumbs, offerCatalog } from '../lib/schema';
+import { dearest, fromPrices, zoneArea } from '../lib/prices';
 import { refSlug, waHref } from '../lib/wa';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const en = lang === 'en';
 const t = ui(lang);
-const { settings, cars } = await getContent(lang);
+const { settings, cars, prices } = await getContent(lang);
 const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
 const path = paths.fleet(lang);
 const crumbs = [{ name: t.home, path: paths.home(lang) }, { name: en ? 'Fleet' : 'Armada', path }];
 const cats = [...new Set(cars.map((c) => c.category))];
-const priced = cars.filter((c) => c.priceCity).sort((a, b) => a.priceCity! - b.priceCity!);
-const lo = priced[0], hi = priced[priced.length - 1];
 const catList = listJoin(cats.map((c) => t.category[c]), lang);
-const answer = en
-  ? `Every car comes with a driver, across ${catList}. Twelve hours in town costs from ${rupiah(lo.priceCity!)} (${lo.name}) to ${rupiah(hi.priceCity!)} (${hi.name}). These are our most-booked types; ask us for anything else.`
-  : `Semua unit disewakan bersama driver, dari ${listJoin(cats.map((c) => t.category[c]), lang)}. Tarif dalam kota 12 jam mulai ${rupiah(lo.priceCity!)} (${lo.name}) sampai ${rupiah(hi.priceCity!)} (${hi.name}). Yang tampil di sini adalah tipe unit yang paling sering dipesan; unit lain bisa di-request ke admin.`;
+// Range within one table (the cheapest car + driver table, Jabodetabek), so "from … to …" compares like with like.
+const slugs = cars.map((c) => c.slug.current);
+const siteFrom = fromPrices(prices, slugs);
+const lo = siteFrom.driver;
+const hi = lo ? dearest(prices, [lo.zone], slugs) : null;
+const carName = (slug: string) => cars.find((c) => c.slug.current === slug)?.name || slug;
+const answer = t.fleetAnswer({
+  cats: catList,
+  range: lo && hi ? { lo: rupiah(lo.amount), loCar: carName(lo.slug), hi: rupiah(hi.amount), hiCar: carName(hi.slug), area: zoneArea(lo.zone, lang) } : undefined,
+  allIn: siteFrom.allIn ? { price: rupiah(siteFrom.allIn.amount), area: zoneArea(siteFrom.allIn.zone, lang) } : undefined,
+});
 const title = en ? 'Fleet & Rates: Car Rental with Driver in Indonesia | Arasya Rent Car' : 'Armada & Tarif Sewa Mobil dengan Driver — Arasya Rent Car';
 const description = en
   ? 'Cars with a professional driver: Avanza, Xpander, Innova, Zenix, Fortuner, Alphard, Hiace and more. Compare seats and 12-hour or all-in rates.'
   : 'Sewa mobil dengan driver: Avanza, Xpander, Innova, Zenix, Fortuner, Alphard, Hiace, dan unit lainnya. Bandingkan kapasitas dan tarif 12 jam atau all-in.';
 ---
-<Base title={title} description={description} path={path} alternates={{ id: '/armada', en: '/en/fleet' }} jsonld={[{ '@type': 'ItemList', name: en ? 'Arasya fleet' : 'Armada Arasya', itemListElement: cars.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, url: site + paths.car(c.slug.current, lang) })) }, { '@id': `${site}/#business`, hasOfferCatalog: offerCatalog(cars, site, en ? 'Fleet rates' : 'Tarif armada', lang) }, breadcrumbs(site, crumbs)]} waRef={en ? 'EN-ARM-fab' : 'ARM-fab'}>
+<Base title={title} description={description} path={path} alternates={{ id: '/armada', en: '/en/fleet' }} jsonld={[{ '@type': 'ItemList', name: en ? 'Arasya fleet' : 'Armada Arasya', itemListElement: cars.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, url: site + paths.car(c.slug.current, lang) })) }, { '@id': `${site}/#business`, hasOfferCatalog: offerCatalog(cars, prices, site, en ? 'Fleet rates' : 'Tarif armada', lang) }, breadcrumbs(site, crumbs)]} waRef={en ? 'EN-ARM-fab' : 'ARM-fab'}>
   <section class="head">
     <div class="wrap stack">
       <Breadcrumbs items={crumbs} />
@@ -53,7 +60,9 @@ const description = en
         <div class="cat" id={cat}>
           <h2>{t.category[cat]}</h2>
           <div class="list">
-            {cars.filter((c) => c.category === cat).map((c) => (
+            {cars.filter((c) => c.category === cat).map((c) => {
+              const from = fromPrices(prices, [c.slug.current]);
+              return (
               <article class="item" id={c.slug.current}>
                 <a class="ph" href={paths.car(c.slug.current, lang)} tabindex="-1" aria-hidden="true"><CarImage car={c} sizes="(max-width: 760px) 90vw, 240px" /></a>
                 <div class="info">
@@ -63,20 +72,22 @@ const description = en
                   <a class="more" href={paths.car(c.slug.current, lang)}>{en ? `About the ${c.name} →` : `Detail ${c.name} →`}</a>
                 </div>
                 <div class="buy">
-                  {c.priceCity ? <><small>{t.per12h}</small><b class="num">{rupiah(c.priceCity)}</b></> : <><small>{t.rate}</small><b>{t.askAdmin}</b></>}
-                  {c.priceAllIn && <small class="num">{t.allIn} {rupiah(c.priceAllIn)}</small>}
+                  {from.driver
+                    ? <><small>{t.fromLbl(t.pkgDriver, zoneArea(from.driver.zone, lang))}</small><b class="num">{rupiah(from.driver.amount)}<small>{t.per12}</small></b></>
+                    : <><small>{t.rate}</small><b>{t.askAdmin}</b></>}
+                  {from.allIn && <small class="num">{t.fromLbl(t.allIn, zoneArea(from.allIn.zone, lang))} {rupiah(from.allIn.amount)}</small>}
                   <a class="btn btn-outline" href={waHref(settings.waPhone, t.waRent(c.name), `${en ? 'EN-' : ''}ARM-${refSlug(c.name)}`)} data-cta={`arm-${refSlug(c.name)}`} rel="nofollow"><Icon name="wa" />{en ? 'Book on WhatsApp' : 'Pesan via WA'}</a>
                 </div>
               </article>
-            ))}
+              );
+            })}
           </div>
         </div>
       ))}
       <BrochureCatalog cars={cars} lang={lang} />
       <UnitRequest settings={settings} waRef={en ? 'EN-ARM-request' : 'ARM-request'} />
       <div class="notes muted">
-        {settings.rateNotes?.city && <p>{settings.rateNotes.city}</p>}
-        {settings.rateNotes?.allIn && <p>{settings.rateNotes.allIn}</p>}
+        <p>{t.ratesPerCity} <a href={paths.terms(lang)}>{t.termsLink}</a></p>
       </div>
     </div>
   </section>
@@ -110,6 +121,7 @@ const description = en
   .buy { display: grid; gap: 4px; justify-items: end; text-align: right; }
   .buy small { color: var(--soft); font-size: 0.8rem; }
   .buy b { font: 800 1.4rem/1.1 var(--display); color: var(--deep); }
+  .buy b small { font: 600 0.8rem/1 var(--text); color: var(--soft); margin-left: 3px; display: inline-block; white-space: nowrap; }
   .buy .btn { margin-top: 8px; }
   .notes { display: grid; gap: 4px; font-size: 0.9rem; margin-top: 16px; }
   @media (max-width: 760px) {

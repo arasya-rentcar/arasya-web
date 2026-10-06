@@ -9,10 +9,16 @@
  * If Sanity can't be reached (or the dataset is still empty) the build falls
  * back to src/data/seed.json, which has the same document shape. Set
  * CONTENT_STRICT=1 in production to turn that fallback into a build failure.
+ *
+ * Prices come from the API instead: the official price list the dashboard
+ * publishes ("Terbitkan", which also calls the deploy hook), fetched once per
+ * build alongside Sanity. See fetchPrices().
  */
 import { createClient } from '@sanity/client';
 import seed from '../data/seed.json';
+import fallbackPrices from '../data/prices.json';
 import { localize, type Lang } from './i18n';
+import { parseSnapshot, type PriceSnapshot } from './prices';
 
 export const SANITY_PROJECT_ID = 'w5eya3q9';
 export const SANITY_DATASET = 'production';
@@ -29,7 +35,9 @@ export interface Car {
   slug: Slug;
   category: 'mpv' | 'mpv-premium' | 'suv' | 'premium' | 'van';
   capacity?: number;
+  /** No longer shown: prices come from the published price list (Content.prices). */
   priceCity?: number | null;
+  /** No longer shown: prices come from the published price list (Content.prices). */
   priceAllIn?: number | null;
   badge?: string | null;
   description?: string;
@@ -70,6 +78,7 @@ export interface Settings {
   fraudWarning?: { title?: string; text?: string; points?: string[] };
   cancellationPolicy?: { title?: string; intro?: string; items?: { when: string; fee: string; text?: string }[]; closing?: string };
   analytics?: { ga4Id?: string; gtmId?: string };
+  /** No longer shown: the price list's table texts and extras replace these notes. */
   rateNotes?: { city?: string; allIn?: string };
   trust: TitledText[];
   testimonials: { quote: string; name: string; context?: string; link?: string }[];
@@ -158,6 +167,9 @@ export interface HomePage { seo?: Seo; hero: Hero; featuredCars?: Car[]; en?: an
 export interface Content {
   lang: Lang;
   source: 'sanity' | 'seed';
+  /** The published price list (same for both languages). */
+  prices: PriceSnapshot;
+  pricesSource: 'api' | 'fallback';
   settings: Settings;
   home: HomePage;
   cars: Car[];
@@ -194,6 +206,43 @@ async function fetchDocs(): Promise<{ docs: Doc[]; source: Content['source'] }> 
   return { docs: seed as Doc[], source: 'seed' };
 }
 
+const PRICES_TIMEOUT_MS = 15_000;
+
+/**
+ * The last price list published from the dashboard: GET
+ * {API}/api/v1/public/prices (404 until the first publication). The API base
+ * is PRICES_API_URL (local testing) or PUBLIC_LEADS_API (.env.production).
+ *
+ * Strict on Vercel production (VERCEL_ENV=production) and with
+ * CONTENT_STRICT=1: any failure fails the build, so the previous deployment
+ * stays live instead of shipping stale prices. Elsewhere (CI, previews, local)
+ * it falls back to src/data/prices.json, the seed list of 6 Oct 2026.
+ */
+async function fetchPrices(): Promise<{ prices: PriceSnapshot; source: Content['pricesSource'] }> {
+  const strict = process.env.VERCEL_ENV === 'production' || process.env.CONTENT_STRICT === '1';
+  const base = String(process.env.PRICES_API_URL || import.meta.env.PUBLIC_LEADS_API || '').trim().replace(/\/+$/, '');
+  const url = base ? `${base}/api/v1/public/prices` : '';
+  try {
+    if (!url) throw new Error('PRICES_API_URL dan PUBLIC_LEADS_API kosong');
+    const res = await fetch(url, { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(PRICES_TIMEOUT_MS) });
+    if (!res.ok) throw new Error(`HTTP ${res.status}${res.status === 404 ? ' (daftar harga belum pernah diterbitkan, atau URL API salah)' : ''}`);
+    const body = await res.json().catch(() => null);
+    const prices = parseSnapshot(body?.data);
+    console.log(`[content] Daftar harga dari API (${url}), diterbitkan ${prices.published_at}`);
+    return { prices, source: 'api' };
+  } catch (err) {
+    const e = err as Error & { cause?: { code?: string; message?: string } };
+    const cause = e.cause?.code || e.cause?.message;
+    const why = e.name === 'TimeoutError' ? `tidak menjawab dalam ${PRICES_TIMEOUT_MS / 1000} detik` : cause ? `${e.message} (${cause})` : e.message;
+    const msg = `[content] Daftar harga tidak bisa diambil dari ${url || 'API'}: ${why}`;
+    if (strict) throw new Error(`${msg}. Build dihentikan (VERCEL_ENV=production / CONTENT_STRICT=1) supaya deployment sebelumnya tetap tayang.`);
+    console.warn(`${msg}; memakai src/data/prices.json`);
+  }
+  const prices = parseSnapshot(fallbackPrices);
+  console.warn(`[content] PERINGATAN: harga dari src/data/prices.json (diterbitkan ${prices.published_at}), bukan dari daftar harga terbaru di dashboard`);
+  return { prices, source: 'fallback' };
+}
+
 /** Replace {_ref} objects with the referenced document, recursively. */
 function resolve(value: any, byId: Map<string, Doc>, depth = 0): any {
   if (depth > 4 || value == null || typeof value !== 'object') return value;
@@ -227,7 +276,14 @@ const cache = new Map<Lang, Promise<Content>>();
 
 function load(): Promise<Content> {
   raw ??= (async () => {
-    const { docs, source } = await fetchDocs();
+    // Both at once; in strict mode every failure is reported, not just the first.
+    const [docsResult, pricesResult] = await Promise.allSettled([fetchDocs(), fetchPrices()]);
+    if (docsResult.status === 'rejected' || pricesResult.status === 'rejected') {
+      const reasons = [docsResult, pricesResult].flatMap((r) => (r.status === 'rejected' ? [(r.reason as Error)?.message || String(r.reason)] : []));
+      throw new Error(reasons.join('\n'));
+    }
+    const { docs, source } = docsResult.value;
+    const { prices, source: pricesSource } = pricesResult.value;
     const byId = new Map(docs.map((d) => [d._id, d]));
     const of = <T>(type: string): T[] =>
       docs.filter((d) => d._type === type).map((d) => resolve(d, byId) as T);
@@ -245,6 +301,8 @@ function load(): Promise<Content> {
     return {
       lang: 'id' as Lang,
       source,
+      prices,
+      pricesSource,
       settings: one<Settings>('siteSettings'),
       home,
       cars: of<Car>('car').sort((a, b) => (a.order ?? 100) - (b.order ?? 100) || a.name.localeCompare(b.name)),

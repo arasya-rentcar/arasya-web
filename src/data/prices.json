@@ -1,0 +1,695 @@
+{
+  "version": 1,
+  "published_at": "2026-10-06T00:00:00.000Z",
+  "cars": [
+    {
+      "slug": "toyota-avanza",
+      "name": "Toyota Avanza",
+      "price_class": "Avanza sekelas"
+    },
+    {
+      "slug": "suzuki-ertiga",
+      "name": "Suzuki Ertiga",
+      "price_class": "Avanza sekelas"
+    },
+    {
+      "slug": "mitsubishi-xpander",
+      "name": "Mitsubishi Xpander",
+      "price_class": "Veloz/Xpander"
+    },
+    {
+      "slug": "daihatsu-terios",
+      "name": "Daihatsu Terios",
+      "price_class": "Veloz/Xpander"
+    },
+    {
+      "slug": "toyota-rush",
+      "name": "Toyota Rush",
+      "price_class": "Veloz/Xpander"
+    },
+    {
+      "slug": "toyota-innova-reborn",
+      "name": "Toyota Innova Reborn",
+      "price_class": "Innova Reborn"
+    },
+    {
+      "slug": "toyota-zenix",
+      "name": "Toyota Zenix",
+      "price_class": "Innova Zenix"
+    },
+    {
+      "slug": "toyota-innova-venturer",
+      "name": "Toyota Innova Venturer",
+      "price_class": "Innova Zenix"
+    },
+    {
+      "slug": "toyota-zenix-q-hybrid-modellista",
+      "name": "Toyota Zenix Q Hybrid Modellista",
+      "price_class": "Innova Zenix Q"
+    },
+    {
+      "slug": "toyota-fortuner",
+      "name": "Toyota Fortuner",
+      "price_class": "Fortuner/Pajero"
+    },
+    {
+      "slug": "toyota-hiace-commuter",
+      "name": "Toyota Hiace Commuter",
+      "price_class": null
+    },
+    {
+      "slug": "toyota-hiace-premio",
+      "name": "Toyota Hiace Premio",
+      "price_class": null
+    },
+    {
+      "slug": "toyota-alphard",
+      "name": "Toyota Alphard",
+      "price_class": null
+    },
+    {
+      "slug": "isuzu-elf-long",
+      "name": "Isuzu Elf Long",
+      "price_class": null
+    }
+  ],
+  "zones": [
+    {
+      "code": "JABODETABEK",
+      "name": "Mobil + Supir Jabodetabek",
+      "service_package": "XOPS",
+      "included": "Mobil dan supir.",
+      "excluded": "BBM, tol, parkir/tiket masuk wisata, dan makan supir. Tip supir seikhlasnya.",
+      "note": null,
+      "default_for_unlisted": false,
+      "rates": {
+        "toyota-avanza": {
+          "12H": 500000,
+          "FULLDAY": 700000
+        },
+        "suzuki-ertiga": {
+          "12H": 500000,
+          "FULLDAY": 700000
+        },
+        "mitsubishi-xpander": {
+          "12H": 600000,
+          "FULLDAY": 800000
+        },
+        "daihatsu-terios": {
+          "12H": 600000,
+          "FULLDAY": 800000
+        },
+        "toyota-rush": {
+          "12H": 600000,
+          "FULLDAY": 800000
+        },
+        "toyota-innova-reborn": {
+          "12H": 700000,
+          "FULLDAY": 900000
+        },
+        "toyota-zenix": {
+          "12H": 1000000,
+          "FULLDAY": 1300000
+        },
+        "toyota-innova-venturer": {
+          "12H": 1000000,
+          "FULLDAY": 1300000
+        },
+        "toyota-zenix-q-hybrid-modellista": {
+          "12H": 1400000,
+          "FULLDAY": 1700000
+        },
+        "toyota-fortuner": {
+          "12H": 1600000,
+          "FULLDAY": 1900000
+        },
+        "toyota-hiace-commuter": {
+          "12H": 1500000,
+          "FULLDAY": null
+        },
+        "toyota-hiace-premio": {
+          "12H": null,
+          "FULLDAY": null
+        },
+        "toyota-alphard": {
+          "12H": null,
+          "FULLDAY": null
+        },
+        "isuzu-elf-long": {
+          "12H": null,
+          "FULLDAY": null
+        }
+      },
+      "surcharges": []
+    },
+    {
+      "code": "LUAR_KOTA",
+      "name": "Mobil + Supir Luar Jabodetabek / Luar Kota",
+      "service_package": "XOPS",
+      "included": "Mobil dan supir.",
+      "excluded": "BBM, tol, parkir/tiket masuk wisata, dan makan supir. Tip supir seikhlasnya.",
+      "note": "Perjalanan luar kota yang selesai di kota awal, dan pemakaian di kota di luar Jabodetabek.",
+      "default_for_unlisted": true,
+      "rates": {
+        "toyota-avanza": {
+          "12H": 700000,
+          "FULLDAY": 900000
+        },
+        "suzuki-ertiga": {
+          "12H": 700000,
+          "FULLDAY": 900000
+        },
+        "mitsubishi-xpander": {
+          "12H": 800000,
+          "FULLDAY": 1000000
+        },
+        "daihatsu-terios": {
+          "12H": 800000,
+          "FULLDAY": 1000000
+        },
+        "toyota-rush": {
+          "12H": 800000,
+          "FULLDAY": 1000000
+        },
+        "toyota-innova-reborn": {
+          "12H": 900000,
+          "FULLDAY": 1100000
+        },
+        "toyota-zenix": {
+          "12H": 1200000,
+          "FULLDAY": 1500000
+        },
+        "toyota-innova-venturer": {
+          "12H": 1200000,
+          "FULLDAY": 1500000
+        },
+        "toyota-zenix-q-hybrid-modellista": {
+          "12H": 1500000,
+          "FULLDAY": 1800000
+        },
+        "toyota-fortuner": {
+          "12H": 1700000,
+          "FULLDAY": 2000000
+        },
+        "toyota-hiace-commuter": {
+          "12H": null,
+          "FULLDAY": null
+        },
+        "toyota-hiace-premio": {
+          "12H": null,
+          "FULLDAY": null
+        },
+        "toyota-alphard": {
+          "12H": null,
+          "FULLDAY": null
+        },
+        "isuzu-elf-long": {
+          "12H": null,
+          "FULLDAY": null
+        }
+      },
+      "surcharges": []
+    },
+    {
+      "code": "JAKARTA",
+      "name": "All-in Jakarta",
+      "service_package": "ALL-IN X PARKIR",
+      "included": "Mobil, supir, BBM, tol, dan makan supir.",
+      "excluded": "Parkir/tiket masuk wisata. Tip supir seikhlasnya.",
+      "note": null,
+      "default_for_unlisted": false,
+      "rates": {
+        "toyota-avanza": {
+          "12H": 750000,
+          "FULLDAY": 950000
+        },
+        "suzuki-ertiga": {
+          "12H": 750000,
+          "FULLDAY": 950000
+        },
+        "mitsubishi-xpander": {
+          "12H": 850000,
+          "FULLDAY": 1100000
+        },
+        "daihatsu-terios": {
+          "12H": 850000,
+          "FULLDAY": 1100000
+        },
+        "toyota-rush": {
+          "12H": 850000,
+          "FULLDAY": 1100000
+        },
+        "toyota-innova-reborn": {
+          "12H": 1000000,
+          "FULLDAY": 1250000
+        },
+        "toyota-zenix": {
+          "12H": 1300000,
+          "FULLDAY": 1600000
+        },
+        "toyota-innova-venturer": {
+          "12H": 1300000,
+          "FULLDAY": 1600000
+        },
+        "toyota-zenix-q-hybrid-modellista": {
+          "12H": 1700000,
+          "FULLDAY": 2100000
+        },
+        "toyota-fortuner": {
+          "12H": null,
+          "FULLDAY": null
+        },
+        "toyota-hiace-commuter": {
+          "12H": null,
+          "FULLDAY": null
+        },
+        "toyota-hiace-premio": {
+          "12H": null,
+          "FULLDAY": null
+        },
+        "toyota-alphard": {
+          "12H": null,
+          "FULLDAY": null
+        },
+        "isuzu-elf-long": {
+          "12H": null,
+          "FULLDAY": null
+        }
+      },
+      "surcharges": [
+        {
+          "area": "Tangerang",
+          "amount": 200000
+        },
+        {
+          "area": "Bekasi",
+          "amount": 100000
+        },
+        {
+          "area": "Cikarang",
+          "amount": 200000
+        },
+        {
+          "area": "Depok",
+          "amount": 100000
+        },
+        {
+          "area": "Bogor",
+          "amount": 100000
+        },
+        {
+          "area": "Puncak",
+          "amount": 200000
+        }
+      ]
+    },
+    {
+      "code": "BANDUNG",
+      "name": "All-in Bandung",
+      "service_package": "ALL-IN X PARKIR",
+      "included": "Mobil, supir, BBM, tol, dan makan supir.",
+      "excluded": "Parkir/tiket masuk wisata. Tip supir seikhlasnya.",
+      "note": null,
+      "default_for_unlisted": false,
+      "rates": {
+        "toyota-avanza": {
+          "12H": 850000,
+          "FULLDAY": 1100000
+        },
+        "suzuki-ertiga": {
+          "12H": 850000,
+          "FULLDAY": 1100000
+        },
+        "mitsubishi-xpander": {
+          "12H": 950000,
+          "FULLDAY": 1200000
+        },
+        "daihatsu-terios": {
+          "12H": 950000,
+          "FULLDAY": 1200000
+        },
+        "toyota-rush": {
+          "12H": 950000,
+          "FULLDAY": 1200000
+        },
+        "toyota-innova-reborn": {
+          "12H": 1100000,
+          "FULLDAY": 1350000
+        },
+        "toyota-zenix": {
+          "12H": 1400000,
+          "FULLDAY": 1700000
+        },
+        "toyota-innova-venturer": {
+          "12H": 1400000,
+          "FULLDAY": 1700000
+        },
+        "toyota-zenix-q-hybrid-modellista": {
+          "12H": 1800000,
+          "FULLDAY": 2200000
+        },
+        "toyota-fortuner": {
+          "12H": null,
+          "FULLDAY": null
+        },
+        "toyota-hiace-commuter": {
+          "12H": null,
+          "FULLDAY": null
+        },
+        "toyota-hiace-premio": {
+          "12H": null,
+          "FULLDAY": null
+        },
+        "toyota-alphard": {
+          "12H": null,
+          "FULLDAY": null
+        },
+        "isuzu-elf-long": {
+          "12H": null,
+          "FULLDAY": null
+        }
+      },
+      "surcharges": [
+        {
+          "area": "Tangkuban Parahu",
+          "amount": 100000
+        },
+        {
+          "area": "Ciater",
+          "amount": 100000
+        },
+        {
+          "area": "Jatinangor",
+          "amount": 100000
+        },
+        {
+          "area": "Pangalengan",
+          "amount": 100000
+        }
+      ]
+    },
+    {
+      "code": "SURABAYA",
+      "name": "All-in Surabaya",
+      "service_package": "ALL-IN X PARKIR",
+      "included": "Mobil, supir, BBM, tol, dan makan supir.",
+      "excluded": "Parkir/tiket masuk wisata. Tip supir seikhlasnya.",
+      "note": "Juga dipakai kota lain yang belum punya tabel sendiri.",
+      "default_for_unlisted": true,
+      "rates": {
+        "toyota-avanza": {
+          "12H": 850000,
+          "FULLDAY": 1100000
+        },
+        "suzuki-ertiga": {
+          "12H": 850000,
+          "FULLDAY": 1100000
+        },
+        "mitsubishi-xpander": {
+          "12H": 950000,
+          "FULLDAY": 1200000
+        },
+        "daihatsu-terios": {
+          "12H": 950000,
+          "FULLDAY": 1200000
+        },
+        "toyota-rush": {
+          "12H": 950000,
+          "FULLDAY": 1200000
+        },
+        "toyota-innova-reborn": {
+          "12H": 1100000,
+          "FULLDAY": 1350000
+        },
+        "toyota-zenix": {
+          "12H": 1400000,
+          "FULLDAY": 1700000
+        },
+        "toyota-innova-venturer": {
+          "12H": 1400000,
+          "FULLDAY": 1700000
+        },
+        "toyota-zenix-q-hybrid-modellista": {
+          "12H": 1800000,
+          "FULLDAY": 2200000
+        },
+        "toyota-fortuner": {
+          "12H": null,
+          "FULLDAY": null
+        },
+        "toyota-hiace-commuter": {
+          "12H": null,
+          "FULLDAY": null
+        },
+        "toyota-hiace-premio": {
+          "12H": null,
+          "FULLDAY": null
+        },
+        "toyota-alphard": {
+          "12H": null,
+          "FULLDAY": null
+        },
+        "isuzu-elf-long": {
+          "12H": null,
+          "FULLDAY": null
+        }
+      },
+      "surcharges": [
+        {
+          "area": "Gresik",
+          "amount": 200000
+        },
+        {
+          "area": "Sidoarjo",
+          "amount": 150000
+        },
+        {
+          "area": "Prigen",
+          "amount": 250000
+        },
+        {
+          "area": "Mojokerto",
+          "amount": 250000
+        },
+        {
+          "area": "Kediri",
+          "amount": 500000
+        },
+        {
+          "area": "Pasuruan",
+          "amount": 400000
+        },
+        {
+          "area": "Malang",
+          "amount": 400000
+        },
+        {
+          "area": "Bromo",
+          "amount": 500000
+        },
+        {
+          "area": "Probolinggo",
+          "amount": 500000
+        }
+      ]
+    },
+    {
+      "code": "DROP_JABODETABEK",
+      "name": "Drop Only Jabodetabek",
+      "service_package": "ALL-IN X PARKIR",
+      "included": "Mobil, supir, BBM, dan tol untuk satu tujuan.",
+      "excluded": "Parkir. Tip supir seikhlasnya.",
+      "note": "Usulan, perlu konfirmasi owner.",
+      "default_for_unlisted": false,
+      "rates": {
+        "toyota-avanza": {
+          "DROP": 500000
+        },
+        "suzuki-ertiga": {
+          "DROP": 500000
+        },
+        "mitsubishi-xpander": {
+          "DROP": 600000
+        },
+        "daihatsu-terios": {
+          "DROP": 600000
+        },
+        "toyota-rush": {
+          "DROP": 600000
+        },
+        "toyota-innova-reborn": {
+          "DROP": 700000
+        },
+        "toyota-zenix": {
+          "DROP": 1000000
+        },
+        "toyota-innova-venturer": {
+          "DROP": 1000000
+        },
+        "toyota-zenix-q-hybrid-modellista": {
+          "DROP": 1400000
+        },
+        "toyota-fortuner": {
+          "DROP": 1600000
+        },
+        "toyota-hiace-commuter": {
+          "DROP": null
+        },
+        "toyota-hiace-premio": {
+          "DROP": null
+        },
+        "toyota-alphard": {
+          "DROP": null
+        },
+        "isuzu-elf-long": {
+          "DROP": null
+        }
+      },
+      "surcharges": []
+    }
+  ],
+  "cities": [
+    {
+      "slug": "sewa-mobil-bogor",
+      "name": "Bogor",
+      "driver_zone": "JABODETABEK",
+      "all_in_zone": "SURABAYA",
+      "quote": false
+    },
+    {
+      "slug": "sewa-mobil-jakarta",
+      "name": "Jakarta",
+      "driver_zone": "JABODETABEK",
+      "all_in_zone": "JAKARTA",
+      "quote": false
+    },
+    {
+      "slug": "sewa-mobil-bandung",
+      "name": "Bandung",
+      "driver_zone": "LUAR_KOTA",
+      "all_in_zone": "BANDUNG",
+      "quote": false
+    },
+    {
+      "slug": "sewa-mobil-bekasi",
+      "name": "Bekasi",
+      "driver_zone": "JABODETABEK",
+      "all_in_zone": "SURABAYA",
+      "quote": false
+    },
+    {
+      "slug": "sewa-mobil-depok",
+      "name": "Depok",
+      "driver_zone": "JABODETABEK",
+      "all_in_zone": "SURABAYA",
+      "quote": false
+    },
+    {
+      "slug": "sewa-mobil-tangerang",
+      "name": "Tangerang",
+      "driver_zone": "JABODETABEK",
+      "all_in_zone": "SURABAYA",
+      "quote": false
+    },
+    {
+      "slug": "sewa-mobil-cirebon",
+      "name": "Cirebon",
+      "driver_zone": "LUAR_KOTA",
+      "all_in_zone": "SURABAYA",
+      "quote": false
+    },
+    {
+      "slug": "sewa-mobil-pekalongan",
+      "name": "Pekalongan",
+      "driver_zone": "LUAR_KOTA",
+      "all_in_zone": "SURABAYA",
+      "quote": false
+    },
+    {
+      "slug": "sewa-mobil-semarang",
+      "name": "Semarang",
+      "driver_zone": "LUAR_KOTA",
+      "all_in_zone": "SURABAYA",
+      "quote": false
+    },
+    {
+      "slug": "sewa-mobil-solo",
+      "name": "Solo",
+      "driver_zone": "LUAR_KOTA",
+      "all_in_zone": "SURABAYA",
+      "quote": false
+    },
+    {
+      "slug": "sewa-mobil-jogja",
+      "name": "Jogja",
+      "driver_zone": "LUAR_KOTA",
+      "all_in_zone": "SURABAYA",
+      "quote": false
+    },
+    {
+      "slug": "sewa-mobil-madiun",
+      "name": "Madiun",
+      "driver_zone": "LUAR_KOTA",
+      "all_in_zone": "SURABAYA",
+      "quote": false
+    },
+    {
+      "slug": "sewa-mobil-surabaya",
+      "name": "Surabaya",
+      "driver_zone": "LUAR_KOTA",
+      "all_in_zone": "SURABAYA",
+      "quote": false
+    },
+    {
+      "slug": "sewa-mobil-malang",
+      "name": "Malang",
+      "driver_zone": "LUAR_KOTA",
+      "all_in_zone": "SURABAYA",
+      "quote": false
+    },
+    {
+      "slug": "sewa-mobil-singapura",
+      "name": "Singapura",
+      "driver_zone": null,
+      "all_in_zone": null,
+      "quote": true
+    },
+    {
+      "slug": "sewa-mobil-malaysia",
+      "name": "Malaysia",
+      "driver_zone": null,
+      "all_in_zone": null,
+      "quote": true
+    },
+    {
+      "slug": "sewa-mobil-thailand",
+      "name": "Thailand",
+      "driver_zone": null,
+      "all_in_zone": null,
+      "quote": true
+    }
+  ],
+  "extras": {
+    "DRIVER_LODGING": {
+      "label": "Inap supir",
+      "amount": 150000,
+      "percent": null,
+      "unit": "malam",
+      "note": "Perjalanan luar kota yang menginap."
+    },
+    "DRIVER_MEAL": {
+      "label": "Makan supir",
+      "amount": 100000,
+      "percent": null,
+      "unit": "hari",
+      "note": "Paket Mobil + Supir."
+    },
+    "OVERTIME": {
+      "label": "Overtime",
+      "amount": null,
+      "percent": 10,
+      "unit": "jam",
+      "note": "Persen dari harga Fullday paket, kota, dan mobil yang sama, per jam. Berlaku bila melebihi durasi sewa atau lewat pukul 23.00."
+    }
+  }
+}

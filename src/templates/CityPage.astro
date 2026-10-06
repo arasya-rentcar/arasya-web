@@ -10,53 +10,63 @@ import PortableText from '../components/PortableText.astro';
 import Icon from '../components/Icon.astro';
 import FraudNotice from '../components/FraudNotice.astro';
 import PolicyNotice from '../components/PolicyNotice.astro';
+import RateNotes from '../components/RateNotes.astro';
 import { getContent, type City } from '../lib/content';
 import { rupiah } from '../lib/format';
-import { dateFmt, ui, type Lang } from '../lib/i18n';
+import { ui, type Lang } from '../lib/i18n';
 import { photo } from '../lib/images';
 import { paths, type Alternates } from '../lib/paths';
 import { refSlug, waHref } from '../lib/wa';
 import { cityIsIndexable } from '../lib/quality';
 import { breadcrumbs, cityService, faqPage } from '../lib/schema';
+import { cheapest, cityTables, isAllInZone, rate, surchargesFor, type PriceZone } from '../lib/prices';
 
 interface Props { city: City; lang: Lang; alternates: Alternates }
 const { city, lang, alternates } = Astro.props;
 const en = lang === 'en';
 const t = ui(lang);
-const { settings, cars, posts, services } = await getContent(lang);
+const { settings, cars, posts, services, prices } = await getContent(lang);
 const site = (Astro.site?.toString() || settings.siteUrl).replace(/\/$/, '');
 const path = paths.city(city, lang);
 const crumbs = [{ name: t.home, path: paths.home(lang) }, { name: t.rentIn(city.name), path }];
 const travel = services.find((s) => s.template === 'travel');
 const originKey = travel?.origins?.find((o) => o.name === city.name || o.code === city.code)?.key;
 const cityTransfers = (travel?.routes || []).filter((r) => r.origin === originKey && r.intro);
-const priced = cars.filter((c) => c.priceCity).sort((a, b) => a.priceCity! - b.priceCity!);
-const lo = priced[0], hi = priced[priced.length - 1];
-const minAllIn = Math.min(...cars.map((c) => c.priceAllIn || Infinity));
+// The price list is keyed by the Indonesian document (slug and name), also on English pages.
+const idCity = (await getContent('id')).cities.find((c) => c._id === city._id) || city;
+const tables = cityTables(prices, idCity);
+const slugs = cars.map((c) => c.slug.current);
+const carName = (slug: string) => cars.find((c) => c.slug.current === slug)?.name || slug;
+const driverLo = tables.driver ? cheapest(prices, [tables.driver], slugs) : null;
+const allInLo = tables.allIn ? cheapest(prices, [tables.allIn], slugs) : null;
+const rateTables = [tables.driver, tables.allIn].filter((z): z is PriceZone => !!z).map((zone) => ({
+  zone,
+  title: isAllInZone(zone) ? t.pkgAllInTitle : t.pkgDriverTitle,
+  surcharges: isAllInZone(zone) ? surchargesFor(zone, idCity.name) : [],
+}));
 const cityPosts = posts.filter((p) => p.city?._id === city._id).slice(0, 3);
 const sections = city.sections?.length ? city.sections : ['answer', 'fleet', 'trust', 'editorial', 'destinations', 'routes', 'testimonials', 'faq'];
 const code = `${en ? 'EN-' : ''}${city.code}`;
-const answer = en
-  ? `Renting a car with a driver in ${city.name} costs from ${rupiah(lo.priceCity!)} for 12 hours in town (${lo.name}) up to ${rupiah(hi.priceCity!)} (${hi.name}). Fuel, tolls, parking and the driver’s meals are extra.${Number.isFinite(minAllIn) ? ` All-in rates, which include them, start at ${rupiah(minAllIn)}.` : ''} We pick up anywhere in ${city.pickupPoints || city.name}.`
-  : `Tarif sewa mobil dengan driver di ${city.name} mulai ${rupiah(lo.priceCity!)} per 12 jam dalam kota (${lo.name}) sampai ${rupiah(hi.priceCity!)} (${hi.name}), belum termasuk BBM, tol, parkir, dan makan driver.${Number.isFinite(minAllIn) ? ` Tarif all-in mulai ${rupiah(minAllIn)}.` : ''} Penjemputan di ${city.pickupPoints || city.name}.`;
-const quote = city.pricing === 'quote';
-const reference = city.pricing === 'reference';
+const answer = t.cityAnswer({
+  city: city.name,
+  pickup: city.pickupPoints || city.name,
+  driver: driverLo ? { price: rupiah(driverLo.amount), car: carName(driverLo.slug) } : undefined,
+  allIn: allInLo ? { price: rupiah(allInLo.amount) } : undefined,
+});
+const quote = tables.quote;
 const quoteAnswer = en
   ? `Car hire with a driver in ${city.name} is quoted per trip, in rupiah, based on your dates, hours and itinerary. Send us your plans on WhatsApp and we reply with a written quote before you pay. Pick-up from ${city.pickupPoints || city.name}.`
   : `Harga sewa mobil dengan supir di ${city.name} dihitung per perjalanan dalam Rupiah, menyesuaikan tanggal, durasi, dan itinerari. Kirim rencana perjalanan lewat WhatsApp; admin kami mengirim penawaran tertulis sebelum Anda membayar. Penjemputan di ${city.pickupPoints || city.name}.`;
-const refNote = en
-  ? `These are our reference rates; we confirm the final rate for ${city.name} with your booking.`
-  : `Tarif di atas adalah tarif acuan armada Arasya; tarif final untuk ${city.name} dikonfirmasi admin saat pemesanan.`;
 const priceText = quote ? quoteAnswer : answer;
 const bookingCars = quote ? (city.unitClasses || []).map((u) => ({ name: u.name }) as any) : cars;
 const priceQuestion = en ? `How much is car rental with a driver in ${city.name}?` : `Berapa tarif sewa mobil dengan driver di ${city.name}?`;
 const faq = [{ question: priceQuestion, answer: priceText }, ...(city.faq || []).filter((f) => f.question !== priceQuestion)];
 const faqAll = withPolicy(faq, settings, lang);
-const jsonld = [cityService(city, cars, site, settings, lang), faqPage(faqAll), breadcrumbs(site, crumbs)];
+const jsonld = [cityService(city, quote ? null : tables, prices, cars, site, settings, lang), faqPage(faqAll), breadcrumbs(site, crumbs)];
 const waCity = en ? `Hi Arasya, I'd like to rent a car with a driver in ${city.name}.` : `Halo Arasya, saya mau sewa mobil di ${city.name}.`;
 ---
 <Base title={city.seo?.title || t.rentIn(city.name)} description={city.seo?.description || ''} path={path} alternates={alternates} noindex={!cityIsIndexable(city)} jsonld={jsonld} waRef={`${code}-fab`} waMessage={waCity}>
-  <HeroShowroom hero={city.hero} settings={settings} cars={bookingCars} refCode={`${code}-booking`} fromPrice={quote ? undefined : lo?.priceCity || undefined} crumbs={crumbs} />
+  <HeroShowroom hero={city.hero} settings={settings} cars={bookingCars} refCode={`${code}-booking`} fromPrice={quote ? undefined : (driverLo || allInLo)?.amount} fromNote={driverLo ? t.heroFrom() : `${t.per12}, ${t.allIn}`} crumbs={crumbs} />
 
   {sections.map((s) => {
     // 'answer' is kept for older documents: its text now opens the rates section.
@@ -80,31 +90,40 @@ const waCity = en ? `Hi Arasya, I'd like to rent a car with a driver in ${city.n
         </div>
       </section>
     );
+    // Domestic cities: the official tables of the published price list (car + driver, all-in).
     if (s === 'fleet') return (
       <section class="section" id="tarif">
         <div class="wrap">
-          <div class="section-head"><div class="stack"><span class="eyebrow">{reference && <span class="ref-badge">{en ? 'Reference rates' : 'Tarif acuan'}</span>}{en ? `Fleet & rates` : `Armada & tarif ${city.name}`}</span><h2>{reference ? (en ? `Reference rates in ${city.name}` : `Tarif acuan sewa mobil di ${city.name}`) : en ? `Car rental rates in ${city.name}` : `Tarif sewa mobil di ${city.name}`}</h2><p class="intro">{answer}</p>{reference && <p class="ref-note">{refNote}</p>}</div><a class="link-more" href={paths.fleet(lang)}>{en ? 'Compare all cars →' : 'Bandingkan semua unit →'}</a></div>
-          <div class="table-wrap">
-            <table class="rates">
-              <caption class="sr-only">{en ? `Car rental rates with driver in ${city.name}` : `Tarif sewa mobil dengan driver di ${city.name}`}</caption>
-              <thead><tr><th scope="col">{en ? 'Car' : 'Unit'}</th><th scope="col">{en ? 'Seats' : 'Kapasitas'}</th><th scope="col">{en ? '12 hours in town' : 'Dalam kota 12 jam'}</th><th scope="col">All-in</th></tr></thead>
-              <tbody>
-                {cars.map((c) => (
-                  <tr>
-                    <th scope="row"><a href={paths.car(c.slug.current, lang)}>{c.name}</a></th>
-                    <td class="num">{c.capacity ? t.seats(c.capacity) : '–'}</td>
-                    <td class="num">{c.priceCity ? rupiah(c.priceCity) : t.askAdmin}</td>
-                    <td class="num">{c.priceAllIn ? rupiah(c.priceAllIn) : '–'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div class="section-head"><div class="stack"><span class="eyebrow">{t.cityRatesEyebrow(city.name)}</span><h2>{t.cityRatesTitle(city.name)}</h2><p class="intro">{answer}</p></div><a class="link-more" href={paths.fleet(lang)}>{t.compareCars}</a></div>
+          <div class="rate-tables">
+            {rateTables.map(({ zone, title, surcharges }) => (
+              <div class="rate-block">
+                <h3>{title}</h3>
+                <div class="table-wrap">
+                  <table class="rates">
+                    <caption class="sr-only">{t.tableCaption(title, city.name)}</caption>
+                    <thead><tr><th scope="col">{t.colCar}</th><th scope="col">{t.col12h}</th><th scope="col">{t.colFullday}</th></tr></thead>
+                    <tbody>
+                      {cars.map((c) => {
+                        const h12 = rate(prices, c.slug.current, zone, '12H');
+                        const full = rate(prices, c.slug.current, zone, 'FULLDAY');
+                        return (
+                          <tr>
+                            <th scope="row"><a href={paths.car(c.slug.current, lang)}>{c.name}</a>{c.capacity && <small>{t.seats(c.capacity)}</small>}</th>
+                            {h12 == null && full == null
+                              ? <td class="ask" colspan="2">{t.askAdmin}</td>
+                              : <><td class="num">{h12 ? rupiah(h12) : t.askAdmin}</td><td class="num">{full ? rupiah(full) : t.askAdmin}</td></>}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+                <RateNotes prices={prices} lang={lang} zone={zone} surcharges={surcharges} cityName={city.name} />
+              </div>
+            ))}
           </div>
-          <div class="notes muted">
-            {settings.rateNotes?.city && <p>{settings.rateNotes.city}</p>}
-            {settings.rateNotes?.allIn && <p>{settings.rateNotes.allIn}</p>}
-            {city._updatedAt && <p>{en ? 'Rates updated' : 'Tarif diperbarui'} {dateFmt(city._updatedAt, lang)}.</p>}
-          </div>
+          {rateTables.length > 0 && <div class="shared-notes"><RateNotes prices={prices} lang={lang} shared /></div>}
         </div>
       </section>
     );
@@ -191,15 +210,21 @@ const waCity = en ? `Hi Arasya, I'd like to rent a car with a driver in ${city.n
 </Base>
 
 <style>
+  .rate-tables { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: start; }
+  .rate-block { display: grid; gap: 12px; min-width: 0; }
+  .rate-block h3 { font-size: 1.2rem; }
   .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
-  .rates { width: 100%; border-collapse: collapse; font-size: 0.95rem; min-width: 560px; }
-  .rates th, .rates td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--line); }
+  .rates { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+  .rates th, .rates td { padding: 11px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
   .rates thead th { background: var(--paper); font: 700 0.75rem/1.2 var(--text); letter-spacing: 0.05em; text-transform: uppercase; color: var(--soft); }
+  .rates thead th + th, .rates td { text-align: right; white-space: nowrap; }
+  .rates td.ask { text-align: center; color: var(--soft); }
   .rates tbody th a { color: var(--deep); font-weight: 700; text-decoration: none; }
   .rates tbody th a:hover { color: var(--blue); }
+  .rates tbody th small { display: block; font-size: 0.8rem; font-weight: 400; color: var(--soft); }
   .rates tbody tr:last-child > * { border-bottom: 0; }
-  .rates td:nth-child(3) { color: var(--blue); font-weight: 700; }
-  .notes { display: grid; gap: 4px; margin-top: 12px; font-size: 0.9rem; }
+  .rates td:nth-of-type(1):not(.ask) { color: var(--blue); font-weight: 700; }
+  .shared-notes { margin-top: 16px; }
   .editorial { display: grid; grid-template-columns: 1fr 1.3fr; gap: 40px; }
   .dest { background: #fff; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); }
   .dest img { aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
@@ -212,8 +237,6 @@ const waCity = en ? `Hi Arasya, I'd like to rent a car with a driver in ${city.n
   .route h3 { color: var(--deep); }
   .dur { font: 800 1.1rem/1.4 var(--display); color: var(--blue); }
   .route .muted { font-size: 0.9rem; }
-  .ref-note { font-size: 0.92rem; color: var(--deep); background: var(--sky); border-radius: var(--radius-sm); padding: 10px 14px; max-width: 72ch; }
-  .ref-badge { display: inline-block; margin-right: 8px; padding: 3px 8px; border-radius: 6px; background: var(--blue); color: #fff; font-size: 0.7rem; letter-spacing: 0.04em; }
   .uclass { border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: grid; gap: 10px; align-content: start; }
   .uclass dl { display: grid; gap: 6px; margin: 0; }
   .uclass dl div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 6px; font-size: 0.92rem; }
@@ -224,5 +247,6 @@ const waCity = en ? `Hi Arasya, I'd like to rent a car with a driver in ${city.n
   .transfers a { font-weight: 600; }
   .post { display: grid; gap: 8px; align-content: start; padding: 22px; background: #fff; border-radius: var(--radius); text-decoration: none; color: var(--ink); border: 1px solid var(--line); }
   .post:hover { border-color: var(--blue); color: var(--ink); }
-  @media (max-width: 860px) { .editorial { grid-template-columns: 1fr; gap: 20px; } }
+  @media (max-width: 860px) { .editorial { grid-template-columns: 1fr; gap: 20px; } .rate-tables { grid-template-columns: 1fr; } }
+  @media (max-width: 480px) { .rates { font-size: 0.88rem; } .rates th, .rates td { padding: 10px; } }
 </style>

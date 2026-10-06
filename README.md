@@ -14,6 +14,16 @@ Marketing site for Arasya Rent Car (PT Ayomi Raya Karsa, Bogor): car rental with
   (Sanity → API → Webhooks). New content is live a few minutes later.
 - If Sanity can't be reached or the dataset is empty, the build falls back to
   `src/data/seed.json`. Set `CONTENT_STRICT=1` on production to fail instead.
+- Prices are not in Sanity. They come from the official price list the team
+  edits in the dashboard (Daftar Harga). "Terbitkan" freezes it into a
+  snapshot and calls the deploy hook; the build reads the latest snapshot from
+  `{PUBLIC_LEADS_API}/api/v1/public/prices` (`src/lib/content.ts`, helpers in
+  `src/lib/prices.ts`). On Vercel production (`VERCEL_ENV=production`) or with
+  `CONTENT_STRICT=1` a failed fetch (including the 404 before the first
+  publication) fails the build, so the previous deployment stays live.
+  Elsewhere the build falls back to `src/data/prices.json` (the seed list of
+  6 Oct 2026) with a warning. `PRICES_API_URL` overrides the API base for
+  local tests.
 
 ## Pages and templates
 

@@ -7,8 +7,9 @@ import CarImage from './CarImage.astro';
 import Breadcrumbs from './Breadcrumbs.astro';
 import Icon from './Icon.astro';
 
-interface Props { hero: Hero; settings: Settings; cars: Car[]; refCode: string; fromPrice?: number; crumbs?: { name: string; path: string }[]; pickup?: string }
-const { hero, settings, cars, refCode, fromPrice, crumbs, pickup } = Astro.props;
+/** `fromPrice` is a "mulai" price per 12 hours; `fromNote` says which package and area it is for. */
+interface Props { hero: Hero; settings: Settings; cars: Car[]; refCode: string; fromPrice?: number; fromNote?: string; crumbs?: { name: string; path: string }[]; pickup?: string }
+const { hero, settings, cars, refCode, fromPrice, fromNote, crumbs, pickup } = Astro.props;
 const t = ui(langOf(Astro.url.pathname));
 const checks = t.heroChecks(settings.legalName);
 ---
@@ -21,7 +22,7 @@ const checks = t.heroChecks(settings.legalName);
         <h1>{hero.title}{hero.titleAccent && <> <span class="accent">{hero.titleAccent}</span></>}</h1>
         {hero.lead && <p class="lead">{hero.lead}</p>}
         {fromPrice && (
-          <p class="from">{t.from} <b class="num">{rupiah(fromPrice)}</b> <span>{t.per12hShort}</span></p>
+          <p class="from">{t.from} <b class="num">{rupiah(fromPrice)}</b> <span>{fromNote || t.per12}</span></p>
         )}
         <ul class="checks">
           {checks.map((c) => <li><Icon name="check" size={16} />{c}</li>)}

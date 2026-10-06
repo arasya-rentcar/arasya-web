@@ -4,8 +4,9 @@
  * with confidence.
  */
 import type { Car, City, Faq, Post, Settings } from './content';
-import type { Lang } from './i18n';
+import { ui, type Lang } from './i18n';
 import { paths } from './paths';
+import { fromPrices, isAllInZone, priceSpan, rate, siteZones, zoneArea, zoneLabel, type Duration, type PriceSnapshot, type PriceZone } from './prices';
 
 export function organization(s: Settings, site: string, areas: string[] = []) {
   return {
@@ -42,34 +43,45 @@ export function organization(s: Settings, site: string, areas: string[] = []) {
   };
 }
 
-export function priceRange(cars: Car[]): string | undefined {
-  const prices = cars.map((c) => c.priceCity).filter((p): p is number => !!p);
-  if (!prices.length) return undefined;
-  return `IDR ${Math.min(...prices)} - ${Math.max(...prices)}`;
+/** Lowest to highest rate on the site (12 hours and Fullday, every table), from the price list. */
+export function priceRange(prices: PriceSnapshot, cars: Car[]): string | undefined {
+  const span = priceSpan(prices, cars.map((c) => c.slug.current));
+  return span ? `IDR ${span.min} - ${span.max}` : undefined;
 }
 
-export function offerCatalog(cars: Car[], site: string, name: string, lang: Lang = 'id') {
+const DURATIONS: Duration[] = ['12H', 'FULLDAY'];
+const durationLabel = (d: Duration, lang: Lang) => (d === '12H' ? ui(lang).col12h : ui(lang).colFullday);
+
+/** Fleet catalogue: each car's "mulai" prices per 12 hours (car + driver, all-in), with the area. */
+export function offerCatalog(cars: Car[], prices: PriceSnapshot, site: string, name: string, lang: Lang = 'id') {
+  const t = ui(lang);
   return {
     '@type': 'OfferCatalog',
     name,
-    itemListElement: cars
-      .filter((c) => c.priceCity)
-      .map((c) => ({
-        '@type': 'Offer',
-        name: lang === 'en' ? `${c.name} with driver, 12 hours in town` : `Sewa ${c.name} dengan driver, 12 jam dalam kota`,
-        price: c.priceCity,
-        priceCurrency: 'IDR',
-        url: site + paths.car(c.slug.current, lang),
-      })),
+    itemListElement: cars.flatMap((c) => {
+      const from = fromPrices(prices, [c.slug.current]);
+      const url = site + paths.car(c.slug.current, lang);
+      const base = lang === 'en' ? `${c.name} with driver` : `Sewa ${c.name} dengan driver`;
+      return [
+        from.driver && { '@type': 'Offer', name: `${base}, ${t.pkgDriver} ${t.col12h} (${zoneArea(from.driver.zone, lang)})`, price: from.driver.amount, priceCurrency: 'IDR', url },
+        from.allIn && { '@type': 'Offer', name: `${base}, ${t.allIn} ${t.col12h} (${zoneArea(from.allIn.zone, lang)})`, price: from.allIn.amount, priceCurrency: 'IDR', url },
+      ].filter(Boolean);
+    }),
   };
 }
 
-/** A unit page: the car as a rentable product with its two tariffs. */
-export function carProduct(c: Car, site: string, lang: Lang, image?: string) {
-  const offers = [
-    c.priceCity && { '@type': 'Offer', name: lang === 'en' ? '12 hours in town, with driver' : '12 jam dalam kota, dengan driver', price: c.priceCity, priceCurrency: 'IDR' },
-    c.priceAllIn && { '@type': 'Offer', name: lang === 'en' ? 'All-in (fuel, tolls, driver meals)' : 'All-in (BBM, tol, makan driver)', price: c.priceAllIn, priceCurrency: 'IDR' },
-  ].filter(Boolean);
+/** Every price of one car in these tables, one offer per table and duration. */
+function rateOffers(c: Car, zones: PriceZone[], prices: PriceSnapshot, lang: Lang, label: (z: PriceZone) => string) {
+  return zones.flatMap((zone) =>
+    DURATIONS.flatMap((d) => {
+      const price = rate(prices, c.slug.current, zone, d);
+      return price ? [{ '@type': 'Offer', name: `${label(zone)}, ${durationLabel(d, lang)}`, price, priceCurrency: 'IDR' }] : [];
+    }));
+}
+
+/** A unit page: the car as a rentable product, priced per table (car + driver and all-in areas). */
+export function carProduct(c: Car, prices: PriceSnapshot, site: string, lang: Lang, image?: string) {
+  const offers = rateOffers(c, siteZones(prices), prices, lang, (z) => zoneLabel(z, lang));
   return {
     '@type': 'Product',
     name: lang === 'en' ? `${c.name} with driver` : `Sewa ${c.name} dengan driver`,
@@ -121,14 +133,20 @@ export function article(p: Post, site: string, s: Settings) {
   };
 }
 
-export function cityService(c: City, cars: Car[], site: string, s: Settings, lang: Lang = 'id') {
+/** A city page; `tables` are the city's price tables (null when it is quoted per trip). */
+export function cityService(c: City, tables: { driver: PriceZone | null; allIn: PriceZone | null } | null, prices: PriceSnapshot, cars: Car[], site: string, s: Settings, lang: Lang = 'id') {
+  const t = ui(lang);
+  const zones = tables ? [tables.driver, tables.allIn].filter((z): z is PriceZone => !!z) : [];
+  const offers = cars.flatMap((car) =>
+    rateOffers(car, zones, prices, lang, (z) => `${lang === 'en' ? `${car.name} with driver in ${c.name}` : `Sewa ${car.name} dengan driver di ${c.name}`}, ${isAllInZone(z) ? t.pkgAllInTitle : t.pkgDriverTitle}`)
+      .map((o) => ({ ...o, url: site + paths.car(car.slug.current, lang) })));
   return {
     '@type': 'Service',
     name: lang === 'en' ? `Car rental with driver in ${c.name}` : `Sewa mobil dengan driver di ${c.name}`,
     serviceType: 'Car rental with driver',
     provider: { '@id': `${site}/#business` },
     areaServed: (c.areaServed || [c.name]).map((n) => ({ '@type': 'Place', name: n })),
-    ...(c.pricing === 'quote' ? {} : { hasOfferCatalog: offerCatalog(cars, site, lang === 'en' ? `Car rental rates in ${c.name}` : `Tarif sewa mobil ${c.name}`, lang) }),
+    ...(offers.length ? { hasOfferCatalog: { '@type': 'OfferCatalog', name: lang === 'en' ? `Car rental rates in ${c.name}` : `Tarif sewa mobil ${c.name}`, itemListElement: offers } } : {}),
     url: site + paths.city(c, lang),
     brand: s.brandName,
   };

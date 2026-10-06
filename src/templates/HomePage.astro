@@ -13,21 +13,26 @@ import Icon from '../components/Icon.astro';
 import UnitRequest from '../components/UnitRequest.astro';
 import { getContent, hasEn } from '../lib/content';
 import { rupiah } from '../lib/format';
-import { listJoin, type Lang } from '../lib/i18n';
+import { listJoin, ui, type Lang } from '../lib/i18n';
 import { paths } from '../lib/paths';
 import { waHref } from '../lib/wa';
 import { faqPage } from '../lib/schema';
 import { byPopularity, cityIsIndexable } from '../lib/quality';
 import { carImage, photo } from '../lib/images';
+import { fromPrices, zoneArea } from '../lib/prices';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const en = lang === 'en';
-const { settings, home, cars, cities, services, posts } = await getContent(lang);
+const t = ui(lang);
+const { settings, home, cars, cities, services, posts, prices } = await getContent(lang);
 const idHome = (await getContent('id')).home;
-const priced = cars.filter((c) => c.priceCity);
-const cheapest = priced.reduce((m, c) => (c.priceCity! < m.priceCity! ? c : m), priced[0]);
-const cheapestAllIn = Math.min(...cars.map((c) => c.priceAllIn || Infinity));
+// Site-wide "mulai" prices from the price list: the cheapest car + driver table
+// (Jabodetabek) and all-in table (Jakarta), each named with its area.
+const from = fromPrices(prices, cars.map((c) => c.slug.current));
+const fromCar = from.driver ? cars.find((c) => c.slug.current === from.driver!.slug)?.name : undefined;
+const driverArea = from.driver ? zoneArea(from.driver.zone, lang) : '';
+const allInArea = from.allIn ? zoneArea(from.allIn.zone, lang) : '';
 const liveCities = cities.filter(cityIsIndexable);
 const featured = home.featuredCars?.length ? home.featuredCars : cars.slice(0, 4);
 const serviceText: Record<string, string> = en
@@ -52,7 +57,11 @@ const bank = settings.bankAccounts[0];
 const homeFaq = en ? [
   {
     question: 'How much does it cost to rent a car with a driver from Arasya?',
-    answer: `From ${rupiah(cheapest.priceCity!)} for 12 hours in town in a ${cheapest.name}, excluding fuel, tolls, parking and the driver’s meals.${Number.isFinite(cheapestAllIn) ? ` All-in packages that include fuel, tolls and the driver’s meals start at ${rupiah(cheapestAllIn)}.` : ''} Every car’s rate is on the fleet page.`,
+    answer: [
+      from.driver ? `Car + driver starts at ${rupiah(from.driver.amount)} for 12 hours in ${driverArea}${fromCar ? ` (${fromCar})` : ''}, excluding fuel, tolls, parking and the driver’s meals.` : 'Rates depend on the car and the trip; ask us on WhatsApp for a quote.',
+      from.allIn ? `All-in packages that include fuel, tolls and the driver’s meals start at ${rupiah(from.allIn.amount)} for 12 hours (${allInArea}).` : '',
+      'Rates differ by city: each city page lists its full rates, and every car’s prices are on the fleet page.',
+    ].filter(Boolean).join(' '),
   },
   ...(cityList ? [{ question: 'Which cities does Arasya serve?', answer: `We have local pages for ${cityList}. Beyond those, we drive between cities and across provinces to wherever you need to go; just ask.` }] : []),
   { question: 'Can I rent a car without a driver?', answer: 'No. Every Arasya car comes with a professional driver who knows the local roads, so you never deal with traffic, parking or directions yourself.' },
@@ -61,7 +70,11 @@ const homeFaq = en ? [
 ] : [
   {
     question: 'Berapa harga sewa mobil dengan driver di Arasya?',
-    answer: `Mulai ${rupiah(cheapest.priceCity!)} per 12 jam dalam kota untuk ${cheapest.name}, belum termasuk BBM, tol, parkir, dan makan driver.${Number.isFinite(cheapestAllIn) ? ` Paket all-in yang sudah termasuk BBM, tol, dan makan driver mulai ${rupiah(cheapestAllIn)}.` : ''} Tarif lengkap per unit ada di halaman armada.`,
+    answer: [
+      from.driver ? `Mobil + supir mulai ${rupiah(from.driver.amount)} per 12 jam di ${driverArea}${fromCar ? ` (${fromCar})` : ''}, belum termasuk BBM, tol, parkir, dan makan driver.` : 'Tarif menyesuaikan unit dan perjalanan; tanyakan penawaran ke admin lewat WhatsApp.',
+      from.allIn ? `Paket all-in yang sudah termasuk BBM, tol, dan makan driver mulai ${rupiah(from.allIn.amount)} per 12 jam (${allInArea}).` : '',
+      'Tarif berbeda per kota: tabel lengkapnya ada di halaman tiap kota, dan tarif per unit ada di halaman armada.',
+    ].filter(Boolean).join(' '),
   },
   ...(cityList ? [{ question: 'Arasya melayani kota mana saja?', answer: `Kami punya layanan lokal di ${cityList}. Di luar itu, kami melayani perjalanan antar kota dan antarprovinsi ke mana pun tujuan Anda; tanyakan saja ke admin.` }] : []),
   { question: 'Bagaimana cara memesan?', answer: `Kirim tanggal, titik jemput, dan tujuan lewat WhatsApp ${settings.phones[0]}. Admin mengonfirmasi unit, tarif, dan titik jemput sebelum pemesanan dipastikan. Admin siaga 24 jam.` },
@@ -70,7 +83,7 @@ const homeFaq = en ? [
 const homeFaqAll = withPolicy(homeFaq, settings, lang);
 ---
 <Base title={home.seo?.title || settings.brandName} description={home.seo?.description || ''} path={paths.home(lang)} alternates={hasEn.home(idHome) ? { id: '/', en: '/en' } : {}} waRef={en ? 'EN-HOME-fab' : 'HOME-fab'} jsonld={[faqPage(homeFaqAll)]}>
-   <HeroShowroom hero={home.hero} settings={settings} cars={cars} refCode={en ? 'EN-HOME-booking' : 'HOME-booking'} fromPrice={cheapest?.priceCity || undefined} />
+   <HeroShowroom hero={home.hero} settings={settings} cars={cars} refCode={en ? 'EN-HOME-booking' : 'HOME-booking'} fromPrice={from.driver?.amount} fromNote={from.driver ? t.heroFrom(driverArea) : undefined} />
 
   <section class="section">
     <div class="wrap">
@@ -81,7 +94,7 @@ const homeFaqAll = withPolicy(homeFaq, settings, lang);
       <div class="grid grid-4">
         {featured.map((c) => <CarCard car={c} settings={settings} refPrefix={en ? 'EN-HOME' : 'HOME'} />)}
       </div>
-      {settings.rateNotes?.city && <p class="note muted">{settings.rateNotes.city}</p>}
+      <p class="note muted">{t.ratesPerCity}</p>
       <UnitRequest settings={settings} waRef={en ? 'EN-HOME-request' : 'HOME-request'} />
     </div>
   </section>
