@@ -120,7 +120,8 @@ const id = {
   bkNotesPh: 'Mis. bawa 3 koper, butuh kursi bayi, nomor penerbangan…',
   bkHint: 'Data ini kami kirim ke WhatsApp admin supaya admin langsung bisa mengecek unit dan tarif.',
   bkMsg: { hello: 'Halo Arasya, saya mau pesan mobil dengan driver.', code: 'Kode pesanan', name: 'Nama', date: 'Tanggal', time: 'Jam jemput', pickup: 'Jemput di', dest: 'Tujuan', unit: 'Tipe mobil', pax: 'Jumlah penumpang', duration: 'Lama sewa', notes: 'Catatan', help: 'mohon dibantu pilihkan', locale: 'id-ID' },
-  // Place suggestions + map picker (only when PUBLIC_GOOGLE_MAPS_KEY is set). {n} = number of suggestions.
+  // Place suggestions + map picker (only when PUBLIC_MAPS_PROVIDER is set). {n} = number of suggestions.
+  // zoomIn/zoomOut: map buttons (OpenStreetMap map; Google labels its own).
   bkMap: {
     open: 'Pilih di peta', title: 'Pilih titik di peta', close: 'Tutup', search: 'Cari nama tempat atau alamat',
     hint: 'Geser peta sampai pin tepat di lokasinya.', finding: 'Mencari alamat titik ini…', noAddr: 'Alamat titik ini tidak ditemukan, titiknya tetap bisa dipakai.',
@@ -129,6 +130,7 @@ const id = {
     fail: 'Peta tidak bisa dimuat. Silakan ketik alamatnya saja, admin kami akan memastikan titiknya.',
     pointSet: 'Titik dipilih', edit: 'Ubah', point: 'Titik di peta',
     count: '{n} saran tempat. Pilih dengan panah atas/bawah lalu Enter.', none: 'Tidak ada saran. Alamat boleh diketik bebas.',
+    zoomIn: 'Perbesar peta', zoomOut: 'Perkecil peta',
   },
   // shared sections
   faqTitle: 'Pertanyaan yang sering diajukan',
@@ -229,6 +231,7 @@ const en: Dict = {
     fail: "The map couldn't load. Just type the address and our team will confirm the exact spot.",
     pointSet: 'Point set', edit: 'Change', point: 'Map point',
     count: '{n} suggestions. Use the up and down arrows, then Enter.', none: 'No suggestions. You can type the address freely.',
+    zoomIn: 'Zoom in', zoomOut: 'Zoom out',
   },
   faqTitle: 'Frequently asked questions',
   trustTitle: 'Why travel with Arasya',

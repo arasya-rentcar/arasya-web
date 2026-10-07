@@ -7,7 +7,7 @@
 export interface PlacePoint {
   lat: number;
   lng: number;
-  /** Google place id; only when the visitor chose a suggested place. */
+  /** Google place id; only when the visitor chose a Google suggestion (never with OSM). */
   placeId?: string;
   /** Place name (suggestion) or the address found for a map point. */
   name?: string;

@@ -6,10 +6,11 @@
  * also recorded in the admin dashboard (fire-and-forget; WhatsApp never waits
  * on it). Without JS the form falls back to a plain wa.me link.
  *
- * With PUBLIC_GOOGLE_MAPS_KEY set, pick-up and destination also get place
- * suggestions and a map picker (src/lib/mapsPicker.ts, loaded on first use);
+ * With PUBLIC_MAPS_PROVIDER set (osm, or google with PUBLIC_GOOGLE_MAPS_KEY),
+ * pick-up and destination also get place suggestions and a map picker
+ * (src/lib/mapsPicker.ts + src/lib/maps/<provider>.ts, loaded on first use);
  * a chosen point adds a map link to the message and coordinates to the lead.
- * Without the key none of that markup or script exists.
+ * Without a provider none of that markup or script exists.
  */
 import type { HTMLAttributes } from 'astro/types';
 import type { Car, Settings } from '../lib/content';
@@ -43,9 +44,12 @@ for (const c of cars) {
 const uid = 'bk-' + refCode.toLowerCase();
 // Optional dashboard endpoint base (no trailing slash); empty turns lead capture off.
 const leadsApi = (import.meta.env.PUBLIC_LEADS_API || '').trim().replace(/\/+$/, '');
-// Public browser key (HTTP-referrer restricted); empty turns suggestions and the map off.
+// Place suggestions + map picker: 'osm', or 'google' with its public browser key
+// (HTTP-referrer restricted); anything else turns them off. Same test as the script below.
 const mapsKey = (import.meta.env.PUBLIC_GOOGLE_MAPS_KEY || '').trim();
-const maps = mapsKey ? JSON.stringify({ key: mapsKey, lang, bias: mapBias(mapCity), msg: t.bkMap, dialog: `${uid}-map` }) : undefined;
+const mapsEnv = import.meta.env.PUBLIC_MAPS_PROVIDER;
+const mapsProvider = mapsEnv === 'osm' ? 'osm' : mapsEnv === 'google' && mapsKey ? 'google' : '';
+const maps = mapsProvider ? JSON.stringify({ provider: mapsProvider, key: mapsProvider === 'google' ? mapsKey : undefined, lang, bias: mapBias(mapCity), msg: t.bkMap, dialog: `${uid}-map` }) : undefined;
 const places: { kind: 'pickup' | 'dest'; label: string; attrs: HTMLAttributes<'input'> }[] = [
   { kind: 'pickup', label: t.bkPickup, attrs: { id: `${uid}-pickup`, name: 'pickup', type: 'text', placeholder: t.bkPickupPh, value: defaultPickup, autocomplete: 'street-address', maxlength: '300', required: true } },
   { kind: 'dest', label: destLabel, attrs: { id: `${uid}-dest`, name: 'dest', type: 'text', placeholder: t.bkDestPh, value: defaultDest, maxlength: '300' } },
@@ -71,7 +75,7 @@ const places: { kind: 'pickup' | 'dest'; label: string; attrs: HTMLAttributes<'i
       {carOptions.map((o) => <option value={o.value} selected={!!defaultCar && (o.value === defaultCar || o.names.includes(defaultCar))}>{o.label}</option>)}
     </select>
   </div>
-  {places.map((p) => mapsKey ? (
+  {places.map((p) => mapsProvider ? (
     <div class="f w2">
       <div class="lab">
         <label for={p.attrs.id}>{p.label}</label>
@@ -82,7 +86,7 @@ const places: { kind: 'pickup' | 'dest'; label: string; attrs: HTMLAttributes<'i
         <button type="button" class="place-map" data-place-map data-kind={p.kind} aria-label={`${t.bkMap.open}: ${p.label}`} title={t.bkMap.open} hidden><Icon name="map" size={18} /></button>
         <div class="place-pop" hidden>
           <ul class="place-list" role="listbox" id={`${p.attrs.id}-list`} aria-label={p.label}></ul>
-          <p class="place-attr" translate="no">Google Maps</p>
+          {mapsProvider === 'osm' ? <p class="place-attr" translate="no">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></p> : <p class="place-attr" translate="no">Google Maps</p>}
         </div>
         <span class="sr-only" aria-live="polite" data-place-live></span>
       </div>
@@ -119,7 +123,7 @@ const places: { kind: 'pickup' | 'dest'; label: string; attrs: HTMLAttributes<'i
   </details>
   <p class="hint">{t.bkHint}</p>
 </form>
-{mapsKey && (
+{mapsProvider && (
   <dialog class="mp" id={`${uid}-map`} aria-labelledby={`${uid}-map-title`}>
     <div class="mp-head">
       <h2 class="mp-title" id={`${uid}-map-title`} data-mp-title>{t.bkMap.title}</h2>
@@ -129,7 +133,7 @@ const places: { kind: 'pickup' | 'dest'; label: string; attrs: HTMLAttributes<'i
       <input type="text" data-mp-search placeholder={t.bkMap.search} aria-label={t.bkMap.search} maxlength="300" enterkeyhint="search" />
       <div class="place-pop" hidden>
         <ul class="place-list" role="listbox" id={`${uid}-map-list`} aria-label={t.bkMap.search}></ul>
-        <p class="place-attr" translate="no">Google Maps</p>
+        {mapsProvider === 'osm' ? <p class="place-attr" translate="no">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></p> : <p class="place-attr" translate="no">Google Maps</p>}
       </div>
       <span class="sr-only" aria-live="polite" data-place-live></span>
     </div>
@@ -148,6 +152,10 @@ const places: { kind: 'pickup' | 'dest'; label: string; attrs: HTMLAttributes<'i
 
 <script>
   import { mapsLink, pointOf } from '../lib/placePoint';
+
+  // Same test as the frontmatter (PUBLIC_MAPS_PROVIDER, see .env.example).
+  const MAPS_OSM = import.meta.env.PUBLIC_MAPS_PROVIDER === 'osm';
+  const MAPS_GOOGLE = import.meta.env.PUBLIC_MAPS_PROVIDER === 'google' && !!import.meta.env.PUBLIC_GOOGLE_MAPS_KEY;
 
   const cookie = (name: string) => {
     const c = document.cookie.split('; ').find((x) => x.startsWith(name + '='));
@@ -192,14 +200,16 @@ const places: { kind: 'pickup' | 'dest'; label: string; attrs: HTMLAttributes<'i
   };
 
   document.querySelectorAll<HTMLFormElement>('form[data-booking]').forEach((form) => {
-    // Place suggestions + map picker: only when the build has a Maps key. The
-    // module (and Google's script) load on the first touch of a place field
-    // or a map button, never with the page; any failure leaves plain text.
-    // (The env check lets builds without a key drop this code entirely.)
-    if (import.meta.env.PUBLIC_GOOGLE_MAPS_KEY && form.dataset.maps) {
+    // Place suggestions + map picker: only when the build has a provider. The
+    // modules (and the provider's script or map library) load on the first
+    // touch of a place field or a map button, never with the page; any
+    // failure leaves plain text. (These build-time constants let a build drop
+    // the code of the provider it does not use, or all of it.)
+    if ((MAPS_OSM || MAPS_GOOGLE) && form.dataset.maps) {
       type Picker = import('../lib/mapsPicker').Picker | null;
       let picker: Promise<Picker> | undefined;
-      const start = () => (picker ||= import('../lib/mapsPicker').then((m) => m.enhance(form)).catch((): Picker => (form.classList.add('maps-off'), null)));
+      const provider = () => (MAPS_OSM ? import('../lib/maps/osm') : import('../lib/maps/google'));
+      const start = () => (picker ||= Promise.all([import('../lib/mapsPicker'), provider()]).then(([m, p]) => m.enhance(form, p)).catch((): Picker => (form.classList.add('maps-off'), null)));
       form.querySelectorAll<HTMLInputElement>('.place input').forEach((input) => {
         input.addEventListener('focus', start, { once: true });
         input.addEventListener('pointerdown', start, { once: true });
@@ -280,7 +290,8 @@ const places: { kind: 'pickup' | 'dest'; label: string; attrs: HTMLAttributes<'i
             campaign: src, gclid, ga_client_id: ga.clientId, ga_session_id: ga.sessionId,
             website: String(f.get('website') || ''),
           };
-          // Only when a point was chosen; numbers, ~6 decimals (placePoint.ts).
+          // Only when a point was chosen; numbers, ~6 decimals (placePoint.ts). A place
+          // id exists only for Google suggestions (OSM has none): an empty one is left out.
           if (pickupPoint) Object.assign(body, { pickup_lat: pickupPoint.lat, pickup_lng: pickupPoint.lng, pickup_place_id: pickupPoint.placeId || '', pickup_place_name: pickupPoint.name || '' });
           if (destPoint) Object.assign(body, { destination_lat: destPoint.lat, destination_lng: destPoint.lng, destination_place_id: destPoint.placeId || '', destination_place_name: destPoint.name || '' });
           for (const k in body) if (body[k] === '') delete body[k];
@@ -310,7 +321,7 @@ const places: { kind: 'pickup' | 'dest'; label: string; attrs: HTMLAttributes<'i
   .more-grid { display: grid; grid-template-columns: 1fr 1.4fr 3fr; gap: 10px; margin-top: 10px; }
   .hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
   .hint { grid-column: 1 / -1; font-size: 0.8rem; color: var(--soft); margin-top: -4px; }
-  /* Place suggestions + map picker (only rendered with a Maps key). */
+  /* Place suggestions + map picker (only rendered with a map provider). */
   .lab { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; min-width: 0; }
   .place-chip { font: 600 0.75rem/1 var(--text); color: var(--deep); white-space: nowrap; }
   .place-chip[hidden] { display: none; }
@@ -328,8 +339,9 @@ const places: { kind: 'pickup' | 'dest'; label: string; attrs: HTMLAttributes<'i
   .place-list :global(li[aria-selected='true']) { background: var(--sky); }
   .place-list :global(b) { font: 700 0.9rem/1.25 var(--text); color: var(--ink); }
   .place-list :global(span) { font: 400 0.8rem/1.3 var(--text); color: var(--soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  /* Google's attribution for Places data shown without a Google map. */
+  /* Data attribution under the list (Google Places / OpenStreetMap). */
   .place-attr { margin: 0; padding: 6px 12px 8px; text-align: right; font: 400 12px/1 Roboto, Arial, sans-serif; color: #5e5e5e; border-top: 1px solid #eef1f4; }
+  .place-attr a { color: inherit; }
   .mp { width: min(720px, calc(100vw - 32px)); height: min(640px, calc(100dvh - 48px)); max-width: none; max-height: none; padding: 0; border: 0; border-radius: var(--radius); box-shadow: var(--shadow); color: var(--ink); overflow: visible; }
   .mp[open] { display: flex; flex-direction: column; }
   .mp::backdrop { background: rgba(1, 24, 48, 0.55); }
@@ -340,7 +352,8 @@ const places: { kind: 'pickup' | 'dest'; label: string; attrs: HTMLAttributes<'i
   .mp-search { padding: 0 16px 10px; }
   .mp-search .place-pop { left: 16px; right: 16px; z-index: 60; }
   .mp-map { position: relative; flex: 1; min-height: 220px; background: var(--paper); }
-  .mp-canvas { position: absolute; inset: 0; }
+  /* Own stacking context: the map library's panes stay under the pin and the suggestion list. */
+  .mp-canvas { position: absolute; inset: 0; isolation: isolate; }
   .mp-pin { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -100%); pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3)); }
   .mp-addr { margin: 0; padding: 10px 16px 0; min-height: 2.6em; font-size: 0.9rem; color: var(--body); }
   .mp-err { margin: 6px 16px 0; padding: 8px 10px; border-radius: var(--radius-sm); background: #fff4ed; color: #9a3412; font-size: 0.85rem; }
