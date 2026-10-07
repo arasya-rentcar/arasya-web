@@ -18,7 +18,7 @@ sys.path.insert(0, str(HERE.parent))
 
 from content.cars import CARS  # noqa: E402
 from content.cities import ALL as NEW_CITIES, EN_FIXES, FIXES  # noqa: E402
-from content.policy import POLICY, POLICY_EN  # noqa: E402
+from content.policy import BEFORE_10_REWRITES, BEFORE_10_REWRITES_EN, POLICY, POLICY_EN  # noqa: E402
 from content.english import CITIES, HOME, SERVICES, SETTINGS  # noqa: E402
 from content.posts import POSTS, blocks  # noqa: E402
 from content.routes import ROUTES  # noqa: E402
@@ -146,4 +146,16 @@ sync = {
     "policyEn": ss["en"]["cancellationPolicy"],
 }
 (out.parent / "2026-10-01-sync.json").write_text(json.dumps(sync, ensure_ascii=False, indent=1))
+
+# Data for migrations/2026-10-08-policy-before-10.mjs: phrase rewrites for the
+# 50% tier boundary, plus the expected result (the seed) for its log line.
+for rewrites, policy in ((BEFORE_10_REWRITES, ss["cancellationPolicy"]), (BEFORE_10_REWRITES_EN, ss["en"]["cancellationPolicy"])):
+    left = [old for old, _ in rewrites if old in json.dumps(policy, ensure_ascii=False)]
+    assert not left, f"policy.py still uses an old 10:00 phrase: {left}"
+before_10 = {
+    "rewrites": {"cancellationPolicy": BEFORE_10_REWRITES, "en.cancellationPolicy": BEFORE_10_REWRITES_EN},
+    "policy": ss["cancellationPolicy"],
+    "policyEn": ss["en"]["cancellationPolicy"],
+}
+(out.parent / "2026-10-08-policy-before-10.json").write_text(json.dumps(before_10, ensure_ascii=False, indent=1))
 print(f"wrote {out.relative_to(ROOT)} and updated {seed_path.relative_to(ROOT)} ({len(seed)} documents)")

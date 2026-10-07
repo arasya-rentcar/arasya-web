@@ -1378,15 +1378,15 @@
      },
      {
       "_key": "g2063df7b32",
-      "when": "On the day, up to 10 a.m. WIB, trip not yet started",
+      "when": "On the day, before 10 a.m. WIB, trip not yet started",
       "fee": "50% of the total booking",
-      "text": "Cancelling on the day of travel up to 10:00 a.m. WIB, as long as the driver has not yet set off to pick you up."
+      "text": "Cancelling on the day of travel before 10:00 a.m. WIB, as long as the driver has not yet set off to pick you up."
      },
      {
       "_key": "g4874f99f48",
-      "when": "On the day after 10 a.m. WIB, once the trip has started, or after the day",
+      "when": "On the day from 10 a.m. WIB, once the trip has started, or after the day",
       "fee": "100% of the total booking",
-      "text": "Cancelling after 10:00 a.m. WIB on the day of travel, once the trip has started (the driver has set off to pick you up), or after the travel day has passed."
+      "text": "Cancelling from 10:00 a.m. WIB on the day of travel, once the trip has started (the driver has set off to pick you up), or after the travel day has passed."
      }
     ],
     "closing": "Cancellation fees are calculated on the total booking. Thank you for your understanding."
@@ -1404,15 +1404,15 @@
     },
     {
      "_key": "g5dcd317b73",
-     "when": "Hari H hingga pukul 10.00 WIB, perjalanan belum dimulai",
+     "when": "Hari H sebelum pukul 10.00 WIB, perjalanan belum dimulai",
      "fee": "Biaya 50% dari total pesanan",
-     "text": "Pembatalan pada hari keberangkatan sampai pukul 10.00 WIB, selama driver belum berangkat menjemput."
+     "text": "Pembatalan pada hari keberangkatan sebelum pukul 10.00 WIB, selama driver belum berangkat menjemput."
     },
     {
      "_key": "gc6a3513ad0",
-     "when": "Hari H setelah pukul 10.00 WIB, perjalanan sudah dimulai, atau setelah hari H",
+     "when": "Hari H mulai pukul 10.00 WIB, perjalanan sudah dimulai, atau setelah hari H",
      "fee": "Biaya 100% dari total pesanan",
-     "text": "Pembatalan setelah pukul 10.00 WIB pada hari keberangkatan, setelah perjalanan dimulai (driver sudah berangkat menjemput), atau setelah hari keberangkatan lewat."
+     "text": "Pembatalan mulai pukul 10.00 WIB pada hari keberangkatan, setelah perjalanan dimulai (driver sudah berangkat menjemput), atau setelah hari keberangkatan lewat."
     }
    ],
    "closing": "Biaya pembatalan dihitung dari total pesanan. Terima kasih atas pengertian dan kerja sama Anda."
