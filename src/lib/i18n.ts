@@ -120,6 +120,16 @@ const id = {
   bkNotesPh: 'Mis. bawa 3 koper, butuh kursi bayi, nomor penerbangan…',
   bkHint: 'Data ini kami kirim ke WhatsApp admin supaya admin langsung bisa mengecek unit dan tarif.',
   bkMsg: { hello: 'Halo Arasya, saya mau pesan mobil dengan driver.', code: 'Kode pesanan', name: 'Nama', date: 'Tanggal', time: 'Jam jemput', pickup: 'Jemput di', dest: 'Tujuan', unit: 'Tipe mobil', pax: 'Jumlah penumpang', duration: 'Lama sewa', notes: 'Catatan', help: 'mohon dibantu pilihkan', locale: 'id-ID' },
+  // Place suggestions + map picker (only when PUBLIC_GOOGLE_MAPS_KEY is set). {n} = number of suggestions.
+  bkMap: {
+    open: 'Pilih di peta', title: 'Pilih titik di peta', close: 'Tutup', search: 'Cari nama tempat atau alamat',
+    hint: 'Geser peta sampai pin tepat di lokasinya.', finding: 'Mencari alamat titik ini…', noAddr: 'Alamat titik ini tidak ditemukan, titiknya tetap bisa dipakai.',
+    use: 'Pakai titik ini', mine: 'Pakai lokasi saya', locating: 'Mencari lokasi Anda…',
+    denied: 'Izin lokasi tidak diberikan. Geser peta atau cari alamatnya di atas.', locErr: 'Lokasi Anda belum terbaca. Coba lagi, atau geser peta ke titiknya.',
+    fail: 'Peta tidak bisa dimuat. Silakan ketik alamatnya saja, admin kami akan memastikan titiknya.',
+    pointSet: 'Titik dipilih', edit: 'Ubah', point: 'Titik di peta',
+    count: '{n} saran tempat. Pilih dengan panah atas/bawah lalu Enter.', none: 'Tidak ada saran. Alamat boleh diketik bebas.',
+  },
   // shared sections
   faqTitle: 'Pertanyaan yang sering diajukan',
   trustTitle: 'Kenapa memilih Arasya',
@@ -211,6 +221,15 @@ const en: Dict = {
   bkNotesPh: 'E.g. 3 suitcases, child seat, flight number…',
   bkHint: 'We send this to our WhatsApp team so they can check the car and price straight away.',
   bkMsg: { hello: "Hi Arasya, I'd like to book a car with a driver.", code: 'Booking code', name: 'Name', date: 'Date', time: 'Pick-up time', pickup: 'Pick-up', dest: 'Destination', unit: 'Car type', pax: 'Passengers', duration: 'Hire type', notes: 'Notes', help: 'please recommend one', locale: 'en-GB' },
+  bkMap: {
+    open: 'Pick on map', title: 'Pick a point on the map', close: 'Close', search: 'Search a place or address',
+    hint: 'Move the map until the pin sits on the exact spot.', finding: 'Looking up this address…', noAddr: 'No address found here, but you can still use this point.',
+    use: 'Use this point', mine: 'Use my location', locating: 'Finding your location…',
+    denied: 'Location access was not allowed. Move the map or search for the address above.', locErr: "We couldn't get your location. Try again, or move the map to the spot.",
+    fail: "The map couldn't load. Just type the address and our team will confirm the exact spot.",
+    pointSet: 'Point set', edit: 'Change', point: 'Map point',
+    count: '{n} suggestions. Use the up and down arrows, then Enter.', none: 'No suggestions. You can type the address freely.',
+  },
   faqTitle: 'Frequently asked questions',
   trustTitle: 'Why travel with Arasya',
   trustEyebrow: 'Our service',
