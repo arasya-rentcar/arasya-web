@@ -249,8 +249,13 @@ const places: { kind: 'pickup' | 'dest'; label: string; attrs: HTMLAttributes<'i
       // open, double tap) reuses its code and is not counted as a second lead.
       // A different map point changes the lines, so it counts as a new request.
       const key = 'arasya-lead:' + fingerprint(lines.join('|'));
+      // Before the fingerprint the full text was the key: still honoured (and removed).
+      const oldKey = 'arasya-lead:' + lines.join('|');
       let code = '';
-      try { code = sessionStorage.getItem(key) || ''; } catch {}
+      try {
+        code = sessionStorage.getItem(key) || sessionStorage.getItem(oldKey) || '';
+        sessionStorage.removeItem(oldKey);
+      } catch {}
       const repeat = !!code;
       if (!code) code = 'ARS-' + Array.from(crypto.getRandomValues(new Uint8Array(5)), (b) => alphabet[b % alphabet.length]).join('');
       try { sessionStorage.setItem(key, code); } catch {}

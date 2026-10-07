@@ -182,6 +182,11 @@ function attachSuggest(input: HTMLInputElement, box: HTMLElement, cfg: Config, o
   const pick = async (i: number) => {
     const pred = items[i];
     if (!pred) return;
+    // Drop a pending or in-flight lookup for the text typed before this choice:
+    // its answer would reopen the list (and could put another place's text
+    // next to this point).
+    clearTimeout(timer);
+    seq++;
     close();
     input.value = clip(String(pred.text?.text || pred.mainText?.text || ''));
     const shown = input.value;
@@ -300,8 +305,15 @@ function mapDialog(dialog: HTMLDialogElement, cfg: Config) {
     (opener?.getClientRects().length ? opener : target?.input)?.focus();
     target = null;
   });
-  // Click on the backdrop closes, like Esc.
-  dialog.addEventListener('click', (e) => { if (e.target === dialog) close(); });
+  // Click on the backdrop closes, like Esc. Only a press that started there:
+  // a map drag or text selection released outside also clicks the dialog.
+  let downOutside = false;
+  dialog.addEventListener('pointerdown', (e) => { downOutside = e.target === dialog; });
+  dialog.addEventListener('click', (e) => {
+    const outside = downOutside;
+    downOutside = false;
+    if (e.target === dialog && outside) close();
+  });
   $('[data-mp-close]').addEventListener('click', close);
   offHandlers.push(() => {
     if (!dialog.open) return;
@@ -349,6 +361,8 @@ function mapDialog(dialog: HTMLDialogElement, cfg: Config) {
       use.disabled = true;
       await lookup(c.lat, c.lng);
       use.disabled = false;
+      // Closed (cancelled) or reopened for another field while the address loaded.
+      if (target !== t) return;
       const name = found?.key === keyOf(c.lat, c.lng) ? found.name : '';
       // A dragged pin is the exact spot: no place id, so links open the pin, not the nearest address.
       p = { lat: c.lat, lng: c.lng, name: name || undefined, label: name || `${cfg.msg.point} (${c.lat}, ${c.lng})` };

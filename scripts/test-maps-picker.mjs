@@ -177,6 +177,17 @@ try {
     const body = await lastBeacon(page);
     check('no key: WhatsApp opens with the typed text', opened.length === 1 && decodeURIComponent(opened[0]).includes('Jemput di: Stasiun Bogor\n'), opened[0]);
     check('no key: lead beacon sent without coordinates', body && body.pickup_location === 'Stasiun Bogor' && !('pickup_lat' in body), JSON.stringify(body));
+    // A session from before the fingerprint (full text as the key) still reuses its code.
+    const text = new URL(opened[0]).searchParams.get('text').replace(/\n\[Ref: [^\]]*\]$/, '').split('\n');
+    text.splice(1, 1);
+    await page.evaluate((old) => {
+      for (const k of Object.keys(sessionStorage)) if (k.startsWith('arasya-lead:')) sessionStorage.removeItem(k);
+      sessionStorage.setItem(old, 'ARS-OLD22');
+    }, 'arasya-lead:' + text.join('|'));
+    await page.click('button[data-cta=booking]');
+    await page.waitForTimeout(200);
+    const again = await page.evaluate(() => ({ url: window.__opened[1] || '', beacons: window.__beacons.length, keys: Object.keys(sessionStorage).filter((k) => k.startsWith('arasya-lead:')) }));
+    check('no key: identical resend in a pre-fingerprint session reuses the code', decodeURIComponent(again.url).includes('ARS-OLD22') && again.beacons === 1 && again.keys.length === 1 && !again.keys[0].includes('Stasiun'), JSON.stringify(again));
     check('no key: no page errors', !errors.length, errors.join(' | '));
     await context.close();
   } else {
@@ -372,6 +383,69 @@ try {
       check('Esc closes the dialog', !(await page.locator('dialog.mp[open]').count()));
       check('no page errors (map dialog)', !errors.length, errors.join(' | '));
       void id;
+      await context.close();
+    }
+    // ------------------------------------------------------------ races
+    {
+      const { page, context, errors } = await open('/sewa-mobil-bogor');
+      const id = await page.getAttribute(pickup, 'id');
+      await page.click(pickup);
+      await typeSlow(page, pickup, 'Stasiun');
+      await page.waitForSelector(`${listOf(id)} li`, { state: 'visible' });
+      // Slow suggestions: the lookup for newer text is still in flight when a suggestion is chosen.
+      await page.evaluate(async () => {
+        const lib = await google.maps.importLibrary('places');
+        const orig = lib.AutocompleteSuggestion.fetchAutocompleteSuggestions;
+        lib.AutocompleteSuggestion.fetchAutocompleteSuggestions = async (r) => { await new Promise((ok) => setTimeout(ok, 600)); return orig(r); };
+      });
+      await page.keyboard.type(' B');
+      await page.waitForTimeout(400);
+      await page.keyboard.press('ArrowDown');
+      await page.keyboard.press('Enter');
+      await page.waitForSelector(`[data-place-chip=pickup]:not([hidden])`);
+      await page.waitForTimeout(900);
+      check('race: a lookup in flight does not reopen the list after a choice', !(await page.locator(listOf(id)).isVisible()));
+      // A choice while the debounce is pending: the chosen text is not looked up again.
+      await page.fill(pickup, '');
+      await typeSlow(page, pickup, 'Hotel');
+      await page.waitForSelector(`${listOf(id)} li`, { state: 'visible' });
+      const before = (await gm(page)).requests.length;
+      await page.keyboard.type(' ');
+      await page.keyboard.press('ArrowDown');
+      await page.keyboard.press('Enter');
+      await page.waitForTimeout(1500);
+      const after = (await gm(page)).requests.slice(before).map((r) => r.input);
+      check('race: a choice drops the pending debounce', after.length === 0 && !(await page.locator(listOf(id)).isVisible()), JSON.stringify(after));
+      // Esc while "Pakai titik ini" waits for the address: nothing is applied.
+      await page.click(`[data-place-map][data-kind=dest]`);
+      await page.waitForSelector('dialog.mp[open] [data-fake-map]');
+      await page.waitForTimeout(200);
+      await page.evaluate(async () => {
+        const { Geocoder } = await google.maps.importLibrary('geocoding');
+        const orig = Geocoder.prototype.geocode;
+        Geocoder.prototype.geocode = async function (r) { await new Promise((ok) => setTimeout(ok, 800)); return orig.call(this, r); };
+      });
+      await page.evaluate(() => window.__gm.map.drag(-6.61, 106.81));
+      await page.waitForTimeout(80);
+      await page.click('dialog.mp [data-mp-use]');
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(1200);
+      check('race: closing the dialog while the address loads cancels "use"', (await page.inputValue(dest)) === '' && (await page.$eval(dest, (el) => !el.arasyaPoint)), await page.inputValue(dest));
+      // A text selection released over the backdrop keeps the dialog open; a backdrop click closes it.
+      await page.click(`[data-place-map][data-kind=dest]`);
+      await page.waitForSelector('dialog.mp[open]');
+      await page.fill('dialog.mp [data-mp-search]', 'Stasiun Bogor');
+      const s = await page.locator('dialog.mp [data-mp-search]').boundingBox();
+      await page.mouse.move(s.x + s.width - 10, s.y + s.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(5, s.y + s.height / 2, { steps: 5 });
+      await page.mouse.up();
+      await page.waitForTimeout(100);
+      check('dialog: a drag released on the backdrop does not close it', (await page.locator('dialog.mp[open]').count()) === 1);
+      await page.mouse.click(5, 5);
+      await page.waitForTimeout(100);
+      check('dialog: a backdrop click closes it', !(await page.locator('dialog.mp[open]').count()));
+      check('no page errors (races)', !errors.length, errors.join(' | '));
       await context.close();
     }
     // ------------------------------------------------------------ phone: full-screen sheet, my location
