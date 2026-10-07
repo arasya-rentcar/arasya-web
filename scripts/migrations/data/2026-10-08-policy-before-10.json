@@ -1,13 +1,42 @@
 {
- "legalName": "PT Ayomi Raya Karsa",
- "bank": {
-  "_key": "k00001",
-  "bank": "BCA",
-  "number": "095 484 0782",
-  "owner": "a.n. PT Ayomi Raya Karsa"
+ "rewrites": {
+  "cancellationPolicy": [
+   [
+    "sampai pukul 10.00",
+    "sebelum pukul 10.00"
+   ],
+   [
+    "hingga pukul 10.00",
+    "sebelum pukul 10.00"
+   ],
+   [
+    "s.d. pukul 10.00",
+    "sebelum pukul 10.00"
+   ],
+   [
+    "s/d pukul 10.00",
+    "sebelum pukul 10.00"
+   ]
+  ],
+  "en.cancellationPolicy": [
+   [
+    "up to 10 a.m.",
+    "before 10 a.m."
+   ],
+   [
+    "up to 10:00 a.m.",
+    "before 10:00 a.m."
+   ],
+   [
+    "until 10 a.m.",
+    "before 10 a.m."
+   ],
+   [
+    "until 10:00",
+    "before 10:00"
+   ]
+  ]
  },
- "rateNotesAllIn": "Tarif All-in sudah termasuk BBM, tol, dan makan driver. Parkir, kelebihan jam, dan biaya luar kota (bila ada) dikonfirmasi terpisah. Kapasitas penumpang sudah termasuk jasa driver.",
- "rateNotesAllInEn": "The all-in rate includes fuel, tolls and the driver's meals. Parking, overtime and out-of-town charges, if any, are confirmed separately. Seat numbers include the driver.",
  "policy": {
   "title": "Kebijakan pembatalan",
   "intro": "Kami memahami bahwa rencana perjalanan dapat berubah sewaktu-waktu. Untuk menjaga kenyamanan dan kelancaran layanan, berikut ketentuan pembatalan yang berlaku:",

@@ -1378,9 +1378,9 @@
      },
      {
       "_key": "g2063df7b32",
-      "when": "On the day, up to 10 a.m. WIB, trip not yet started",
+      "when": "On the day, before 10 a.m. WIB, trip not yet started",
       "fee": "50% of the total booking",
-      "text": "Cancelling on the day of travel up to 10:00 a.m. WIB, as long as the driver has not yet set off to pick you up."
+      "text": "Cancelling on the day of travel before 10:00 a.m. WIB, as long as the driver has not yet set off to pick you up."
      },
      {
       "_key": "g4874f99f48",
@@ -1404,9 +1404,9 @@
     },
     {
      "_key": "g5dcd317b73",
-     "when": "Hari H hingga pukul 10.00 WIB, perjalanan belum dimulai",
+     "when": "Hari H sebelum pukul 10.00 WIB, perjalanan belum dimulai",
      "fee": "Biaya 50% dari total pesanan",
-     "text": "Pembatalan pada hari keberangkatan sampai pukul 10.00 WIB, selama driver belum berangkat menjemput."
+     "text": "Pembatalan pada hari keberangkatan sebelum pukul 10.00 WIB, selama driver belum berangkat menjemput."
     },
     {
      "_key": "gc6a3513ad0",
