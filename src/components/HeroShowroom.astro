@@ -7,8 +7,8 @@ import CarImage from './CarImage.astro';
 import Breadcrumbs from './Breadcrumbs.astro';
 import Icon from './Icon.astro';
 
-interface Props { hero: Hero; settings: Settings; cars: Car[]; refCode: string; fromPrice?: number; crumbs?: { name: string; path: string }[]; pickup?: string }
-const { hero, settings, cars, refCode, fromPrice, crumbs, pickup } = Astro.props;
+interface Props { hero: Hero; settings: Settings; cars: Car[]; refCode: string; fromPrice?: number; crumbs?: { name: string; path: string }[]; pickup?: string; mapCity?: string }
+const { hero, settings, cars, refCode, fromPrice, crumbs, pickup, mapCity } = Astro.props;
 const t = ui(langOf(Astro.url.pathname));
 const checks = t.heroChecks(settings.legalName);
 ---
@@ -32,7 +32,7 @@ const checks = t.heroChecks(settings.legalName);
       </div>
     </div>
     <div class="booking-wrap">
-      <BookingBar settings={settings} cars={cars} refCode={refCode} defaultPickup={pickup} />
+      <BookingBar settings={settings} cars={cars} refCode={refCode} defaultPickup={pickup} mapCity={mapCity} />
     </div>
   </div>
 </section>

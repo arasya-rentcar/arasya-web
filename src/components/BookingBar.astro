@@ -5,15 +5,23 @@
  * structured WhatsApp message. When PUBLIC_LEADS_API is set, the request is
  * also recorded in the admin dashboard (fire-and-forget; WhatsApp never waits
  * on it). Without JS the form falls back to a plain wa.me link.
+ *
+ * With PUBLIC_GOOGLE_MAPS_KEY set, pick-up and destination also get place
+ * suggestions and a map picker (src/lib/mapsPicker.ts, loaded on first use);
+ * a chosen point adds a map link to the message and coordinates to the lead.
+ * Without the key none of that markup or script exists.
  */
+import type { HTMLAttributes } from 'astro/types';
 import type { Car, Settings } from '../lib/content';
 import { langOf, ui } from '../lib/i18n';
 import { waHref } from '../lib/wa';
+import { mapBias } from '../lib/geo';
 import Icon from './Icon.astro';
 
-interface Props { settings: Settings; cars: Car[]; refCode: string; defaultPickup?: string; defaultDest?: string; defaultCar?: string; destLabel?: string }
-const t = ui(langOf(Astro.url.pathname));
-const { settings, cars, refCode, defaultPickup = '', defaultDest = '', defaultCar = '', destLabel = t.bkDest } = Astro.props;
+interface Props { settings: Settings; cars: Car[]; refCode: string; defaultPickup?: string; defaultDest?: string; defaultCar?: string; destLabel?: string; /** City code (Sanity) that place suggestions and the map start around. */ mapCity?: string }
+const lang = langOf(Astro.url.pathname);
+const t = ui(lang);
+const { settings, cars, refCode, defaultPickup = '', defaultDest = '', defaultCar = '', destLabel = t.bkDest, mapCity } = Astro.props;
 const fallback = waHref(settings.waPhone, t.bkMsg.hello, refCode);
 // Stable, language-independent keys for the t.bkDurations options (same order
 // in id and en; the first option is "not sure yet" and has none).
@@ -35,8 +43,15 @@ for (const c of cars) {
 const uid = 'bk-' + refCode.toLowerCase();
 // Optional dashboard endpoint base (no trailing slash); empty turns lead capture off.
 const leadsApi = (import.meta.env.PUBLIC_LEADS_API || '').trim().replace(/\/+$/, '');
+// Public browser key (HTTP-referrer restricted); empty turns suggestions and the map off.
+const mapsKey = (import.meta.env.PUBLIC_GOOGLE_MAPS_KEY || '').trim();
+const maps = mapsKey ? JSON.stringify({ key: mapsKey, lang, bias: mapBias(mapCity), msg: t.bkMap, dialog: `${uid}-map` }) : undefined;
+const places: { kind: 'pickup' | 'dest'; label: string; attrs: HTMLAttributes<'input'> }[] = [
+  { kind: 'pickup', label: t.bkPickup, attrs: { id: `${uid}-pickup`, name: 'pickup', type: 'text', placeholder: t.bkPickupPh, value: defaultPickup, autocomplete: 'street-address', maxlength: '300', required: true } },
+  { kind: 'dest', label: destLabel, attrs: { id: `${uid}-dest`, name: 'dest', type: 'text', placeholder: t.bkDestPh, value: defaultDest, maxlength: '300' } },
+];
 ---
-<form class="booking" data-booking data-fab-tuck data-phone={settings.waPhone} data-ref={refCode} data-msg={JSON.stringify(t.bkMsg)} data-leads-api={leadsApi || undefined} action={fallback} method="get">
+<form class="booking" data-booking data-fab-tuck data-phone={settings.waPhone} data-ref={refCode} data-msg={JSON.stringify(t.bkMsg)} data-leads-api={leadsApi || undefined} data-maps={maps} action={fallback} method="get">
   <div class="f w2">
     <label for={`${uid}-name`}>{t.bkName}</label>
     <input id={`${uid}-name`} name="name" type="text" placeholder={t.bkNamePh} autocomplete="name" maxlength="120" required />
@@ -56,14 +71,28 @@ const leadsApi = (import.meta.env.PUBLIC_LEADS_API || '').trim().replace(/\/+$/,
       {carOptions.map((o) => <option value={o.value} selected={!!defaultCar && (o.value === defaultCar || o.names.includes(defaultCar))}>{o.label}</option>)}
     </select>
   </div>
-  <div class="f w2">
-    <label for={`${uid}-pickup`}>{t.bkPickup}</label>
-    <input id={`${uid}-pickup`} name="pickup" type="text" placeholder={t.bkPickupPh} value={defaultPickup} autocomplete="street-address" maxlength="300" required />
-  </div>
-  <div class="f w2">
-    <label for={`${uid}-dest`}>{destLabel}</label>
-    <input id={`${uid}-dest`} name="dest" type="text" placeholder={t.bkDestPh} value={defaultDest} maxlength="300" />
-  </div>
+  {places.map((p) => mapsKey ? (
+    <div class="f w2">
+      <div class="lab">
+        <label for={p.attrs.id}>{p.label}</label>
+        <span class="place-chip" data-place-chip={p.kind} hidden><span aria-hidden="true">📍</span> {t.bkMap.pointSet} · <button type="button" data-place-edit data-kind={p.kind} aria-label={`${t.bkMap.edit} · ${p.label}`}>{t.bkMap.edit}</button></span>
+      </div>
+      <div class="place" data-place={p.kind}>
+        <input {...p.attrs} />
+        <button type="button" class="place-map" data-place-map data-kind={p.kind} aria-label={`${t.bkMap.open}: ${p.label}`} title={t.bkMap.open} hidden><Icon name="map" size={18} /></button>
+        <div class="place-pop" hidden>
+          <ul class="place-list" role="listbox" id={`${p.attrs.id}-list`} aria-label={p.label}></ul>
+          <p class="place-attr" translate="no">Google Maps</p>
+        </div>
+        <span class="sr-only" aria-live="polite" data-place-live></span>
+      </div>
+    </div>
+  ) : (
+    <div class="f w2">
+      <label for={p.attrs.id}>{p.label}</label>
+      <input {...p.attrs} />
+    </div>
+  ))}
   <div class="hp" aria-hidden="true">
     <label for={`${uid}-website`}>Website</label>
     <input id={`${uid}-website`} name="website" type="text" tabindex="-1" autocomplete="off" />
@@ -90,8 +119,36 @@ const leadsApi = (import.meta.env.PUBLIC_LEADS_API || '').trim().replace(/\/+$/,
   </details>
   <p class="hint">{t.bkHint}</p>
 </form>
+{mapsKey && (
+  <dialog class="mp" id={`${uid}-map`} aria-labelledby={`${uid}-map-title`}>
+    <div class="mp-head">
+      <h2 class="mp-title" id={`${uid}-map-title`} data-mp-title>{t.bkMap.title}</h2>
+      <button type="button" class="mp-x" data-mp-close aria-label={t.bkMap.close}>×</button>
+    </div>
+    <div class="mp-search place">
+      <input type="text" data-mp-search placeholder={t.bkMap.search} aria-label={t.bkMap.search} maxlength="300" enterkeyhint="search" />
+      <div class="place-pop" hidden>
+        <ul class="place-list" role="listbox" id={`${uid}-map-list`} aria-label={t.bkMap.search}></ul>
+        <p class="place-attr" translate="no">Google Maps</p>
+      </div>
+      <span class="sr-only" aria-live="polite" data-place-live></span>
+    </div>
+    <div class="mp-map">
+      <div class="mp-canvas" data-mp-canvas></div>
+      <svg class="mp-pin" width="36" height="44" viewBox="0 0 36 44" aria-hidden="true"><path d="M18 43s15-14.2 15-25.5A15 15 0 0 0 3 17.5C3 28.8 18 43 18 43z" fill="#046bd2" stroke="#fff" stroke-width="2"/><circle cx="18" cy="17.5" r="5.5" fill="#fff"/></svg>
+    </div>
+    <p class="mp-addr" data-mp-addr aria-live="polite">{t.bkMap.hint}</p>
+    <p class="mp-err" data-mp-err role="alert" hidden></p>
+    <div class="mp-actions">
+      <button type="button" class="btn btn-ghost" data-mp-mine hidden><Icon name="pin" />{t.bkMap.mine}</button>
+      <button type="button" class="btn btn-blue" data-mp-use>{t.bkMap.use}</button>
+    </div>
+  </dialog>
+)}
 
 <script>
+  import { mapsLink, pointOf } from '../lib/placePoint';
+
   const cookie = (name: string) => {
     const c = document.cookie.split('; ').find((x) => x.startsWith(name + '='));
     return c ? decodeURIComponent(c.slice(name.length + 1)) : '';
@@ -120,7 +177,40 @@ const leadsApi = (import.meta.env.PUBLIC_LEADS_API || '').trim().replace(/\/+$/,
     } catch {}
   };
 
+  // Short, non-reversible fingerprint (cyrb53) so the resend key below does not
+  // keep names, addresses or map points in sessionStorage.
+  const fingerprint = (str: string) => {
+    let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+    for (let i = 0; i < str.length; i++) {
+      const ch = str.charCodeAt(i);
+      h1 = Math.imul(h1 ^ ch, 2654435761);
+      h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+  };
+
   document.querySelectorAll<HTMLFormElement>('form[data-booking]').forEach((form) => {
+    // Place suggestions + map picker: only when the build has a Maps key. The
+    // module (and Google's script) load on the first touch of a place field
+    // or a map button, never with the page; any failure leaves plain text.
+    // (The env check lets builds without a key drop this code entirely.)
+    if (import.meta.env.PUBLIC_GOOGLE_MAPS_KEY && form.dataset.maps) {
+      type Picker = import('../lib/mapsPicker').Picker | null;
+      let picker: Promise<Picker> | undefined;
+      const start = () => (picker ||= import('../lib/mapsPicker').then((m) => m.enhance(form)).catch((): Picker => (form.classList.add('maps-off'), null)));
+      form.querySelectorAll<HTMLInputElement>('.place input').forEach((input) => {
+        input.addEventListener('focus', start, { once: true });
+        input.addEventListener('pointerdown', start, { once: true });
+      });
+      form.querySelectorAll<HTMLElement>('[data-place-map]').forEach((b) => { b.hidden = false; });
+      form.addEventListener('click', (ev) => {
+        const b = (ev.target as Element).closest<HTMLElement>('[data-place-map], [data-place-edit]');
+        if (!b) return;
+        start().then((p) => p?.open(b.dataset.kind as 'pickup' | 'dest', b));
+      });
+    }
     const date = form.querySelector<HTMLInputElement>('input[name=date]');
     if (date && !date.value) {
       // The visitor's own calendar date (toISOString would give the UTC date).
@@ -137,14 +227,17 @@ const leadsApi = (import.meta.env.PUBLIC_LEADS_API || '').trim().replace(/\/+$/,
       const tanggal = get('date')
         ? new Date(get('date') + 'T00:00:00').toLocaleDateString(m.locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
         : '…';
+      // Points chosen from suggestions or the map (only while the text is unchanged).
+      const pickupPoint = get('pickup') ? pointOf(form.querySelector('input[name=pickup]')) : undefined;
+      const destPoint = get('dest') ? pointOf(form.querySelector('input[name=dest]')) : undefined;
       const lines = [
         m.hello,
         '',
         `${m.name}: ${get('name') || '…'}`,
         `${m.date}: ${tanggal}`,
         `${m.time}: ${get('time') || '…'}`,
-        `${m.pickup}: ${get('pickup') || '…'}`,
-        `${m.dest}: ${get('dest') || '…'}`,
+        `${m.pickup}: ${get('pickup') || '…'}${pickupPoint ? ` (${mapsLink(pickupPoint)})` : ''}`,
+        `${m.dest}: ${get('dest') || '…'}${destPoint ? ` (${mapsLink(destPoint)})` : ''}`,
         `${m.unit}: ${get('car') || m.help}`,
       ];
       if (get('pax')) lines.push(`${m.pax}: ${get('pax')}`);
@@ -154,9 +247,15 @@ const leadsApi = (import.meta.env.PUBLIC_LEADS_API || '').trim().replace(/\/+$/,
       const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
       // Sending the identical request again in the same visit (WhatsApp didn't
       // open, double tap) reuses its code and is not counted as a second lead.
-      const key = 'arasya-lead:' + lines.join('|');
+      // A different map point changes the lines, so it counts as a new request.
+      const key = 'arasya-lead:' + fingerprint(lines.join('|'));
+      // Before the fingerprint the full text was the key: still honoured (and removed).
+      const oldKey = 'arasya-lead:' + lines.join('|');
       let code = '';
-      try { code = sessionStorage.getItem(key) || ''; } catch {}
+      try {
+        code = sessionStorage.getItem(key) || sessionStorage.getItem(oldKey) || '';
+        sessionStorage.removeItem(oldKey);
+      } catch {}
       const repeat = !!code;
       if (!code) code = 'ARS-' + Array.from(crypto.getRandomValues(new Uint8Array(5)), (b) => alphabet[b % alphabet.length]).join('');
       try { sessionStorage.setItem(key, code); } catch {}
@@ -181,6 +280,9 @@ const leadsApi = (import.meta.env.PUBLIC_LEADS_API || '').trim().replace(/\/+$/,
             campaign: src, gclid, ga_client_id: ga.clientId, ga_session_id: ga.sessionId,
             website: String(f.get('website') || ''),
           };
+          // Only when a point was chosen; numbers, ~6 decimals (placePoint.ts).
+          if (pickupPoint) Object.assign(body, { pickup_lat: pickupPoint.lat, pickup_lng: pickupPoint.lng, pickup_place_id: pickupPoint.placeId || '', pickup_place_name: pickupPoint.name || '' });
+          if (destPoint) Object.assign(body, { destination_lat: destPoint.lat, destination_lng: destPoint.lng, destination_place_id: destPoint.placeId || '', destination_place_name: destPoint.name || '' });
           for (const k in body) if (body[k] === '') delete body[k];
           sendLead(form.dataset.leadsApi + '/api/v1/public/leads', body);
         } catch {}
@@ -208,6 +310,50 @@ const leadsApi = (import.meta.env.PUBLIC_LEADS_API || '').trim().replace(/\/+$/,
   .more-grid { display: grid; grid-template-columns: 1fr 1.4fr 3fr; gap: 10px; margin-top: 10px; }
   .hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
   .hint { grid-column: 1 / -1; font-size: 0.8rem; color: var(--soft); margin-top: -4px; }
+  /* Place suggestions + map picker (only rendered with a Maps key). */
+  .lab { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; min-width: 0; }
+  .place-chip { font: 600 0.75rem/1 var(--text); color: var(--deep); white-space: nowrap; }
+  .place-chip[hidden] { display: none; }
+  .place-chip button { font: inherit; color: var(--blue); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+  .place { position: relative; min-width: 0; }
+  .place:has(.place-map:not([hidden])) input { padding-right: 44px; }
+  .place-map { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; display: grid; place-items: center; border: 0; border-radius: 6px; background: none; color: var(--soft); cursor: pointer; }
+  .place-map:hover, .place-map:focus-visible { color: var(--blue); background: var(--sky); }
+  .place-map.on { color: var(--blue); }
+  .place-map[hidden], .maps-off .place-map, .maps-off [data-place-edit] { display: none; }
+  .place-pop { position: absolute; z-index: 40; left: 0; right: 0; top: calc(100% + 4px); min-width: min(320px, 86vw); background: #fff; border: 1px solid var(--line); border-radius: var(--radius-sm); box-shadow: var(--shadow); overflow: hidden; }
+  .place-pop[hidden] { display: none; }
+  .place-list { list-style: none; margin: 0; padding: 4px 0; }
+  .place-list :global(li) { display: grid; gap: 2px; padding: 9px 12px; cursor: pointer; text-align: left; }
+  .place-list :global(li[aria-selected='true']) { background: var(--sky); }
+  .place-list :global(b) { font: 700 0.9rem/1.25 var(--text); color: var(--ink); }
+  .place-list :global(span) { font: 400 0.8rem/1.3 var(--text); color: var(--soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* Google's attribution for Places data shown without a Google map. */
+  .place-attr { margin: 0; padding: 6px 12px 8px; text-align: right; font: 400 12px/1 Roboto, Arial, sans-serif; color: #5e5e5e; border-top: 1px solid #eef1f4; }
+  .mp { width: min(720px, calc(100vw - 32px)); height: min(640px, calc(100dvh - 48px)); max-width: none; max-height: none; padding: 0; border: 0; border-radius: var(--radius); box-shadow: var(--shadow); color: var(--ink); overflow: visible; }
+  .mp[open] { display: flex; flex-direction: column; }
+  .mp::backdrop { background: rgba(1, 24, 48, 0.55); }
+  :global(html.mp-lock) { overflow: hidden; }
+  .mp-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 12px 8px 16px; }
+  .mp-title { margin: 0; font: 700 1rem/1.3 var(--display); color: var(--deep); }
+  .mp-x { width: 40px; height: 40px; flex: none; border: 0; border-radius: 50%; background: var(--paper); font-size: 1.5rem; line-height: 1; color: var(--deep); cursor: pointer; }
+  .mp-search { padding: 0 16px 10px; }
+  .mp-search .place-pop { left: 16px; right: 16px; z-index: 60; }
+  .mp-map { position: relative; flex: 1; min-height: 220px; background: var(--paper); }
+  .mp-canvas { position: absolute; inset: 0; }
+  .mp-pin { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -100%); pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3)); }
+  .mp-addr { margin: 0; padding: 10px 16px 0; min-height: 2.6em; font-size: 0.9rem; color: var(--body); }
+  .mp-err { margin: 6px 16px 0; padding: 8px 10px; border-radius: var(--radius-sm); background: #fff4ed; color: #9a3412; font-size: 0.85rem; }
+  .mp-err[hidden] { display: none; }
+  .mp-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; padding: 12px 16px 16px; }
+  .mp-actions .btn[hidden] { display: none; }
+  .mp-actions .btn:disabled { opacity: 0.6; cursor: progress; }
+  /* Phones: a full-screen sheet with the main button in thumb reach. */
+  @media (max-width: 640px) {
+    .mp { width: 100vw; height: 100dvh; border-radius: 0; margin: 0; inset: 0; }
+    .mp-actions { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+    .mp-actions .btn { flex: 1 1 100%; }
+  }
   @media (max-width: 920px) {
     .booking { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .w2, .btn { grid-column: 1 / -1; }
