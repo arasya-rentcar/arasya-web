@@ -759,6 +759,27 @@ try {
       check('osm: generate_lead still pushed', dl === 1);
       await context.close();
     }
+    // ------------------------------------------------------------ OSM: an invalid point is never sent or used
+    {
+      const { page, context, errors, osm } = await open('/sewa-mobil-bogor');
+      await page.fill('input[name=name]', 'Tes');
+      await page.fill(pickup, 'Rumah Tes');
+      // As if a provider handed over garbage: out of range / NaN.
+      await page.$eval(pickup, (el) => { el.arasyaPoint = { lat: 123, lng: NaN, name: 'x' }; });
+      await page.click('button[data-cta=booking]');
+      await page.waitForTimeout(200);
+      const opened = await page.evaluate(() => window.__opened);
+      const body = await lastBeacon(page);
+      check('osm invalid point: lead + WhatsApp sent as free text, no coordinates or map link', opened.length === 1 && body?.pickup_location === 'Rumah Tes' && !('pickup_lat' in body) && !('pickup_place_name' in body) && !decodeURIComponent(opened[0]).includes('maps/search'), JSON.stringify(body));
+      await page.click(`[data-place-map][data-kind=pickup]`);
+      await page.waitForSelector('dialog.mp[open] .leaflet-container');
+      await waitFor(() => osm.reverse.length >= 1);
+      check('osm invalid point: the map opens at the page city instead', osm.reverse[0]?.lat === '-6.5971' && osm.reverse[0]?.lon === '106.806', JSON.stringify(osm.reverse[0]));
+      const map = await page.$eval('dialog.mp .leaflet-container', (el) => ({ role: el.getAttribute('role'), label: el.getAttribute('aria-label'), tab: el.tabIndex }));
+      check('osm a11y: the focusable map has a name', map.role === 'region' && map.label === 'Pilih titik di peta' && map.tab === 0, JSON.stringify(map));
+      check('osm: no page errors (invalid point)', !errors.length, errors.join(' | '));
+      await context.close();
+    }
     // ------------------------------------------------------------ OSM: stale answers, errors, throttling
     {
       const { page, context, errors, osm } = await open('/sewa-mobil-bogor');

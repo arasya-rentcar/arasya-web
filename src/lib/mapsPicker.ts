@@ -394,8 +394,10 @@ export function enhance(form: HTMLFormElement, mod: ProviderModule): Picker | nu
     const apply = (p: Picked | null) => {
       if (p) input.value = p.label;
       setPoint(input, p && { lat: p.lat, lng: p.lng, placeId: p.placeId, name: p.name });
-      if (chip) chip.hidden = !p;
-      btn?.classList.toggle('on', !!p);
+      // An invalid point is not stored (placePoint.ts): no chip for it, the text stays.
+      const set = !!pointOf(input);
+      if (chip) chip.hidden = !set;
+      btn?.classList.toggle('on', set);
     };
     // Editing the text drops the point: text and point always match.
     input.addEventListener('input', () => { if (pointOf(input)) apply(null); });

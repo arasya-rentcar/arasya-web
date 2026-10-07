@@ -149,6 +149,9 @@ export function create(opts: ProviderOptions): Provider {
         document.head.append(style);
       }
       const map = L.map(el, { center: [center.lat, center.lng], zoom, maxZoom: 19, zoomControl: false });
+      // Leaflet makes the map focusable (arrow keys pan it) but gives it no name.
+      el.setAttribute('role', 'region');
+      el.setAttribute('aria-label', opts.msg.title);
       L.control.zoom({ position: 'topright', zoomInTitle: opts.msg.zoomIn, zoomOutTitle: opts.msg.zoomOut }).addTo(map);
       L.tileLayer(TILES, { maxZoom: 19, attribution: ATTRIBUTION }).addTo(map);
       map.on('dragstart', on.dragStart);
