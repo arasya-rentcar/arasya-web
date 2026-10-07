@@ -7,7 +7,7 @@
 export interface PlacePoint {
   lat: number;
   lng: number;
-  /** Google place id; only when the visitor chose a suggested place. */
+  /** Google place id; only when the visitor chose a Google suggestion (never with OSM). */
   placeId?: string;
   /** Place name (suggestion) or the address found for a map point. */
   name?: string;
@@ -15,10 +15,21 @@ export interface PlacePoint {
 
 type WithPoint = HTMLInputElement & { arasyaPoint?: PlacePoint };
 
-export const pointOf = (input: Element | null | undefined): PlacePoint | undefined => (input as WithPoint | null)?.arasyaPoint;
+/**
+ * Finite WGS84 coordinates in range. Checked when a point is stored and when it
+ * is read, so a provider bug can never put NaN or an impossible point into the
+ * WhatsApp link, the lead or the map (the text is still sent as typed).
+ */
+export const isValidPoint = (p: Partial<PlacePoint> | null | undefined): p is PlacePoint =>
+  !!p && Number.isFinite(p.lat) && Number.isFinite(p.lng) && Math.abs(p.lat!) <= 90 && Math.abs(p.lng!) <= 180;
+
+export const pointOf = (input: Element | null | undefined): PlacePoint | undefined => {
+  const p = (input as WithPoint | null)?.arasyaPoint;
+  return isValidPoint(p) ? p : undefined;
+};
 
 export const setPoint = (input: HTMLInputElement, point: PlacePoint | null) => {
-  (input as WithPoint).arasyaPoint = point || undefined;
+  (input as WithPoint).arasyaPoint = isValidPoint(point) ? point : undefined;
 };
 
 /** About 10 cm: plenty for a pick-up point, and short in links. */

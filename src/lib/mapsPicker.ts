@@ -1,33 +1,31 @@
 /**
- * Place suggestions and the map picker for the booking form (Google Maps
- * Platform). BookingBar imports this module only when PUBLIC_GOOGLE_MAPS_KEY
- * is set, and only once the visitor first touches the pick-up or destination
- * field or a map button; the Google script loads at that moment, never with
- * the page.
+ * Place suggestions and the map picker for the booking form, independent of
+ * the map provider (maps/provider.ts; maps/osm.ts or maps/google.ts, chosen at
+ * build time by PUBLIC_MAPS_PROVIDER). BookingBar imports this module and the
+ * provider only when the feature is on, and only once the visitor first
+ * touches the pick-up or destination field or a map button; nothing loads
+ * with the page.
  *
  * Everything here is an extra: free text is always accepted, and if the
- * script fails, the key is rejected or a request errors, the form keeps
- * working exactly as without it (the map buttons disappear, nothing blocks
- * sending).
- *
- * APIs used (restrict the key to exactly these): Maps JavaScript API (loader,
- * Map), Places API (New) (AutocompleteSuggestion, Place.fetchFields with
- * displayName/formattedAddress/location only) and Geocoding API (Geocoder,
- * reverse geocoding when the map stops moving).
+ * provider cannot load, rejects us or errors three times in a row, the form
+ * keeps working exactly as without it (the map buttons disappear, nothing
+ * blocks sending).
  *
  * Location data is personal data: nothing here logs, stores or sends it
- * anywhere except to Google for the lookup itself; the chosen point stays on
- * the input element (placePoint.ts) until the form is sent.
+ * anywhere except to the provider for the lookup itself; the chosen point
+ * stays on the input element (placePoint.ts) until the form is sent.
  */
 import type { MapBias } from './geo';
+import { labelOf, type LatLng, type MapView, type Provider, type ProviderOptions, type Suggestion } from './maps/provider';
 import { pointOf, round6, setPoint, type PlacePoint } from './placePoint';
 
 type Kind = 'pickup' | 'dest';
 type Msg = Record<string, string>;
-interface Config { key: string; lang: string; bias: MapBias; msg: Msg; dialog: string }
+interface Config { provider: string; key?: string; lang: string; bias: MapBias; msg: Msg; dialog: string }
 /** A chosen place, plus the text the field shows for it. */
 type Picked = PlacePoint & { label: string };
 export interface Picker { open(kind: Kind, opener: HTMLElement): void }
+export interface ProviderModule { create(opts: ProviderOptions): Provider }
 
 const MAX_TEXT = 300;
 let broken = false;
@@ -37,81 +35,36 @@ const fail = () => {
   broken = true;
   offHandlers.forEach((f) => f());
 };
-
-/**
- * Google's dynamic library import bootstrap
- * (developers.google.com/maps/documentation/javascript/load-maps-js-api),
- * unminified: defines google.maps.importLibrary, which adds the <script> on
- * its first call and then hands over to the real implementation. Added: a
- * timeout, and a guard against a script that loads without installing it.
- */
-function installLoader(params: Record<string, string>) {
-  const w = window as any;
-  const maps = ((w.google ||= {}).maps ||= {});
-  if (maps.importLibrary) return;
-  const libraries = new Set<string>();
-  let loading: Promise<void> | undefined;
-  const load = () =>
-    (loading ||= new Promise<void>((resolve, reject) => {
-      const q = new URLSearchParams();
-      q.set('libraries', [...libraries].join(','));
-      for (const k in params) q.set(k.replace(/[A-Z]/g, (c) => '_' + c.toLowerCase()), params[k]);
-      q.set('callback', 'google.maps.__ib__');
-      maps.__ib__ = resolve;
-      const s = document.createElement('script');
-      s.src = 'https://maps.googleapis.com/maps/api/js?' + q;
-      s.async = true;
-      s.nonce = (document.querySelector('script[nonce]') as HTMLScriptElement | null)?.nonce || '';
-      s.onerror = () => reject(new Error('maps script'));
-      setTimeout(() => reject(new Error('maps timeout')), 20000);
-      document.head.append(s);
-    }));
-  const bootstrap = (name: string, ...rest: unknown[]): Promise<any> => {
-    libraries.add(name);
-    return load().then(() => {
-      if (maps.importLibrary === bootstrap) throw new Error('maps not installed');
-      return maps.importLibrary(name, ...rest);
-    });
-  };
-  maps.importLibrary = bootstrap;
-}
-
-const lib = (name: string): Promise<any> => {
-  if (broken) return Promise.reject(new Error('maps off'));
-  return (window as any).google.maps.importLibrary(name).catch((e: unknown) => {
-    fail();
-    throw e;
-  });
+// Provider errors in a row (network, throttled, down); the third turns the extras off.
+let strikes = 0;
+const ok = () => { strikes = 0; };
+const strike = (e: unknown) => {
+  if ((e as Error)?.name === 'AbortError') return;
+  if (++strikes >= 3) fail();
 };
 
-const labelOf = (name: string, address: string) => {
-  if (!name) return address;
-  if (!address || address.toLowerCase().startsWith(name.toLowerCase())) return address || name;
-  return `${name}, ${address}`;
-};
 const clip = (s: string) => s.slice(0, MAX_TEXT);
 
 /**
  * ARIA combobox on a text input: suggestions after 3 characters, 300 ms after
- * the last keystroke, at most 5, one session token per typing + choosing
- * session (the session ends with the fetchFields call on the chosen place).
+ * the last keystroke, at most 5; newer typing aborts a lookup in flight.
  */
-function attachSuggest(input: HTMLInputElement, box: HTMLElement, cfg: Config, onPick: (p: Picked) => void) {
+function attachSuggest(input: HTMLInputElement, box: HTMLElement, cfg: Config, provider: Provider, onPick: (p: Picked) => void) {
   const pop = box.querySelector<HTMLElement>('.place-pop')!;
   const list = pop.querySelector<HTMLUListElement>('[role=listbox]')!;
   const live = box.querySelector<HTMLElement>('[data-place-live]');
+  const suggester = provider.suggester();
   input.setAttribute('role', 'combobox');
   input.setAttribute('aria-autocomplete', 'list');
   input.setAttribute('aria-expanded', 'false');
   input.setAttribute('aria-controls', list.id);
   // The browser's own address autofill list would cover ours.
   input.setAttribute('autocomplete', 'off');
-  let items: any[] = [];
+  let items: Suggestion[] = [];
   let active = -1;
   let timer: ReturnType<typeof setTimeout> | undefined;
   let seq = 0;
-  let token: any = null;
-  let errors = 0;
+  let inflight: AbortController | null = null;
 
   const close = () => {
     pop.hidden = true;
@@ -141,9 +94,9 @@ function attachSuggest(input: HTMLInputElement, box: HTMLElement, cfg: Config, o
         li.setAttribute('role', 'option');
         li.setAttribute('aria-selected', 'false');
         const name = document.createElement('b');
-        name.textContent = p.mainText?.text || p.text?.text || '';
+        name.textContent = p.main;
         const sub = document.createElement('span');
-        sub.textContent = p.secondaryText?.text || '';
+        sub.textContent = p.sub;
         li.append(name, sub);
         return li;
       }),
@@ -155,61 +108,59 @@ function attachSuggest(input: HTMLInputElement, box: HTMLElement, cfg: Config, o
     highlight(-1);
     reveal();
   };
+  // Drop a pending or in-flight lookup: its answer is for older text.
+  const cancel = () => {
+    clearTimeout(timer);
+    seq++;
+    inflight?.abort();
+    inflight = null;
+  };
   const query = async () => {
     const text = input.value.trim();
     const my = ++seq;
-    if (text.length < 3 || broken || errors >= 3) return close();
+    if (text.length < 3 || broken) return close();
+    const ctl = (inflight = new AbortController());
     try {
-      const { AutocompleteSuggestion, AutocompleteSessionToken } = await lib('places');
-      token ||= new AutocompleteSessionToken();
-      const { suggestions } = await AutocompleteSuggestion.fetchAutocompleteSuggestions({
-        input: text,
-        sessionToken: token,
-        language: cfg.lang,
-        region: 'id',
-        // Bias, never restrict: the site also serves other cities and countries.
-        locationBias: { center: { lat: cfg.bias.lat, lng: cfg.bias.lng }, radius: cfg.bias.radius },
-      });
+      const found = await suggester.suggest(text, ctl.signal);
+      ok();
       if (my !== seq || document.activeElement !== input) return;
-      errors = 0;
-      items = (suggestions || []).map((s: any) => s.placePrediction).filter(Boolean).slice(0, 5);
+      items = found.slice(0, 5);
       render();
-    } catch {
-      errors++;
+    } catch (e) {
+      strike(e);
       if (my === seq) close();
+    } finally {
+      if (inflight === ctl) inflight = null;
     }
   };
   const pick = async (i: number) => {
-    const pred = items[i];
-    if (!pred) return;
-    // Drop a pending or in-flight lookup for the text typed before this choice:
-    // its answer would reopen the list (and could put another place's text
-    // next to this point).
-    clearTimeout(timer);
-    seq++;
+    const s = items[i];
+    if (!s) return;
+    // Its answer would reopen the list (and could put another place's text next to this point).
+    cancel();
     close();
-    input.value = clip(String(pred.text?.text || pred.mainText?.text || ''));
+    input.value = clip(s.text || s.main);
     const shown = input.value;
-    token = null; // fetchFields below closes this session
     try {
-      const place = pred.toPlace();
-      await place.fetchFields({ fields: ['displayName', 'formattedAddress', 'location'] });
+      const place = await suggester.resolve(s);
+      ok();
       // The visitor kept typing meanwhile: their text wins.
-      if (input.value !== shown || !place.location) return;
-      const name = String(place.displayName || pred.mainText?.text || '');
+      if (input.value !== shown || !place) return;
+      const name = place.name || s.main;
       onPick({
-        lat: round6(place.location.lat()),
-        lng: round6(place.location.lng()),
-        placeId: place.id || pred.placeId || undefined,
+        lat: place.lat,
+        lng: place.lng,
+        placeId: place.placeId || undefined,
         name: clip(name),
-        label: clip(labelOf(name, String(place.formattedAddress || ''))),
+        label: clip(labelOf(name, place.address)),
       });
-    } catch {}
+    } catch (e) {
+      strike(e);
+    }
   };
 
   input.addEventListener('input', () => {
-    clearTimeout(timer);
-    seq++;
+    cancel();
     if (input.value.trim().length < 3) close();
     else timer = setTimeout(query, 300);
   });
@@ -233,8 +184,8 @@ function attachSuggest(input: HTMLInputElement, box: HTMLElement, cfg: Config, o
     } else if (e.key === 'Tab') close();
   });
   input.addEventListener('blur', () => setTimeout(() => { if (document.activeElement !== input) close(); }, 200));
-  // Keep focus in the field while tapping a suggestion.
-  const keep = (e: Event) => e.preventDefault();
+  // Keep focus in the field while tapping a suggestion (the attribution link still works).
+  const keep = (e: Event) => { if (!(e.target as Element).closest('a')) e.preventDefault(); };
   pop.addEventListener('mousedown', keep);
   pop.addEventListener('pointerdown', keep);
   list.addEventListener('click', (e) => {
@@ -248,7 +199,7 @@ function attachSuggest(input: HTMLInputElement, box: HTMLElement, cfg: Config, o
 }
 
 /** Map dialog (desktop) / full-screen sheet (phones), one per form. */
-function mapDialog(dialog: HTMLDialogElement, cfg: Config) {
+function mapDialog(dialog: HTMLDialogElement, cfg: Config, provider: Provider) {
   const $ = <T extends Element = HTMLElement>(s: string) => dialog.querySelector(s) as T;
   const title = $('[data-mp-title]');
   const canvas = $('[data-mp-canvas]');
@@ -258,8 +209,8 @@ function mapDialog(dialog: HTMLDialogElement, cfg: Config) {
   const mine = $<HTMLButtonElement>('[data-mp-mine]');
   const search = $<HTMLInputElement>('[data-mp-search]');
   const canLocate = 'geolocation' in navigator;
-  let map: any = null;
-  let geocoder: any = null;
+  let view: MapView | null = null;
+  let viewReady: Promise<MapView> | null = null;
   let target: { input: HTMLInputElement; apply: (p: Picked) => void } | null = null;
   let opener: HTMLElement | null = null;
   // A suggested place the map was moved to (keeps its name and id while the map stays there).
@@ -267,32 +218,37 @@ function mapDialog(dialog: HTMLDialogElement, cfg: Config) {
   // The last reverse-geocoded centre.
   let found: { key: string; name: string; done: Promise<void> } | null = null;
   let geoSeq = 0;
+  let geoCtl: AbortController | null = null;
 
   const say = (text: string) => { addr.textContent = text; };
   const showErr = (text: string) => { err.textContent = text; err.hidden = !text; };
   const keyOf = (lat: number, lng: number) => `${round6(lat)},${round6(lng)}`;
-  const center = () => { const c = map.getCenter(); return { lat: round6(c.lat()), lng: round6(c.lng()) }; };
-  const near = (a: { lat: number; lng: number }, b: { lat: number; lng: number }) => Math.abs(a.lat - b.lat) < 1e-5 && Math.abs(a.lng - b.lng) < 1e-5;
+  const near = (a: LatLng, b: LatLng) => Math.abs(a.lat - b.lat) < 1e-5 && Math.abs(a.lng - b.lng) < 1e-5;
 
-  // Reverse geocode once per stop (idle), never while the map moves.
+  // Reverse geocode once per stop (idle), never while the map moves; a newer stop aborts an older lookup.
   const lookup = (lat: number, lng: number) => {
     const key = keyOf(lat, lng);
     if (found?.key === key) return found.done;
     const my = ++geoSeq;
+    geoCtl?.abort();
+    const ctl = (geoCtl = new AbortController());
     const entry = { key, name: '', done: Promise.resolve() };
     found = entry;
     say(cfg.msg.finding);
     entry.done = (async () => {
       try {
-        const { results } = await geocoder.geocode({ location: { lat, lng }, language: cfg.lang });
-        entry.name = clip(String(results?.[0]?.formatted_address || ''));
-      } catch {}
+        entry.name = clip(await provider.reverse({ lat, lng }, ctl.signal));
+        ok();
+      } catch (e) {
+        strike(e);
+      }
       if (my === geoSeq) say(entry.name || cfg.msg.noAddr);
     })();
     return entry.done;
   };
   const onIdle = () => {
-    const c = center();
+    if (!view) return;
+    const c = view.getCenter();
     if (candidate && near(candidate, c)) return say(candidate.label);
     candidate = null;
     lookup(c.lat, c.lng);
@@ -321,12 +277,11 @@ function mapDialog(dialog: HTMLDialogElement, cfg: Config) {
     use.hidden = mine.hidden = true;
   });
 
-  attachSuggest(search, $('.place'), cfg, (p) => {
-    if (!map) return;
+  attachSuggest(search, $('.place'), cfg, provider, (p) => {
+    if (!view) return;
     candidate = p;
     search.value = p.label;
-    map.setCenter({ lat: p.lat, lng: p.lng });
-    map.setZoom(17);
+    view.setCenter(p, 17);
     say(p.label);
   });
 
@@ -337,10 +292,9 @@ function mapDialog(dialog: HTMLDialogElement, cfg: Config) {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         mine.disabled = false;
-        if (!map) return;
+        if (!view) return;
         candidate = null;
-        map.setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        map.setZoom(17);
+        view.setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude }, 17);
       },
       (e) => {
         mine.disabled = false;
@@ -352,9 +306,9 @@ function mapDialog(dialog: HTMLDialogElement, cfg: Config) {
   });
 
   use.addEventListener('click', async () => {
-    if (!map || !target) return;
+    if (!view || !target) return;
     const t = target;
-    const c = center();
+    const c = view.getCenter();
     let p: Picked;
     if (candidate && near(candidate, c)) p = candidate;
     else {
@@ -387,31 +341,22 @@ function mapDialog(dialog: HTMLDialogElement, cfg: Config) {
       // Typing straight away is natural with a mouse; on phones the keyboard would cover the map.
       if (matchMedia('(pointer: fine)').matches) search.focus();
       else $<HTMLButtonElement>('[data-mp-close]').focus();
+      const p = pointOf(input);
+      const start = p ? { lat: p.lat, lng: p.lng } : { lat: cfg.bias.lat, lng: cfg.bias.lng };
+      const zoom = p ? 17 : cfg.bias.zoom;
+      candidate = p ? { ...p, label: input.value } : null;
       try {
-        const [{ Map }, { Geocoder }] = await Promise.all([lib('maps'), lib('geocoding')]);
+        // The first open creates the map at the start point; later opens move it there.
+        const fresh = !viewReady;
+        viewReady ||= provider.createMap(canvas, start, zoom, { dragStart: () => { candidate = null; }, idle: onIdle });
+        view = await viewReady;
         if (target?.input !== input) return;
-        const p = pointOf(input);
-        const start = p ? { lat: p.lat, lng: p.lng } : { lat: cfg.bias.lat, lng: cfg.bias.lng };
-        candidate = p ? { ...p, label: input.value } : null;
-        geocoder ||= new Geocoder();
-        if (!map) {
-          map = new Map(canvas, {
-            center: start,
-            zoom: p ? 17 : cfg.bias.zoom,
-            // One finger pans the map inside the sheet (the page behind does not scroll).
-            gestureHandling: 'greedy',
-            disableDefaultUI: true,
-            zoomControl: true,
-            clickableIcons: false,
-          });
-          map.addListener('dragstart', () => { candidate = null; });
-          map.addListener('idle', onIdle);
-        } else {
-          map.setCenter(start);
-          map.setZoom(p ? 17 : cfg.bias.zoom);
-        }
+        if (!fresh) view.setCenter(start, zoom);
         if (candidate) say(candidate.label);
       } catch {
+        viewReady = null;
+        // No map at all: the same as a provider that cannot load.
+        fail();
         if (target?.input === input) {
           showErr(cfg.msg.fail);
           use.hidden = mine.hidden = true;
@@ -421,26 +366,23 @@ function mapDialog(dialog: HTMLDialogElement, cfg: Config) {
   };
 }
 
-/** Wires one booking form. Returns null when the feature is off. */
-export function enhance(form: HTMLFormElement): Picker | null {
+/** Wires one booking form with the configured provider. Returns null when the feature is off. */
+export function enhance(form: HTMLFormElement, mod: ProviderModule): Picker | null {
   let cfg: Config;
   try {
     cfg = JSON.parse(form.dataset.maps || '');
   } catch {
     return null;
   }
-  if (!cfg?.key) return null;
+  if (!cfg?.provider) return null;
   offHandlers.push(() => form.classList.add('maps-off'));
-  installLoader({ key: cfg.key, v: 'weekly', language: cfg.lang, region: 'ID' });
-  // An invalid or restricted key: Google calls this once the script has loaded.
-  const w = window as any;
-  const prevAuth = w.gm_authFailure;
-  w.gm_authFailure = () => {
+  let provider: Provider;
+  try {
+    provider = mod.create({ lang: cfg.lang, bias: cfg.bias, msg: cfg.msg, key: cfg.key, onFail: fail });
+  } catch {
     fail();
-    if (typeof prevAuth === 'function') prevAuth();
-  };
-  // Start loading now (first touch of a field), so suggestions are ready by the third letter.
-  lib('places').catch(() => {});
+    return null;
+  }
   if (broken) form.classList.add('maps-off');
 
   const fields = new Map<Kind, { input: HTMLInputElement; label: string; apply: (p: Picked | null) => void }>();
@@ -452,17 +394,19 @@ export function enhance(form: HTMLFormElement): Picker | null {
     const apply = (p: Picked | null) => {
       if (p) input.value = p.label;
       setPoint(input, p && { lat: p.lat, lng: p.lng, placeId: p.placeId, name: p.name });
-      if (chip) chip.hidden = !p;
-      btn?.classList.toggle('on', !!p);
+      // An invalid point is not stored (placePoint.ts): no chip for it, the text stays.
+      const set = !!pointOf(input);
+      if (chip) chip.hidden = !set;
+      btn?.classList.toggle('on', set);
     };
     // Editing the text drops the point: text and point always match.
     input.addEventListener('input', () => { if (pointOf(input)) apply(null); });
-    attachSuggest(input, box, cfg, apply);
+    attachSuggest(input, box, cfg, provider, apply);
     fields.set(kind, { input, label: form.querySelector(`label[for="${input.id}"]`)?.textContent?.trim() || '', apply });
   }
 
   const dialogEl = document.getElementById(cfg.dialog) as HTMLDialogElement | null;
-  const dlg = dialogEl && typeof dialogEl.showModal === 'function' ? mapDialog(dialogEl, cfg) : null;
+  const dlg = dialogEl && typeof dialogEl.showModal === 'function' ? mapDialog(dialogEl, cfg, provider) : null;
   if (!dlg) form.classList.add('maps-off');
   return {
     open(kind, opener) {
