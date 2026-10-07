@@ -157,12 +157,17 @@ export function create(opts: ProviderOptions): Provider {
       setTimeout(on.idle, 0);
       return {
         getCenter() {
-          const c = map.getCenter();
+          // Leaflet does not wrap: panned past 180° the longitude would leave -180..180.
+          const c = map.getCenter().wrap();
           return { lat: round6(c.lat), lng: round6(c.lng) };
         },
         setCenter(c, z) {
-          // The dialog was closed (no size) since the last view.
+          // The dialog was closed (no size) since the last view. If the size changed
+          // (map made while hidden, window resized meanwhile), Leaflet reports it as a
+          // stop at a shifted old centre, which would drop the chosen place: not an idle.
+          map.off('moveend', on.idle);
           map.invalidateSize({ pan: false });
+          map.on('moveend', on.idle);
           map.setView([c.lat, c.lng], z, { animate: false });
         },
       };

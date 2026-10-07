@@ -500,6 +500,18 @@ try {
       await page.keyboard.press('Escape');
       await page.waitForTimeout(100);
       check('Esc closes the dialog', !(await page.locator('dialog.mp[open]').count()));
+      // A point without an address (sea): Google rejects with ZERO_RESULTS. Three in a row must not turn the map off.
+      await page.evaluate(async () => {
+        const { Geocoder } = await google.maps.importLibrary('geocoding');
+        Geocoder.prototype.geocode = async () => { throw Object.assign(new Error('GEOCODER_GEOCODE: ZERO_RESULTS'), { code: 'ZERO_RESULTS' }); };
+      });
+      await page.click(`[data-place-map][data-kind=dest]`);
+      await page.waitForSelector('dialog.mp[open]');
+      for (const ll of [[-5.9, 106.5], [-5.8, 106.6], [-5.7, 106.7]]) { await page.evaluate(([a, b]) => window.__gm.map.drag(a, b), ll); await page.waitForTimeout(150); }
+      check('no address (ZERO_RESULTS) three times: map stays usable', (await page.locator('dialog.mp [data-mp-use]').isVisible()) && /tidak ditemukan/.test(await page.locator('dialog.mp [data-mp-addr]').textContent()), await page.locator('dialog.mp [data-mp-addr]').textContent());
+      await page.click('dialog.mp [data-mp-use]');
+      await page.waitForTimeout(150);
+      check('no address: the bare point is used, map buttons stay', (await page.inputValue(dest)) === 'Titik di peta (-5.7, 106.7)' && (await page.locator('form[data-booking] .place-map:visible').count()) === 2, await page.inputValue(dest));
       check('no page errors (map dialog)', !errors.length, errors.join(' | '));
       void id;
       await context.close();
@@ -864,6 +876,19 @@ try {
       await page.waitForTimeout(150);
       const p2 = await point(page, pickup);
       check('osm: searched place used (exact point, no place id)', p2?.lat === -6.595345 && p2?.lng === 106.790543 && !p2.placeId && (await page.inputValue(pickup)).startsWith('Stasiun Bogor, '), JSON.stringify(p2));
+      // Window resized while the dialog is closed (phone rotated, desktop window): reopening keeps the chosen place.
+      const label2 = await page.inputValue(pickup);
+      const revResize = osm.reverse.length;
+      await page.setViewportSize({ width: 900, height: 800 });
+      await page.waitForTimeout(500);
+      await page.click('[data-place-chip=pickup] [data-place-edit]');
+      await page.waitForSelector('dialog.mp[open]');
+      await page.waitForTimeout(1500);
+      check('osm: resized while closed -> reopen keeps the chosen place, no lookup', (await page.locator('dialog.mp [data-mp-addr]').textContent()) === label2 && osm.reverse.length === revResize, JSON.stringify({ addr: await page.locator('dialog.mp [data-mp-addr]').textContent(), rev: osm.reverse.slice(revResize) }));
+      await page.click('dialog.mp [data-mp-use]');
+      await page.waitForTimeout(150);
+      check('osm: ... and "Pakai titik ini" keeps it', (await page.inputValue(pickup)) === label2 && (await point(page, pickup))?.name === 'Stasiun Bogor', await page.inputValue(pickup));
+      await page.setViewportSize({ width: 1280, height: 900 });
       // destination: no "my location"; Esc closes
       await page.click(`[data-place-map][data-kind=dest]`);
       await page.waitForSelector('dialog.mp[open]');
@@ -897,7 +922,7 @@ try {
       // Zooming all the way in never asks for tiles above 19.
       await page.click(`[data-place-map][data-kind=dest]`);
       await page.waitForSelector('dialog.mp[open]');
-      for (let i = 0; i < 10 && !(await page.locator('dialog.mp .leaflet-control-zoom-in.leaflet-disabled').count()); i++) { await page.click('dialog.mp .leaflet-control-zoom-in'); await page.waitForTimeout(150); }
+      for (let i = 0; i < 10 && !(await page.locator('dialog.mp .leaflet-control-zoom-in.leaflet-disabled').count()); i++) { await page.click('dialog.mp .leaflet-control-zoom-in', { timeout: 1000 }).catch(() => {}); await page.waitForTimeout(150); }
       await page.waitForTimeout(400);
       const zooms = tileZooms(osm);
       check('osm: zoom stops at 19 (tile policy)', Math.max(...zooms) === 19 && (await page.locator('dialog.mp .leaflet-control-zoom-in.leaflet-disabled').count()) === 1, zooms.join());

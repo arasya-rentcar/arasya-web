@@ -123,8 +123,15 @@ export function create(opts: ProviderOptions): Provider {
     async reverse(p) {
       const { Geocoder } = await lib('geocoding');
       geocoder ||= new Geocoder();
-      const { results } = await geocoder.geocode({ location: p, language: opts.lang });
-      return String(results?.[0]?.formatted_address || '');
+      try {
+        const { results } = await geocoder.geocode({ location: p, language: opts.lang });
+        return String(results?.[0]?.formatted_address || '');
+      } catch (e) {
+        // A point without an address (sea): Google rejects with ZERO_RESULTS. Not a
+        // service error, so it must not count towards turning the extras off.
+        if ((e as { code?: string } | null)?.code === 'ZERO_RESULTS') return '';
+        throw e;
+      }
     },
     async createMap(el, center, zoom, on) {
       const [{ Map }] = await Promise.all([lib('maps'), lib('geocoding')]);
