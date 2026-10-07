@@ -1,11 +1,12 @@
 /**
  * Cancellation policy wording (ID + EN): the 50% tier ends *before* 10:00 WIB
- * on the travel day; 10:00:00 itself is already the 100% tier (owner decision,
- * same rule as computeCancellationPenalty).
+ * on the travel day and the 100% tier starts *at* 10:00 WIB, so 10:00:00 itself
+ * is already 100% (owner decision, same rule as computeCancellationPenalty).
  *
  * Only strings inside siteSettings.cancellationPolicy and
  * en.cancellationPolicy that still hold an old phrase ("sampai/hingga/s.d.
- * pukul 10.00", "up to/until 10 a.m.") are set, with just that phrase
+ * pukul 10.00" → "sebelum", "setelah pukul 10.00" → "mulai", "up to/until
+ * 10 a.m." → "before", "after 10 a.m." → "from") are set, with just that phrase
  * replaced; the rest of the text, and any other Studio edit, is kept.
  * Idempotent: no new phrase contains an old one, so a second run finds
  * nothing and commits nothing.
