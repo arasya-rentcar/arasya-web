@@ -1,13 +1,100 @@
 {
- "legalName": "PT Ayomi Raya Karsa",
- "bank": {
-  "_key": "k00001",
-  "bank": "BCA",
-  "number": "095 484 0782",
-  "owner": "a.n. PT Ayomi Raya Karsa"
+ "rewrites": {
+  "cancellationPolicy": [
+   [
+    "sampai pukul 10.00",
+    "sebelum pukul 10.00"
+   ],
+   [
+    "hingga pukul 10.00",
+    "sebelum pukul 10.00"
+   ],
+   [
+    "s.d. pukul 10.00",
+    "sebelum pukul 10.00"
+   ],
+   [
+    "s/d pukul 10.00",
+    "sebelum pukul 10.00"
+   ],
+   [
+    "setelah pukul 10.00",
+    "mulai pukul 10.00"
+   ]
+  ],
+  "en.cancellationPolicy": [
+   [
+    "up to 10 a.m.",
+    "before 10 a.m."
+   ],
+   [
+    "up to 10:00 a.m.",
+    "before 10:00 a.m."
+   ],
+   [
+    "until 10 a.m.",
+    "before 10 a.m."
+   ],
+   [
+    "until 10:00",
+    "before 10:00"
+   ],
+   [
+    "after 10 a.m.",
+    "from 10 a.m."
+   ],
+   [
+    "after 10:00 a.m.",
+    "from 10:00 a.m."
+   ]
+  ]
  },
- "rateNotesAllIn": "Tarif All-in sudah termasuk BBM, tol, dan makan driver. Parkir, kelebihan jam, dan biaya luar kota (bila ada) dikonfirmasi terpisah. Kapasitas penumpang sudah termasuk jasa driver.",
- "rateNotesAllInEn": "The all-in rate includes fuel, tolls and the driver's meals. Parking, overtime and out-of-town charges, if any, are confirmed separately. Seat numbers include the driver.",
+ "previous": {
+  "cancellationPolicy": {
+   "title": "Kebijakan pembatalan",
+   "intro": "Kami memahami bahwa rencana perjalanan dapat berubah sewaktu-waktu. Untuk menjaga kenyamanan dan kelancaran layanan, berikut ketentuan pembatalan yang berlaku:",
+   "items": [
+    {
+     "when": "Sebelum hari keberangkatan",
+     "fee": "Biaya 20% dari total pesanan (DP 20% tidak dapat dikembalikan)",
+     "text": "Pembatalan hingga pukul 23.59 WIB sehari sebelum keberangkatan."
+    },
+    {
+     "when": "Hari H sebelum pukul 10.00 WIB, perjalanan belum dimulai",
+     "fee": "Biaya 50% dari total pesanan",
+     "text": "Pembatalan pada hari keberangkatan sebelum pukul 10.00 WIB, selama driver belum berangkat menjemput."
+    },
+    {
+     "when": "Hari H mulai pukul 10.00 WIB, perjalanan sudah dimulai, atau setelah hari H",
+     "fee": "Biaya 100% dari total pesanan",
+     "text": "Pembatalan mulai pukul 10.00 WIB pada hari keberangkatan, setelah perjalanan dimulai (driver sudah berangkat menjemput), atau setelah hari keberangkatan lewat."
+    }
+   ],
+   "closing": "Biaya pembatalan dihitung dari total pesanan. Terima kasih atas pengertian dan kerja sama Anda."
+  },
+  "en.cancellationPolicy": {
+   "title": "Cancellation policy",
+   "intro": "Plans change, and we understand that. To keep things fair for every customer and driver, these are our cancellation terms:",
+   "items": [
+    {
+     "when": "Before the day of travel",
+     "fee": "20% of the total booking (the 20% deposit is non-refundable)",
+     "text": "Cancelling up to 11:59 p.m. WIB the day before you travel."
+    },
+    {
+     "when": "On the day, before 10 a.m. WIB, trip not yet started",
+     "fee": "50% of the total booking",
+     "text": "Cancelling on the day of travel before 10:00 a.m. WIB, as long as the driver has not yet set off to pick you up."
+    },
+    {
+     "when": "On the day from 10 a.m. WIB, once the trip has started, or after the day",
+     "fee": "100% of the total booking",
+     "text": "Cancelling from 10:00 a.m. WIB on the day of travel, once the trip has started (the driver has set off to pick you up), or after the travel day has passed."
+    }
+   ],
+   "closing": "Cancellation fees are calculated on the total booking. Thank you for your understanding."
+  }
+ },
  "policy": {
   "title": "Kebijakan pembatalan",
   "intro": "Kami memahami bahwa rencana perjalanan dapat berubah sewaktu-waktu. Untuk menjaga kenyamanan dan kelancaran layanan, berikut ketentuan pembatalan yang berlaku:",

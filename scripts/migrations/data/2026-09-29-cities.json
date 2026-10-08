@@ -2439,24 +2439,24 @@
   "items": [
    {
     "_key": "g01270a4777",
-    "when": "Sebelum hari keberangkatan",
-    "fee": "Biaya 20% dari total pesanan (DP 20% tidak dapat dikembalikan)",
-    "text": "Pembatalan hingga pukul 23.59 WIB sehari sebelum keberangkatan."
+    "when": "Paling lambat sehari sebelum hari sewa",
+    "fee": "Biaya 20% dari harga hari tersebut",
+    "text": "Pembatalan hingga pukul 23.59 WIB sehari sebelum hari sewa yang dibatalkan."
    },
    {
     "_key": "g5dcd317b73",
-    "when": "Hari H sebelum pukul 10.00 WIB, perjalanan belum dimulai",
-    "fee": "Biaya 50% dari total pesanan",
-    "text": "Pembatalan pada hari keberangkatan sebelum pukul 10.00 WIB, selama driver belum berangkat menjemput."
+    "when": "Pada hari sewa sebelum pukul 10.00 WIB, driver belum tiba di alamat jemput",
+    "fee": "Biaya 50% dari harga hari tersebut",
+    "text": "Pembatalan pada hari sewa sebelum pukul 10.00 WIB, selama driver belum tiba di alamat jemput."
    },
    {
     "_key": "gc6a3513ad0",
-    "when": "Hari H mulai pukul 10.00 WIB, perjalanan sudah dimulai, atau setelah hari H",
-    "fee": "Biaya 100% dari total pesanan",
-    "text": "Pembatalan mulai pukul 10.00 WIB pada hari keberangkatan, setelah perjalanan dimulai (driver sudah berangkat menjemput), atau setelah hari keberangkatan lewat."
+    "when": "Pada hari sewa mulai pukul 10.00 WIB, atau driver sudah tiba di alamat jemput",
+    "fee": "Biaya 100% dari harga hari tersebut",
+    "text": "Pembatalan pada hari sewa mulai pukul 10.00 WIB, atau setelah driver tiba di alamat jemput."
    }
   ],
-  "closing": "Biaya pembatalan dihitung dari total pesanan. Terima kasih atas pengertian dan kerja sama Anda."
+  "closing": "Biaya pembatalan dihitung per hari dari harga hari tersebut. Biaya tambahan yang sudah terpakai dibayar penuh. Kelebihan bayar dipotongkan ke tagihan berikutnya atau dikembalikan bila diminta. Contoh: sewa 3 hari, Rp 1.000.000 per hari, semua dibatalkan. Batal sehari sebelum hari pertama: Rp 600.000 (3 × 20%). Batal di hari pertama pukul 08.00 dan driver belum tiba: Rp 900.000 (50% + 20% + 20%). Batal di hari pertama pukul 11.00: Rp 1.400.000 (100% + 20% + 20%). Hari kedua dan ketiga dihitung 20% karena belum masuk hari sewanya. Terima kasih atas pengertian dan kerja sama Anda."
  },
  "policyEn": {
   "title": "Cancellation policy",
@@ -2464,24 +2464,24 @@
   "items": [
    {
     "_key": "g4f28245646",
-    "when": "Before the day of travel",
-    "fee": "20% of the total booking (the 20% deposit is non-refundable)",
-    "text": "Cancelling up to 11:59 p.m. WIB the day before you travel."
+    "when": "Up to the day before the rental day",
+    "fee": "20% of that day's price",
+    "text": "Cancelling up to 11:59 p.m. WIB the day before the rental day you cancel."
    },
    {
     "_key": "g2063df7b32",
-    "when": "On the day, before 10 a.m. WIB, trip not yet started",
-    "fee": "50% of the total booking",
-    "text": "Cancelling on the day of travel before 10:00 a.m. WIB, as long as the driver has not yet set off to pick you up."
+    "when": "On the rental day, before 10 a.m. WIB, driver not yet at the pick-up address",
+    "fee": "50% of that day's price",
+    "text": "Cancelling on the rental day before 10:00 a.m. WIB, as long as the driver has not yet arrived at the pick-up address."
    },
    {
     "_key": "g4874f99f48",
-    "when": "On the day from 10 a.m. WIB, once the trip has started, or after the day",
-    "fee": "100% of the total booking",
-    "text": "Cancelling from 10:00 a.m. WIB on the day of travel, once the trip has started (the driver has set off to pick you up), or after the travel day has passed."
+    "when": "On the rental day from 10 a.m. WIB, or once the driver is at the pick-up address",
+    "fee": "100% of that day's price",
+    "text": "Cancelling on the rental day from 10:00 a.m. WIB, or after the driver has arrived at the pick-up address."
    }
   ],
-  "closing": "Cancellation fees are calculated on the total booking. Thank you for your understanding."
+  "closing": "Cancellation fees are calculated per day from that day's price, and every rental day is judged by its own date. Extra charges already incurred are paid in full. Any overpayment is deducted from your next bill or refunded on request. Example: a 3-day rental at Rp 1,000,000 per day, everything cancelled. Cancelling the day before the first day: Rp 600,000 (3 × 20%). Cancelling on the first day at 8:00 a.m., driver not yet arrived: Rp 900,000 (50% + 20% + 20%). Cancelling on the first day at 11:00 a.m.: Rp 1,400,000 (100% + 20% + 20%). Days two and three are charged 20% because their rental day has not started yet. Thank you for your understanding."
  },
  "fixes": [
   {
