@@ -18,7 +18,7 @@ sys.path.insert(0, str(HERE.parent))
 
 from content.cars import CARS  # noqa: E402
 from content.cities import ALL as NEW_CITIES, EN_FIXES, FIXES  # noqa: E402
-from content.policy import BEFORE_10_REWRITES, BEFORE_10_REWRITES_EN, POLICY, POLICY_EN  # noqa: E402
+from content.policy import BEFORE_10_REWRITES, BEFORE_10_REWRITES_EN, POLICY, POLICY_EN, _PREVIOUS, _PREVIOUS_EN  # noqa: E402
 from content.english import CITIES, HOME, SERVICES, SETTINGS  # noqa: E402
 from content.posts import POSTS, blocks  # noqa: E402
 from content.routes import ROUTES  # noqa: E402
@@ -158,4 +158,15 @@ before_10 = {
     "policyEn": ss["en"]["cancellationPolicy"],
 }
 (out.parent / "2026-10-08-policy-before-10.json").write_text(json.dumps(before_10, ensure_ascii=False, indent=1))
+
+# Data for migrations/2026-10-09-policy-per-day.mjs: the text each field must
+# still hold to be replaced (previous), the 10:00 phrase rewrites that bring a
+# not-yet-migrated Studio text up to that previous wording, and the new text.
+per_day = {
+    "rewrites": {"cancellationPolicy": BEFORE_10_REWRITES, "en.cancellationPolicy": BEFORE_10_REWRITES_EN},
+    "previous": {"cancellationPolicy": _PREVIOUS, "en.cancellationPolicy": _PREVIOUS_EN},
+    "policy": ss["cancellationPolicy"],
+    "policyEn": ss["en"]["cancellationPolicy"],
+}
+(out.parent / "2026-10-09-policy-per-day.json").write_text(json.dumps(per_day, ensure_ascii=False, indent=1))
 print(f"wrote {out.relative_to(ROOT)} and updated {seed_path.relative_to(ROOT)} ({len(seed)} documents)")

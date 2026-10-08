@@ -40,7 +40,7 @@ Flow: website form → `POST /api/v1/public/leads` (code `ARS-XXXXX`, also sent 
 Rules that apply everywhere:
 - **Time is WIB (Asia/Jakarta, +07:00).** Never derive dates from `toISOString()` or the browser timezone; build `…T00:00:00+07:00` / `…:00+07:00` explicitly.
 - **Payments only to BCA 0954840782 a.n. PT Ayomi Raya Karsa.** No personal accounts anywhere (captions, PDFs, site).
-- **Cancellation (as enforced by `computeCancellationPenalty`):** before the travel day 20% of the order total; day H before 10:00 WIB and trip not started 50%; after that 100% (10:00:00 WIB itself is already 100%). Website text, captions and PDFs must say the same.
+- **Cancellation (per rental day, from that day's own price; every day of an order is judged by its own date):** until 23:59 WIB the day before 20%; on the rental day before 10:00 WIB and the driver has not yet arrived at the pickup address 50%; from 10:00 WIB (10:00:00 itself is already 100%) or once the driver has arrived 100%. Extra charges already incurred are paid in full; overpayment is deducted from the next bill or refunded on request. Website text, captions and PDFs must say the same.
 - **Personal data:** NIK and KTP/document files are sensitive (UU PDP). Lists show masked NIK only; documents live in the private bucket and are served by 5-minute signed URLs; never return a full customer object from endpoints that don't need it.
 - **Idempotency:** client-generated `client_ref` (uuid) + guarded conditional updates; resends must be no-ops.
 - **WhatsApp:** default is manual mode (`WA_DELIVERY` unset/manual): the API returns `wa_url` links the admin opens; driver messages go to the app as push. `WA_DELIVERY=bot` only while the old bot still runs.
